@@ -4,7 +4,9 @@ void main() {// Main para iniciar o app.
   runApp(MyApp());
 }
 
-class MyApp extends StatelessWidget { 
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+ 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -15,6 +17,8 @@ class MyApp extends StatelessWidget {
 }
 
 class TelaInicial extends StatefulWidget {
+  const TelaInicial({super.key});
+
   @override
   _TelaInicialState createState() => _TelaInicialState();
 }
@@ -22,7 +26,7 @@ class TelaInicial extends StatefulWidget {
 class _TelaInicialState extends State<TelaInicial> {
   String texto = 'Clique no botão!';
 
-  void _mudarTexto() {
+  void _mudarTexto() { //Função para mudar o texto
     setState(() {
       texto = 'Você clicou no botão!';
     });
