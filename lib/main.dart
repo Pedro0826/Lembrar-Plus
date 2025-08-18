@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-void main() {// Main para iniciar o app.
-  runApp(MyApp());
+void main() {
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -9,8 +9,8 @@ class MyApp extends StatelessWidget {
  
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'App com botão',
+    return const MaterialApp(
+      title: 'App Contador',
       home: TelaInicial(),
     );
   }
@@ -20,15 +20,28 @@ class TelaInicial extends StatefulWidget {
   const TelaInicial({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _TelaInicialState createState() => _TelaInicialState();
 }
 
 class _TelaInicialState extends State<TelaInicial> {
-  String texto = 'Clique no botão!';
+  int contador = 0;
 
-  void _mudarTexto() { //Função para mudar o texto
+  void _incrementar() {
     setState(() {
-      texto = 'Você clicou no botão!';
+      contador++;
+    });
+  }
+
+  void _decrementar() {
+    setState(() {
+      contador--;
+    });
+  }
+
+  void _resetar() {
+    setState(() {
+      contador = 0;
     });
   }
 
@@ -36,21 +49,39 @@ class _TelaInicialState extends State<TelaInicial> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('App com botão'),
+        title: const Text('Contador com 3 botões'),
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
-              texto,
+            const Text(
+              'Contagem:',
               style: TextStyle(fontSize: 24),
-              textAlign: TextAlign.center,
             ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _mudarTexto,
-              child: Text('Clique aqui'),
+            Text(
+              '$contador',
+              style: const TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton(
+                  onPressed: _decrementar,
+                  child: const Text('-'),
+                ),
+                const SizedBox(width: 20),
+                ElevatedButton(
+                  onPressed: _resetar,
+                  child: const Text('Zerar'),
+                ),
+                const SizedBox(width: 20),
+                ElevatedButton(
+                  onPressed: _incrementar,
+                  child: const Text('+'),
+                ),
+              ],
             ),
           ],
         ),
