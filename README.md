@@ -38,11 +38,13 @@ Antes de começar, certifique-se de ter:
 ```bash
 git clone https://github.com/ICEI-PUC-Minas-EC-TI/plu-ti1-2025-2-t1-g1-lembrar
 cd lembrar-plus
-
-# Instale as dependências
+```
+**Instale as dependências:**
+```bash
 flutter pub get
-
-# Execute o app
+```
+**Execute o app:**
+```bash
 flutter run
 ```
 
