@@ -50,8 +50,9 @@ flutter run
 
 ---
 
-## Estrutura do Repositório
+## 🗂️ Estrutura do Repositório
 
+```
 lembrar-plus/
 ├── README.md                     # Documentação principal do projeto
 ├── LICENSE                       # Licença do projeto (Apache 2.0)
@@ -72,8 +73,7 @@ lembrar-plus/
 ├── ios/                          # Código e configurações específicas do iOS (Info.plist, Xcode project, recursos nativos)
 ├── .gitignore                    # Arquivos e pastas ignorados pelo Git (builds, caches, etc.)
 └── .vscode/                      # Configurações do VS Code para o projeto (opcional)
-
----
+```
 
 ## Ferramentas Utilizadas
 
