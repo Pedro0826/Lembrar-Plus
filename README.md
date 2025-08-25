@@ -6,7 +6,7 @@ Este repositório contém o aplicativo **Lembrar+**, desenvolvido em Flutter (Da
 
 ## 🧩 Funcionalidades
 
-- Login e registro de usuários (*Idoso* ou *Responsável*).  
+- Login e registro de usuários (*Paciente* ou *Cuidador*).  
 - Tela inicial de boas-vindas.  
 - Comunicação entre idoso e responsável:  
   - Ligar  
