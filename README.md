@@ -82,6 +82,7 @@ Faço o desenvolvimento do **Lembrar+** em **macOS** e Windows**, utilizando o e
 Para testes, utilizo emuladores Android/iOS e um dispositivo físico Android.  
 O controle de versão é feito pelo **Git** diretamente pelo terminal integrado do VSCode.
 
+---
 ### 📄 Licença
 
 Este projeto está sob a Apache License 2.0.
