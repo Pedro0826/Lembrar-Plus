@@ -74,7 +74,7 @@ lembrar-plus/
 ├── .gitignore                    # Arquivos e pastas ignorados pelo Git (builds, caches, etc.)
 └── .vscode/                      # Configurações do VS Code para o projeto (opcional)
 ```
-
+---
 ## Ferramentas Utilizadas
 
 ### [Caua Diniz] 
