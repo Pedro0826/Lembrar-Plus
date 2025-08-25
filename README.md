@@ -52,26 +52,26 @@ flutter run
 
 ## Estrutura do Repositório
 
-- **README.md**: este é o arquivo que você está lendo agora.
-- **LICENSE**: este arquivo contém a licença do projeto.
-- **pubspec.yaml**: contém as definições do Flutter, dependências e configurações do projeto.
-- **lib/**: contém todo o código-fonte do aplicativo, organizado da seguinte forma:
-  - **main.dart**: ponto de entrada do aplicativo.
-  - **screens/**: todas as telas do app:
-    - **welcome.dart**: tela de boas-vindas inicial.
-    - **login.dart**: tela de login de usuário (idoso ou responsável).
-    - **register.dart**: tela de registro de novo usuário.
-    - **home_idoso.dart**: tela principal do idoso após login.
-    - **home_responsavel.dart**: tela principal do responsável após login.
-  - **widgets/**: componentes visuais reutilizáveis, como botões, cards e alertas.
-  - **services/**: lógica do app, funções auxiliares e, futuramente, integração com backend.
-- **assets/**: imagens, ícones, fontes e outros recursos visuais do aplicativo.
-- **test/**: contém testes unitários do aplicativo para garantir que as funcionalidades se comportam conforme esperado.
-- **android/**: código e configuração específicos do Android, incluindo Gradle, manifest e recursos nativos.
-- **ios/**: código e configuração específicos do iOS, incluindo Info.plist, Xcode project e recursos nativos.
-- **.gitignore**: lista de arquivos e pastas que o Git deve ignorar, como builds e caches.
-- **.vscode/**: configurações do VS Code para o projeto (opcional).
-
+📦 lembrar-plus
+┣ 📜 README.md — este é o arquivo que você está lendo agora
+┣ 📜 LICENSE — contém a licença do projeto
+┣ 📜 pubspec.yaml — definições do Flutter, dependências e configurações do projeto
+┣ 📂 lib/ — código-fonte do aplicativo
+┃ ┣ 📜 main.dart — ponto de entrada do aplicativo
+┃ ┣ 📂 screens/ — telas do app
+┃ ┃ ┣ 📜 welcome.dart — tela de boas-vindas inicial
+┃ ┃ ┣ 📜 login.dart — tela de login de usuário (idoso ou responsável)
+┃ ┃ ┣ 📜 register.dart — tela de registro de novo usuário
+┃ ┃ ┣ 📜 home_idoso.dart — tela principal do idoso após login
+┃ ┃ ┗ 📜 home_responsavel.dart — tela principal do responsável após login
+┃ ┣ 📂 widgets/ — componentes visuais reutilizáveis (botões, cards, alertas)
+┃ ┗ 📂 services/ — lógica do app e futura integração com backend
+┣ 📂 assets/ — imagens, ícones, fontes e recursos visuais
+┣ 📂 test/ — testes unitários do aplicativo
+┣ 📂 android/ — código e configurações específicas do Android (Gradle, manifest, recursos nativos)
+┣ 📂 ios/ — código e configurações específicas do iOS (Info.plist, Xcode project, recursos nativos)
+┣ 📜 .gitignore — arquivos e pastas ignorados pelo Git (builds, caches, etc.)
+┗ 📂 .vscode/ — configurações do VS Code para o projeto (opcional)
 
 ---
 
