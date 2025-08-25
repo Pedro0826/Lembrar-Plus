@@ -1,4 +1,4 @@
-# Lembrar+ 🌟
+# 🌟 Lembrar+
 
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue)]()
 
@@ -7,7 +7,7 @@ O app oferece funcionalidades de **login**, **registro**, **chamadas**, **mensag
 
 ---
 
-## Funcionalidades
+## 🧩 Funcionalidades
 
 - Login e registro de usuários (*Idoso* ou *Responsável*).  
 - Tela inicial de boas-vindas.  
@@ -19,14 +19,14 @@ O app oferece funcionalidades de **login**, **registro**, **chamadas**, **mensag
 
 ---
 
-## Tecnologias
+## ⚙️ Tecnologias
 
 - Flutter (Dart)  
 - Android & iOS  
 
 ---
 
-## Como usar
+## 🚀 Como Usar
 
 Antes de começar, certifique-se de ter:
 
@@ -75,7 +75,7 @@ lembrar-plus/
 └── .vscode/                      # Configurações do VS Code para o projeto (opcional)
 ```
 ---
-## Ferramentas Utilizadas
+## 👩‍💻 Autores
 
 ### [Caua Diniz] 
 
@@ -93,7 +93,7 @@ O controle de versão é feito pelo **Git** diretamente pelo terminal integrado 
 
 ---
 
-### Licença
+### 📄 Licença
 
 Este projeto está sob a Apache License 2.0.
 
