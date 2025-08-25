@@ -79,7 +79,7 @@ flutter run
 
 ### [Caua Diniz] 
 
-### [Júlia de Mello] (https://github.com/jujupoipo)
+### [Júlia de Mello](https://github.com/jujupoipo)
 
 Atuo principalmente no Frontend do Lembrar+, desenvolvendo e mantendo a interface do usuário em Flutter, com foco na usabilidade e na estética do aplicativo.
 Participo da definição de wireframes e protótipos para as telas, além de contribuir no planejamento do projeto, organizando tarefas, cronograma e documentação.
