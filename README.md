@@ -86,6 +86,3 @@ O controle de versão é feito pelo **Git** diretamente pelo terminal integrado 
 ### 📄 Licença
 
 Este projeto está sob a Apache License 2.0.
-
----
-
