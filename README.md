@@ -68,7 +68,7 @@ lembrar-plus/
 ---
 ## 👩‍💻 Autores
 
-### [Caua Diniz] (https://github.com/Caua0305)
+### [Caua Diniz](https://github.com/Caua0305)
 
 Realizo um pouco de ambos os campos do **Lembrar+**, tanto do Frontend quanto no Backend em **macOS** por meio do **VSCode**, dando apoio criativo para o desenvolvimento das telas como também ajudando na construção do código-fonte, utilizando de emuladores como o **Android Studio**.
 Também dou suporte acerca da colaboração nas tarefas de integração entre as camadas do sistema.
