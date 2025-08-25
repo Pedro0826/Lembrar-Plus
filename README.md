@@ -52,8 +52,6 @@ flutter run
 
 ## Estrutura do Repositório
 
----
-
 lembrar-plus/
 ├── README.md                     # Documentação principal do projeto
 ├── LICENSE                       # Licença do projeto (Apache 2.0)
