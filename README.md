@@ -5,8 +5,6 @@
 Este repositório contém o aplicativo **Lembrar+**, desenvolvido em Flutter (Dart), voltado para ajudar idosos a se comunicarem com seus responsáveis.  
 O app oferece funcionalidades de **login**, **registro**, **chamadas**, **mensagens** e **avisos rápidos** entre idoso e responsável.
 
----
-
 ## 🧩 Funcionalidades
 
 - Login e registro de usuários (*Idoso* ou *Responsável*).  
@@ -17,14 +15,10 @@ O app oferece funcionalidades de **login**, **registro**, **chamadas**, **mensag
   - Enviar alertas/notificações  
 - Histórico de interações.
 
----
-
 ## ⚙️ Tecnologias
 
 - Flutter (Dart)  
 - Android & iOS  
-
----
 
 ## 🚀 Como Usar
 
@@ -47,8 +41,6 @@ flutter pub get
 ```bash
 flutter run
 ```
-
----
 
 ## 🗂️ Estrutura do Repositório
 
@@ -90,8 +82,6 @@ Também ofereço suporte pontual no backend quando necessário, garantindo integ
 Faço o desenvolvimento do **Lembrar+** em **macOS** e Windows**, utilizando o editor de código **VSCode** com suporte a Flutter/Dart.  
 Para testes, utilizo emuladores Android/iOS e um dispositivo físico Android.  
 O controle de versão é feito pelo **Git** diretamente pelo terminal integrado do VSCode.
-
----
 
 ### 📄 Licença
 
