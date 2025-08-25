@@ -40,7 +40,7 @@ flutter pub get
 ```bash
 flutter run
 ```
-
+---
 ## 🗂️ Estrutura do Repositório
 
 ```
