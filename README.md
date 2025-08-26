@@ -82,7 +82,7 @@ Também ofereço suporte pontual no backend quando necessário, garantindo integ
 
 ### [Pedro Vitor](https://github.com/Pedro0826)
 
-Faço o desenvolvimento do **Lembrar+** em **macOS** e **Windows**, utilizando o editor de código **VSCode** com suporte a Flutter/Dart.  
+Faço o desenvolvimento principalmente no Backend (Arquitetura, Banco de dados e Autenticação) do **Lembrar+** em **macOS** e **Windows**, utilizando o editor de código **VSCode** com suporte a Flutter/Dart.  
 Para testes, utilizo emuladores Android/iOS e um dispositivo físico Android.  
 O controle de versão é feito pelo **Git** diretamente pelo terminal integrado do VSCode.
 
