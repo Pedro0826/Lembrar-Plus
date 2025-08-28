@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
+import '../services/firestore_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 
@@ -14,8 +15,11 @@ class RegisterResponsavelPage extends StatefulWidget {
 
 class _RegisterResponsavelPageState extends State<RegisterResponsavelPage> {
   final TextEditingController nomeController = TextEditingController();
+  final TextEditingController telefoneController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController senhaController = TextEditingController();
+  final TextEditingController cpfController = TextEditingController();
+  DateTime? dataNascSelecionada;
 
   // Não precisa de userType ou didChangeDependencies para idoso
 
@@ -29,8 +33,15 @@ class _RegisterResponsavelPageState extends State<RegisterResponsavelPage> {
 
   Future<void> registrarUsuario() async {
     String nome = nomeController.text;
+    String telefone = telefoneController.text;
     String email = emailController.text;
     String senha = senhaController.text;
+    String cpf = cpfController.text;
+    DateTime? dataNasc = dataNascSelecionada;
+    if (dataNasc == null) {
+      mostrarErro('Selecione a data de nascimento.');
+      return;
+    }
     try {
       UserCredential cred = await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: email,
@@ -38,6 +49,17 @@ class _RegisterResponsavelPageState extends State<RegisterResponsavelPage> {
       );
       // Opcional: atualizar o displayName
       await cred.user?.updateDisplayName(nome);
+
+      // Salvar responsável no Firestore
+      final firestoreService = FirestoreService();
+      await firestoreService.addResponsavel(
+        nome: nome,
+        telefone: telefone,
+        email: email,
+        dataNasc: dataNasc,
+        cpf: cpf,
+      );
+
       Navigator.pushReplacementNamed(context, '/home_responsavel');
     } catch (e) {
       mostrarErro('Erro ao registrar: ${e.toString()}');
@@ -48,7 +70,24 @@ class _RegisterResponsavelPageState extends State<RegisterResponsavelPage> {
     try {
       User? user = await _authService.signInWithGoogle();
       if (user != null) {
-        // Aqui você pode decidir para onde redirecionar
+        // Coletar dados adicionais do formulário
+        String nome = user.displayName ?? nomeController.text;
+        String telefone = telefoneController.text;
+        String email = user.email ?? emailController.text;
+        String cpf = cpfController.text;
+        DateTime? dataNasc = dataNascSelecionada;
+        if (dataNasc == null) {
+          mostrarErro('Selecione a data de nascimento.');
+          return;
+        }
+        final firestoreService = FirestoreService();
+        await firestoreService.addResponsavel(
+          nome: nome,
+          telefone: telefone,
+          email: email,
+          dataNasc: dataNasc,
+          cpf: cpf,
+        );
         Navigator.pushReplacementNamed(context, '/home_responsavel');
       }
     } catch (e) {
@@ -70,6 +109,11 @@ class _RegisterResponsavelPageState extends State<RegisterResponsavelPage> {
                 decoration: const InputDecoration(labelText: "Nome"),
               ),
               TextField(
+                controller: telefoneController,
+                decoration: const InputDecoration(labelText: "Telefone"),
+                keyboardType: TextInputType.phone,
+              ),
+              TextField(
                 controller: emailController,
                 decoration: const InputDecoration(labelText: "Email"),
               ),
@@ -77,6 +121,36 @@ class _RegisterResponsavelPageState extends State<RegisterResponsavelPage> {
                 controller: senhaController,
                 decoration: const InputDecoration(labelText: "Senha"),
                 obscureText: true,
+              ),
+              TextField(
+                controller: cpfController,
+                decoration: const InputDecoration(labelText: "CPF"),
+                keyboardType: TextInputType.number,
+              ),
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  const Text("Data de Nascimento: "),
+                  Text(dataNascSelecionada == null
+                      ? "Selecione"
+                      : "${dataNascSelecionada!.day}/${dataNascSelecionada!.month}/${dataNascSelecionada!.year}"),
+                  IconButton(
+                    icon: const Icon(Icons.calendar_today),
+                    onPressed: () async {
+                      DateTime? picked = await showDatePicker(
+                        context: context,
+                        initialDate: DateTime(2000, 1, 1),
+                        firstDate: DateTime(1900),
+                        lastDate: DateTime.now(),
+                      );
+                      if (picked != null) {
+                        setState(() {
+                          dataNascSelecionada = picked;
+                        });
+                      }
+                    },
+                  ),
+                ],
               ),
               const SizedBox(height: 20),
 
