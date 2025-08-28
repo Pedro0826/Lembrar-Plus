@@ -13,7 +13,7 @@ class HomeResponsavel extends StatelessWidget {
         children: [
           const Center(child: Text("Bem-vindo, Responsável!")),
           CircularMenu(
-            alignment: Alignment.bottomRight,
+            alignment: Alignment.bottomCenter,
             items: [
               CircularMenuItem(
                 icon: Icons.logout,
