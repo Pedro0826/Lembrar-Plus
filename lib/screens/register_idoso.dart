@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
+import '../services/firestore_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 
@@ -38,6 +39,11 @@ class _RegisterIdosoPageState extends State<RegisterIdosoPage> {
       );
       // Opcional: atualizar o displayName
       await cred.user?.updateDisplayName(nome);
+
+      // Salvar idoso no Firestore
+      final firestoreService = FirestoreService();
+      await firestoreService.addIdoso(nome: nome, email: email);
+
       Navigator.pushReplacementNamed(context, '/home_idoso');
     } catch (e) {
       mostrarErro('Erro ao registrar: ${e.toString()}');
@@ -48,7 +54,12 @@ class _RegisterIdosoPageState extends State<RegisterIdosoPage> {
     try {
       User? user = await _authService.signInWithGoogle();
       if (user != null) {
-        // Aqui você pode decidir para onde redirecionar
+        // Salvar idoso no Firestore após login Google
+        final firestoreService = FirestoreService();
+        await firestoreService.addIdoso(
+          nome: user.displayName ?? '',
+          email: user.email ?? '',
+        );
         Navigator.pushReplacementNamed(context, '/home_idoso');
       }
     } catch (e) {
