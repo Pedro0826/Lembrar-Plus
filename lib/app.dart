@@ -1,7 +1,6 @@
 
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'services/auth_service.dart';
+// ...existing code...
 import 'screens/welcome.dart';
 import 'screens/login.dart';
 import 'screens/register_principal.dart';
@@ -9,6 +8,7 @@ import 'screens/register_idoso.dart';
 import 'screens/register_responsavel.dart';
 import 'screens/home_idoso.dart';
 import 'screens/home_responsavel.dart';
+import 'screens/register_responsavel_resto.dart';
 
 class App extends StatelessWidget {
   const App({super.key});
@@ -24,24 +24,11 @@ class App extends StatelessWidget {
         '/register_principal': (context) => const RegisterPrincipalPage(),
         '/register_idoso': (context) => const RegisterIdosoPage(),
         '/register_responsavel': (context) => const RegisterResponsavelPage(),
+        '/register_responsavel_resto': (context) => const RegisterResponsavelRestoPage(nome: '', email: ''),
         '/home_idoso': (context) => const HomeIdoso(),
         '/home_responsavel': (context) => const HomeResponsavel(),
       },
-      home: StreamBuilder<User?>(
-        stream: AuthService().userChanges,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          if (snapshot.hasData && snapshot.data != null) {
-            // Usuário autenticado, pode customizar para qual home ir
-            return const HomeResponsavel();
-          } else {
-            // Não autenticado
-            return const LoginPage();
-          }
-        },
-      ),
+      home: const WelcomePage(),
     );
   }
 }

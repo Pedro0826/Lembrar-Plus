@@ -1,7 +1,18 @@
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class FirestoreService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
+
+  Future<bool> isResponsavelByEmail(String email) async {
+    final snap = await _db.collection('responsavel').where('email', isEqualTo: email).limit(1).get();
+    return snap.docs.isNotEmpty;
+  }
+
+  Future<bool> isIdosoByEmail(String email) async {
+    final snap = await _db.collection('idoso').where('email', isEqualTo: email).limit(1).get();
+    return snap.docs.isNotEmpty;
+  }
 
   /// Atualiza os dados do idoso após o vínculo com o responsável
   Future<void> atualizarDadosIdoso({

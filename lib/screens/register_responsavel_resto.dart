@@ -1,4 +1,20 @@
 import 'package:flutter/material.dart';
+import '../services/firestore_service.dart';
+// ...existing code...
+  bool validarCPF(String cpf) {
+    cpf = cpf.replaceAll(RegExp(r'[^0-9]'), '');
+    if (cpf.length != 11 || RegExp(r'(\d)\1{10}').hasMatch(cpf)) return false;
+    List<int> digits = cpf.split('').map(int.parse).toList();
+    int calc(int n) {
+      int sum = 0;
+      for (int i = 0; i < n; i++) {
+        sum += digits[i] * (n + 1 - i);
+      }
+      int mod = (sum * 10) % 11;
+      return mod == 10 ? 0 : mod;
+    }
+    return calc(9) == digits[9] && calc(10) == digits[10];
+  }
 
 class RegisterResponsavelRestoPage extends StatefulWidget {
   final String nome;
@@ -28,7 +44,23 @@ class _RegisterResponsavelRestoPageState extends State<RegisterResponsavelRestoP
       mostrarErro('Preencha todos os campos.');
       return;
     }
-    Navigator.pushReplacementNamed(context, '/home_responsavel');
+    if (!validarCPF(cpf)) {
+      mostrarErro('CPF inválido.');
+      return;
+    }
+    try {
+      final firestoreService = FirestoreService();
+      await firestoreService.addResponsavel(
+        nome: widget.nome,
+        telefone: telefone,
+        email: widget.email,
+        dataNasc: dataNasc,
+        cpf: cpf,
+      );
+      Navigator.pushReplacementNamed(context, '/home_responsavel');
+    } catch (e) {
+      mostrarErro('Erro ao salvar dados: ${e.toString()}');
+    }
   }
 
   @override
