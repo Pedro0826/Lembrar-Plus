@@ -62,37 +62,6 @@ class _WelcomePageState extends State<WelcomePage> {
                 },
                 child: const Text("Já tenho conta (Login)"),
               ),
-              const SizedBox(height: 10),
-              OutlinedButton(
-                onPressed: () {
-                  showDialog(
-                    context: context,
-                    builder: (context) => AlertDialog(
-                      title: const Text('Registrar como:'),
-                      content: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          ElevatedButton(
-                            onPressed: () {
-                              Navigator.pop(context); // fecha o dialog
-                              Navigator.pushNamed(context, '/register', arguments: 'idoso');
-                            },
-                            child: const Text('Idoso'),
-                          ),
-                          ElevatedButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                              Navigator.pushNamed(context, '/register', arguments: 'responsavel');
-                            },
-                            child: const Text('Responsável'),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-                child: const Text("Sou novo aqui (Registrar)"),
-              ),
             ],
           ),
         ),

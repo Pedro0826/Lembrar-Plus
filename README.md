@@ -45,25 +45,44 @@ flutter run
 
 ```
 lembrar-plus/
-├── README.md                     # Documentação principal do projeto
-├── LICENSE                       # Licença do projeto (Apache 2.0)
-├── pubspec.yaml                  # Definições do Flutter, dependências e configurações
-├── lib/                          # Código-fonte do aplicativo
-│   ├── main.dart                 # Ponto de entrada do aplicativo
-│   ├── screens/                  # Telas do app
-│   │   ├── welcome.dart          # Tela de boas-vindas inicial
-│   │   ├── login.dart            # Tela de login de usuário (idoso ou responsável)
-│   │   ├── register.dart         # Tela de registro de novo usuário
-│   │   ├── home_idoso.dart       # Tela principal do idoso após login
-│   │   └── home_responsavel.dart # Tela principal do responsável após login
-│   ├── widgets/                  # Componentes visuais reutilizáveis (botões, cards, alertas)
-│   └── services/                 # Lógica do app e futura integração com backend
-├── assets/                       # Imagens, ícones, fontes e recursos visuais
-├── test/                         # Testes unitários do aplicativo
-├── android/                      # Código e configurações específicas do Android (Gradle, manifest, recursos nativos)
-├── ios/                          # Código e configurações específicas do iOS (Info.plist, Xcode project, recursos nativos)
-├── .gitignore                    # Arquivos e pastas ignorados pelo Git (builds, caches, etc.)
-└── .vscode/                      # Configurações do VS Code para o projeto (opcional)
+├── .dart_tool/                  # Ferramentas internas do Flutter/Dart
+├── .flutter-plugins-dependencies # Plugins usados pelo Flutter
+├── .git/                        # Dados do controle de versão Git
+├── .gitignore                   # Arquivos/pastas ignorados pelo Git
+├── .metadata                    # Metadados do projeto Flutter
+├── .vscode/                     # Configurações do VS Code (opcional)
+├── analysis_options.yaml        # Regras de análise estática do Dart
+├── android/                     # Projeto Android nativo
+├── assets/                      # Imagens e recursos visuais
+├── build/                       # Arquivos gerados na build
+├── firebase.json                # Configuração do Firebase para web
+├── ios/                         # Projeto iOS nativo
+├── lib/                         # Código-fonte principal do app
+│   ├── app.dart                 # Configuração principal do app
+│   ├── firebase_options.dart    # Opções de inicialização do Firebase
+│   ├── main.dart                # Ponto de entrada do app
+│   ├── screens/                 # Telas do aplicativo
+│   │   ├── home_idoso.dart                # Tela principal do idoso
+│   │   ├── home_responsavel.dart          # Tela principal do responsável
+│   │   ├── login.dart                     # Tela de login
+│   │   ├── register_idoso.dart            # Registro de idoso
+│   │   ├── register_principal.dart        # Escolha de tipo de registro
+│   │   ├── register_responsavel.dart      # Registro de responsável
+│   │   ├── register_responsavel_resto.dart# Complemento de cadastro do responsável
+│   │   └── welcome.dart                   # Tela de boas-vindas
+│   ├── services/                # Lógica de autenticação e banco
+│   │   ├── auth_service.dart             # Serviço de autenticação (login, registro, Google)
+│   │   └── firestore_service.dart        # Serviço de banco de dados (Firestore)
+│   └── widgets/                 # Componentes reutilizáveis
+├── LICENSE                      # Licença do projeto
+├── linux/                       # Projeto Linux nativo
+├── macos/                       # Projeto macOS nativo
+├── pubspec.lock                 # Versões travadas das dependências
+├── pubspec.yaml                 # Dependências e configurações do Flutter
+├── README.md                    # Documentação principal
+├── test/                        # Testes automatizados
+├── web/                         # Projeto web e recursos
+├── windows/                     # Projeto Windows nativo
 ```
 ---
 ## 👩‍💻 Autores

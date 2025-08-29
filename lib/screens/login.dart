@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
+import '../services/firestore_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class LoginPage extends StatefulWidget {
@@ -44,8 +45,16 @@ class _LoginPageState extends State<LoginPage> {
     try {
       User? user = await _authService.signInWithGoogle();
       if (user != null) {
-        // Aqui você pode decidir para onde redirecionar, por exemplo:
-        Navigator.pushReplacementNamed(context, '/home_idoso');
+        final firestore = FirestoreService();
+        if (await firestore.isResponsavelByEmail(user.email ?? '')) {
+          Navigator.pushReplacementNamed(context, '/home_responsavel');
+          return;
+        }
+        if (await firestore.isIdosoByEmail(user.email ?? '')) {
+          Navigator.pushReplacementNamed(context, '/home_idoso');
+          return;
+        }
+        mostrarErro('Usuário não encontrado como responsável ou idoso.');
       }
     } catch (e) {
       mostrarErro('Falha no login com Google: ${e.toString()}');

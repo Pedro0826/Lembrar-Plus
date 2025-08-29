@@ -1,9 +1,23 @@
-
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
 import '../services/firestore_service.dart';
+import 'register_responsavel_resto.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-
+// ...existing code...
+  bool validarCPF(String cpf) {
+    cpf = cpf.replaceAll(RegExp(r'[^0-9]'), '');
+    if (cpf.length != 11 || RegExp(r'(\d)\1{10}').hasMatch(cpf)) return false;
+    List<int> digits = cpf.split('').map(int.parse).toList();
+    int calc(int n) {
+      int sum = 0;
+      for (int i = 0; i < n; i++) {
+        sum += digits[i] * (n + 1 - i);
+      }
+      int mod = (sum * 10) % 11;
+      return mod == 10 ? 0 : mod;
+    }
+    return calc(9) == digits[9] && calc(10) == digits[10];
+  }
 
 class RegisterResponsavelPage extends StatefulWidget {
   const RegisterResponsavelPage({super.key});
@@ -42,6 +56,10 @@ class _RegisterResponsavelPageState extends State<RegisterResponsavelPage> {
       mostrarErro('Selecione a data de nascimento.');
       return;
     }
+    if (!validarCPF(cpf)) {
+      mostrarErro('CPF inválido.');
+      return;
+    }
     try {
       UserCredential cred = await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: email,
@@ -70,25 +88,18 @@ class _RegisterResponsavelPageState extends State<RegisterResponsavelPage> {
     try {
       User? user = await _authService.signInWithGoogle();
       if (user != null) {
-        // Coletar dados adicionais do formulário
-        String nome = user.displayName ?? nomeController.text;
-        String telefone = telefoneController.text;
-        String email = user.email ?? emailController.text;
-        String cpf = cpfController.text;
-        DateTime? dataNasc = dataNascSelecionada;
-        if (dataNasc == null) {
-          mostrarErro('Selecione a data de nascimento.');
-          return;
-        }
-        final firestoreService = FirestoreService();
-        await firestoreService.addResponsavel(
-          nome: nome,
-          telefone: telefone,
-          email: email,
-          dataNasc: dataNasc,
-          cpf: cpf,
+        String nome = user.displayName ?? '';
+        String email = user.email ?? '';
+        // Navega para a tela de completar cadastro, passando nome e email
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => RegisterResponsavelRestoPage(
+              nome: nome,
+              email: email,
+            ),
+          ),
         );
-        Navigator.pushReplacementNamed(context, '/home_responsavel');
       }
     } catch (e) {
       mostrarErro('Erro ao registrar com Google: ${e.toString()}');
