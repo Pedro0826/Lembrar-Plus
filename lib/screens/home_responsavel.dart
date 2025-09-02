@@ -5,7 +5,7 @@ import '../services/auth_service.dart';
 import 'package:circular_menu/circular_menu.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../services/firestore_service.dart';
-import 'register_idoso_resto.dart';
+import 'idoso_page.dart';
 
 class HomeResponsavel extends StatefulWidget {
   const HomeResponsavel({super.key});
@@ -49,15 +49,23 @@ class _HomeResponsavelState extends State<HomeResponsavel> {
   }
 
   Future<void> removerVinculoIdoso(String idosoId) async {
-    final firestore = FirestoreService();
-    final user = await AuthService().getCurrentUser();
-    if (user == null) return;
-    final responsavelSnap = await firestore.getResponsavelByEmail(user.email ?? '');
-    if (responsavelSnap == null) return;
-    List<dynamic> ids = responsavelSnap['idosos_vinculados'] ?? [];
-    ids.remove(idosoId);
-    await FirebaseFirestore.instance.collection('responsavel').doc(responsavelSnap['id']).update({'idosos_vinculados': ids});
-    await fetchIdososVinculados();
+  final firestore = FirestoreService();
+  final user = await AuthService().getCurrentUser();
+  if (user == null) return;
+  final responsavelSnap = await firestore.getResponsavelByEmail(user.email ?? '');
+  if (responsavelSnap == null) return;
+  List<dynamic> ids = responsavelSnap['idosos_vinculados'] ?? [];
+  ids.remove(idosoId);
+  await FirebaseFirestore.instance.collection('responsavel').doc(responsavelSnap['id']).update({'idosos_vinculados': ids});
+
+  // Remove o responsável da lista 'responsaveis' do idoso e o apelido
+  final idosoDocRef = FirebaseFirestore.instance.collection('idoso').doc(idosoId);
+  final idosoDoc = await idosoDocRef.get();
+  List<dynamic> responsaveis = idosoDoc.data()?['responsaveis'] ?? [];
+  responsaveis.remove(user.email);
+  await idosoDocRef.update({'responsaveis': responsaveis, 'apelido': FieldValue.delete()});
+
+  await fetchIdososVinculados();
   }
 
   @override
@@ -89,46 +97,6 @@ class _HomeResponsavelState extends State<HomeResponsavel> {
     setState(() { idosos = idososSnap; isLoading = false; });
   }
 
-  Future<void> vincularIdoso() async {
-    setState(() { errorMsg = null; });
-    final codigo = codigoController.text.trim();
-    if (codigo.isEmpty) {
-      setState(() { errorMsg = 'Digite o código do idoso.'; });
-      return;
-    }
-    final firestore = FirestoreService();
-    final idosoSnap = await firestore.getIdosoByCodigo(codigo);
-    if (idosoSnap == null) {
-      setState(() { errorMsg = 'Idoso não encontrado.'; });
-      return;
-    }
-    final user = await AuthService().getCurrentUser();
-    if (user == null) return;
-    await firestore.vincularIdosoAoResponsavel(user.email ?? '', idosoSnap['id']);
-
-    // Atualiza o documento do idoso para adicionar o responsável
-    final idosoDocRef = FirebaseFirestore.instance.collection('idoso').doc(idosoSnap['id']);
-    final idosoDoc = await idosoDocRef.get();
-    List<dynamic> responsaveis = idosoDoc.data()?['responsaveis'] ?? [];
-    if (!responsaveis.contains(user.email)) {
-      responsaveis.add(user.email);
-      await idosoDocRef.update({'responsaveis': responsaveis});
-    }
-
-    codigoController.clear();
-    await fetchIdososVinculados();
-
-    // Navegar para tela de informações adicionais do idoso
-    if (context.mounted) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => RegisterIdosoRestoPage(idosoId: idosoSnap['id']),
-        ),
-      );
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -140,24 +108,32 @@ class _HomeResponsavelState extends State<HomeResponsavel> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 16),
-                TextField(
-                  controller: codigoController,
-                  decoration: const InputDecoration(labelText: "Código do idoso"),
-                ),
                 if (errorMsg != null)
                   Padding(
                     padding: const EdgeInsets.only(top: 8.0),
                     child: Text(errorMsg!, style: const TextStyle(color: Colors.red)),
                   ),
-                ElevatedButton(
-                  onPressed: vincularIdoso,
-                  child: const Text("Vincular idoso"),
-                ),
                 if (isLoading)
                   const Center(child: CircularProgressIndicator()),
                 if (!isLoading && idosos.isEmpty)
-                  const Text("Nenhum idoso vinculado.", style: TextStyle(fontSize: 18)),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text("Nenhum idoso vinculado.", style: TextStyle(fontSize: 18)),
+                      const SizedBox(height: 16),
+                      ElevatedButton.icon(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.green,
+                          foregroundColor: Colors.white,
+                        ),
+                        icon: const Icon(Icons.add),
+                        label: const Text("Cadastrar idoso por código"),
+                        onPressed: () {
+                          Navigator.pushNamed(context, '/register_codigo_idoso');
+                        },
+                      ),
+                    ],
+                  ),
                 if (!isLoading && idosos.isNotEmpty)
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -166,10 +142,21 @@ class _HomeResponsavelState extends State<HomeResponsavel> {
                       const SizedBox(height: 8),
                       ...idosos.map((idoso) => Card(
                         child: ListTile(
-                          title: Text(
-                            (idoso['apelido'] != null && idoso['apelido'].toString().isNotEmpty)
-                              ? idoso['apelido']
-                              : (idoso['nome'] ?? 'Sem nome'),
+                          title: GestureDetector(
+                            child: Text(
+                              (idoso['apelido'] != null && idoso['apelido'].toString().isNotEmpty)
+                                ? idoso['apelido']
+                                : (idoso['nome'] ?? 'Sem nome'),
+                            ),
+                            onTap: () async {
+                                await Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => IdosoPage(idosoId: idoso['id']),
+                                  ),
+                                );
+                                await fetchIdososVinculados();
+                              },
                           ),
                           subtitle: Text('CPF: ${idoso['cpf'] ?? ''}'),
                           trailing: PopupMenuButton<String>(
@@ -202,6 +189,13 @@ class _HomeResponsavelState extends State<HomeResponsavel> {
           CircularMenu(
             alignment: Alignment.bottomCenter,
             items: [
+              CircularMenuItem(
+                icon: Icons.add,
+                color: Colors.green,
+                onTap: () {
+                  Navigator.pushNamed(context, '/register_codigo_idoso');
+                },
+              ),
               CircularMenuItem(
                 icon: Icons.logout,
                 color: Colors.grey,
