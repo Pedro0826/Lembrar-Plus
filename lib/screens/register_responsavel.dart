@@ -174,7 +174,7 @@ class _RegisterResponsavelPageState extends State<RegisterResponsavelPage> {
               ElevatedButton.icon(
                 onPressed: registrarComGoogle,
                 icon: Image.asset(
-                  'assets/google_logo.png',
+                  'assets/images/google_logo.png',
                   height: 24,
                   width: 24,
                 ),

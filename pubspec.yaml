@@ -26,6 +26,6 @@ flutter:
 
   uses-material-design: true
   assets:
-    - assets/google_logo.png
-    - assets/registro_responsavel.png
-    - assets/registro_idoso.png
+    - assets/images/google_logo.png
+    - assets/images/registro_responsavel.png
+    - assets/images/registro_idoso.png
