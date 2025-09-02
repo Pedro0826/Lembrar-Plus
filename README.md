@@ -45,31 +45,33 @@ flutter run
 
 ```
 lembrar-plus/
-├── .dart_tool/                  # Ferramentas internas do Flutter/Dart
+├── .dart_tool/                   # Ferramentas internas do Flutter/Dart
 ├── .flutter-plugins-dependencies # Plugins usados pelo Flutter
-├── .git/                        # Dados do controle de versão Git
-├── .gitignore                   # Arquivos/pastas ignorados pelo Git
-├── .metadata                    # Metadados do projeto Flutter
-├── .vscode/                     # Configurações do VS Code (opcional)
-├── analysis_options.yaml        # Regras de análise estática do Dart
-├── android/                     # Projeto Android nativo
-├── assets/                      # Imagens e recursos visuais
-├── build/                       # Arquivos gerados na build
-├── firebase.json                # Configuração do Firebase para web
-├── ios/                         # Projeto iOS nativo
-├── lib/                         # Código-fonte principal do app
-│   ├── app.dart                 # Configuração principal do app
-│   ├── firebase_options.dart    # Opções de inicialização do Firebase
-│   ├── main.dart                # Ponto de entrada do app
-│   ├── screens/                 # Telas do aplicativo
-│   │   ├── home_idoso.dart                # Tela principal do idoso
-│   │   ├── home_responsavel.dart          # Tela principal do responsável
-│   │   ├── login.dart                     # Tela de login
-│   │   ├── register_idoso.dart            # Registro de idoso
-│   │   ├── register_principal.dart        # Escolha de tipo de registro
-│   │   ├── register_responsavel.dart      # Registro de responsável
-│   │   ├── register_responsavel_resto.dart# Complemento de cadastro do responsável
-│   │   └── welcome.dart                   # Tela de boas-vindas
+├── .git/                         # Dados do controle de versão Git
+├── .gitignore                    # Arquivos/pastas ignorados pelo Git
+├── .metadata                     # Metadados do projeto Flutter
+├── .vscode/                      # Configurações do VS Code (opcional)
+├── analysis_options.yaml         # Regras de análise estática do Dart
+├── android/                      # Projeto Android nativo
+├── assets/                       # Imagens e recursos visuais
+│   ├── images/                   # Imagens utilizadas no app
+├── build/                        # Arquivos gerados na build
+├── firebase.json                 # Configuração do Firebase para web
+├── ios/                          # Projeto iOS nativo
+├── lib/                          # Código-fonte principal do app
+│   ├── app.dart                  # Configuração principal do app
+│   ├── firebase_options.dart     # Opções de inicialização do Firebase
+│   ├── main.dart                 # Ponto de entrada do app
+│   ├── screens/                  # Telas do aplicativo
+│   │   ├── home_idoso.dart                 # Tela principal do idoso
+│   │   ├── home_responsavel.dart           # Tela principal do responsável
+│   │   ├── login.dart                      # Tela de login
+│   │   ├── register_idoso_resto.dart       # Complemento de cadastro do Idoso
+│   │   ├── register_idoso.dart             # Registro de idoso
+│   │   ├── register_principal.dart         # Escolha de tipo de registro
+│   │   ├── register_responsavel.dart       # Registro de responsável
+│   │   ├── register_responsavel_resto.dart # Complemento de cadastro do responsável
+│   │   └── welcome.dart                    # Tela de boas-vindas
 │   ├── services/                # Lógica de autenticação e banco
 │   │   ├── auth_service.dart             # Serviço de autenticação (login, registro, Google)
 │   │   └── firestore_service.dart        # Serviço de banco de dados (Firestore)
