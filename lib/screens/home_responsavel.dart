@@ -5,7 +5,9 @@ import '../services/auth_service.dart';
 import 'package:circular_menu/circular_menu.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../services/firestore_service.dart';
+
 import 'register_idoso_resto.dart';
+import 'idoso_page.dart';
 
 class HomeResponsavel extends StatefulWidget {
   const HomeResponsavel({super.key});
@@ -49,15 +51,23 @@ class _HomeResponsavelState extends State<HomeResponsavel> {
   }
 
   Future<void> removerVinculoIdoso(String idosoId) async {
-    final firestore = FirestoreService();
-    final user = await AuthService().getCurrentUser();
-    if (user == null) return;
-    final responsavelSnap = await firestore.getResponsavelByEmail(user.email ?? '');
-    if (responsavelSnap == null) return;
-    List<dynamic> ids = responsavelSnap['idosos_vinculados'] ?? [];
-    ids.remove(idosoId);
-    await FirebaseFirestore.instance.collection('responsavel').doc(responsavelSnap['id']).update({'idosos_vinculados': ids});
-    await fetchIdososVinculados();
+  final firestore = FirestoreService();
+  final user = await AuthService().getCurrentUser();
+  if (user == null) return;
+  final responsavelSnap = await firestore.getResponsavelByEmail(user.email ?? '');
+  if (responsavelSnap == null) return;
+  List<dynamic> ids = responsavelSnap['idosos_vinculados'] ?? [];
+  ids.remove(idosoId);
+  await FirebaseFirestore.instance.collection('responsavel').doc(responsavelSnap['id']).update({'idosos_vinculados': ids});
+
+  // Remove o responsável da lista 'responsaveis' do idoso
+  final idosoDocRef = FirebaseFirestore.instance.collection('idoso').doc(idosoId);
+  final idosoDoc = await idosoDocRef.get();
+  List<dynamic> responsaveis = idosoDoc.data()?['responsaveis'] ?? [];
+  responsaveis.remove(user.email);
+  await idosoDocRef.update({'responsaveis': responsaveis});
+
+  await fetchIdososVinculados();
   }
 
   @override
@@ -120,12 +130,21 @@ class _HomeResponsavelState extends State<HomeResponsavel> {
 
     // Navegar para tela de informações adicionais do idoso
     if (context.mounted) {
-      Navigator.push(
+      final resultado = await Navigator.push(
         context,
         MaterialPageRoute(
           builder: (context) => RegisterIdosoRestoPage(idosoId: idosoSnap['id']),
         ),
       );
+      // Se as informações foram salvas, navega para a página do idoso
+      if (resultado == true) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => IdosoPage(idosoId: idosoSnap['id']),
+          ),
+        );
+      }
     }
   }
 
@@ -166,10 +185,20 @@ class _HomeResponsavelState extends State<HomeResponsavel> {
                       const SizedBox(height: 8),
                       ...idosos.map((idoso) => Card(
                         child: ListTile(
-                          title: Text(
-                            (idoso['apelido'] != null && idoso['apelido'].toString().isNotEmpty)
-                              ? idoso['apelido']
-                              : (idoso['nome'] ?? 'Sem nome'),
+                          title: GestureDetector(
+                            child: Text(
+                              (idoso['apelido'] != null && idoso['apelido'].toString().isNotEmpty)
+                                ? idoso['apelido']
+                                : (idoso['nome'] ?? 'Sem nome'),
+                            ),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => IdosoPage(idosoId: idoso['id']),
+                                ),
+                              );
+                            },
                           ),
                           subtitle: Text('CPF: ${idoso['cpf'] ?? ''}'),
                           trailing: PopupMenuButton<String>(

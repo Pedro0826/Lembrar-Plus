@@ -10,6 +10,8 @@ import 'screens/home_idoso.dart';
 import 'screens/home_responsavel.dart';
 import 'screens/register_responsavel_resto.dart';
 import 'screens/register_idoso_resto.dart';
+import 'screens/idoso_page.dart';
+import 'screens/idoso_info.dart';
 
 class App extends StatelessWidget {
   const App({super.key});
@@ -32,6 +34,16 @@ class App extends StatelessWidget {
           final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
           final idosoId = args?['idosoId'] ?? '';
           return RegisterIdosoRestoPage(idosoId: idosoId);
+        },
+        '/idoso_page': (context) {
+          final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+          final idosoId = args?['idosoId'] ?? '';
+          return IdosoPage(idosoId: idosoId);
+        },
+        '/idoso_info': (context) {
+          final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+          final idosoId = args?['idosoId'] ?? '';
+          return IdosoInfoPage(idosoId: idosoId);
         },
       },
       home: const WelcomePage(),
