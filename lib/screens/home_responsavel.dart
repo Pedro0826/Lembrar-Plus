@@ -148,14 +148,15 @@ class _HomeResponsavelState extends State<HomeResponsavel> {
                                 ? idoso['apelido']
                                 : (idoso['nome'] ?? 'Sem nome'),
                             ),
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => IdosoPage(idosoId: idoso['id']),
-                                ),
-                              );
-                            },
+                            onTap: () async {
+                                await Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => IdosoPage(idosoId: idoso['id']),
+                                  ),
+                                );
+                                await fetchIdososVinculados();
+                              },
                           ),
                           subtitle: Text('CPF: ${idoso['cpf'] ?? ''}'),
                           trailing: PopupMenuButton<String>(

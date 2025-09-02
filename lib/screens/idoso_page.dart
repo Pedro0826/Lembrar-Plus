@@ -34,6 +34,7 @@ class _IdosoPageState extends State<IdosoPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: Text(
           idosoData != null
             ? 'Cuidando de: ${idosoData!['apelido'] != null && idosoData!['apelido'].toString().isNotEmpty ? idosoData!['apelido'] : (idosoData!['nome'] ?? '')}'
@@ -72,13 +73,15 @@ class _IdosoPageState extends State<IdosoPage> {
             icon: Icons.logout,
             color: Colors.grey,
             onTap: () {
-              Navigator.pop(context);
+              // Pode ser usado para logout futuramente
             },
           ),
           CircularMenuItem(
-            icon: Icons.info_outline,
+            icon: Icons.arrow_back,
             color: Colors.red,
-            onTap: () {}, // item dummy
+            onTap: () {
+              Navigator.pop(context);
+            },
           ),
         ],
       ),
