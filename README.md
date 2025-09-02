@@ -65,7 +65,10 @@ lembrar-plus/
 │   ├── screens/                  # Telas do aplicativo
 │   │   ├── home_idoso.dart                 # Tela principal do idoso
 │   │   ├── home_responsavel.dart           # Tela principal do responsável
+│   │   ├── idoso_info.dart                 # Tela para adicionar infos do idoso
+│   │   ├── idoso_page.dart                 # Tela do Idoso para o responsável
 │   │   ├── login.dart                      # Tela de login
+│   │   ├── register_codigo_idoso.dart      # Tela para vincular responsável com idoso
 │   │   ├── register_idoso_resto.dart       # Complemento de cadastro do Idoso
 │   │   ├── register_idoso.dart             # Registro de idoso
 │   │   ├── register_principal.dart         # Escolha de tipo de registro
