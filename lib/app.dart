@@ -9,6 +9,7 @@ import 'screens/register_responsavel.dart';
 import 'screens/home_idoso.dart';
 import 'screens/home_responsavel.dart';
 import 'screens/register_responsavel_resto.dart';
+import 'screens/register_idoso_resto.dart';
 
 class App extends StatelessWidget {
   const App({super.key});
@@ -27,6 +28,11 @@ class App extends StatelessWidget {
         '/register_responsavel_resto': (context) => const RegisterResponsavelRestoPage(nome: '', email: ''),
         '/home_idoso': (context) => const HomeIdoso(),
         '/home_responsavel': (context) => const HomeResponsavel(),
+        '/register_idoso_resto': (context) {
+          final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+          final idosoId = args?['idosoId'] ?? '';
+          return RegisterIdosoRestoPage(idosoId: idosoId);
+        },
       },
       home: const WelcomePage(),
     );

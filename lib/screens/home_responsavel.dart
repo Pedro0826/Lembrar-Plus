@@ -1,8 +1,11 @@
+
+
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
 import 'package:circular_menu/circular_menu.dart';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../services/firestore_service.dart';
+import 'register_idoso_resto.dart';
 
 class HomeResponsavel extends StatefulWidget {
   const HomeResponsavel({super.key});
@@ -16,6 +19,46 @@ class _HomeResponsavelState extends State<HomeResponsavel> {
   List<Map<String, dynamic>> idosos = [];
   bool isLoading = true;
   String? errorMsg;
+
+  Future<void> editarApelidoIdoso(String idosoId, String apelidoAtual) async {
+    final TextEditingController apelidoController = TextEditingController(text: apelidoAtual);
+    final result = await showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Definir apelido do idoso'),
+        content: TextField(
+          controller: apelidoController,
+          decoration: const InputDecoration(labelText: 'Apelido'),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancelar'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, apelidoController.text.trim()),
+            child: const Text('Salvar'),
+          ),
+        ],
+      ),
+    );
+    if (result != null) {
+      await FirebaseFirestore.instance.collection('idoso').doc(idosoId).update({'apelido': result});
+      await fetchIdososVinculados();
+    }
+  }
+
+  Future<void> removerVinculoIdoso(String idosoId) async {
+    final firestore = FirestoreService();
+    final user = await AuthService().getCurrentUser();
+    if (user == null) return;
+    final responsavelSnap = await firestore.getResponsavelByEmail(user.email ?? '');
+    if (responsavelSnap == null) return;
+    List<dynamic> ids = responsavelSnap['idosos_vinculados'] ?? [];
+    ids.remove(idosoId);
+    await FirebaseFirestore.instance.collection('responsavel').doc(responsavelSnap['id']).update({'idosos_vinculados': ids});
+    await fetchIdososVinculados();
+  }
 
   @override
   void initState() {
@@ -62,8 +105,28 @@ class _HomeResponsavelState extends State<HomeResponsavel> {
     final user = await AuthService().getCurrentUser();
     if (user == null) return;
     await firestore.vincularIdosoAoResponsavel(user.email ?? '', idosoSnap['id']);
+
+    // Atualiza o documento do idoso para adicionar o responsável
+    final idosoDocRef = FirebaseFirestore.instance.collection('idoso').doc(idosoSnap['id']);
+    final idosoDoc = await idosoDocRef.get();
+    List<dynamic> responsaveis = idosoDoc.data()?['responsaveis'] ?? [];
+    if (!responsaveis.contains(user.email)) {
+      responsaveis.add(user.email);
+      await idosoDocRef.update({'responsaveis': responsaveis});
+    }
+
     codigoController.clear();
     await fetchIdososVinculados();
+
+    // Navegar para tela de informações adicionais do idoso
+    if (context.mounted) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => RegisterIdosoRestoPage(idosoId: idosoSnap['id']),
+        ),
+      );
+    }
   }
 
   @override
@@ -103,8 +166,32 @@ class _HomeResponsavelState extends State<HomeResponsavel> {
                       const SizedBox(height: 8),
                       ...idosos.map((idoso) => Card(
                         child: ListTile(
-                          title: Text(idoso['nome'] ?? 'Sem nome'),
+                          title: Text(
+                            (idoso['apelido'] != null && idoso['apelido'].toString().isNotEmpty)
+                              ? idoso['apelido']
+                              : (idoso['nome'] ?? 'Sem nome'),
+                          ),
                           subtitle: Text('CPF: ${idoso['cpf'] ?? ''}'),
+                          trailing: PopupMenuButton<String>(
+                            icon: const Icon(Icons.more_vert),
+                            onSelected: (value) async {
+                              if (value == 'remover') {
+                                await removerVinculoIdoso(idoso['id']);
+                              } else if (value == 'editar_apelido') {
+                                await editarApelidoIdoso(idoso['id'], idoso['apelido'] ?? '');
+                              }
+                            },
+                            itemBuilder: (context) => [
+                              const PopupMenuItem(
+                                value: 'editar_apelido',
+                                child: Text('Definir apelido'),
+                              ),
+                              const PopupMenuItem(
+                                value: 'remover',
+                                child: Text('Remover vínculo'),
+                              ),
+                            ],
+                          ),
                         ),
                       )),
                     ],
