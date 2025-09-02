@@ -18,7 +18,7 @@ class RegisterPrincipalPage extends StatelessWidget {
                   Navigator.pushNamed(context, '/register_responsavel');
                 },
                 icon: Image.asset(
-                  'assets/registro_responsavel.png',
+                  'assets/images/registro_responsavel.png',
                   height: 32,
                   width: 32,
                 ),
@@ -34,7 +34,7 @@ class RegisterPrincipalPage extends StatelessWidget {
                   Navigator.pushNamed(context, '/register_idoso');
                 },
                 icon: Image.asset(
-                  'assets/registro_idoso.png',
+                  'assets/images/registro_idoso.png',
                   height: 32,
                   width: 32,
                 ),

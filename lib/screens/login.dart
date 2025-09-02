@@ -15,9 +15,6 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController senhaController = TextEditingController();
 
-  String userType = "idoso"; // flag inicial
-
-
   final AuthService _authService = AuthService();
 
   void mostrarErro(String mensagem) {
@@ -30,11 +27,16 @@ class _LoginPageState extends State<LoginPage> {
     try {
       User? user = await _authService.signIn(emailController.text, senhaController.text);
       if (user != null) {
-        if (userType == "idoso") {
-          Navigator.pushReplacementNamed(context, '/home_idoso');
-        } else {
+        final firestore = FirestoreService();
+        if (await firestore.isResponsavelByEmail(user.email ?? '')) {
           Navigator.pushReplacementNamed(context, '/home_responsavel');
+          return;
         }
+        if (await firestore.isIdosoByEmail(user.email ?? '')) {
+          Navigator.pushReplacementNamed(context, '/home_idoso');
+          return;
+        }
+        mostrarErro('Usuário não encontrado como responsável ou idoso.');
       }
     } catch (e) {
       mostrarErro('Falha no login: ${e.toString()}');
@@ -87,7 +89,7 @@ class _LoginPageState extends State<LoginPage> {
             ElevatedButton.icon(
               onPressed: fazerLoginGoogle,
               icon: Image.asset(
-                'assets/google_logo.png',
+                'assets/images/google_logo.png',
                 height: 24,
                 width: 24,
               ),

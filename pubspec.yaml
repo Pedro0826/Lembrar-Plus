@@ -15,6 +15,7 @@ dependencies:
   google_sign_in: ^6.3.0
   circular_menu: ^2.0.1
   cloud_firestore: ^6.0.0
+  uuid: ^4.5.1
 
 dev_dependencies:
   flutter_test:
@@ -26,6 +27,6 @@ flutter:
 
   uses-material-design: true
   assets:
-    - assets/google_logo.png
-    - assets/registro_responsavel.png
-    - assets/registro_idoso.png
+    - assets/images/google_logo.png
+    - assets/images/registro_responsavel.png
+    - assets/images/registro_idoso.png

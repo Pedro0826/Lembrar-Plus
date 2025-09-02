@@ -1,5 +1,5 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:math';
 
 class FirestoreService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
@@ -12,6 +12,42 @@ class FirestoreService {
   Future<bool> isIdosoByEmail(String email) async {
     final snap = await _db.collection('idoso').where('email', isEqualTo: email).limit(1).get();
     return snap.docs.isNotEmpty;
+  }
+
+  // Busca documento do responsável pelo e-mail
+  Future<Map<String, dynamic>?> getResponsavelByEmail(String email) async {
+    final snap = await _db.collection('responsavel').where('email', isEqualTo: email).limit(1).get();
+    if (snap.docs.isEmpty) return null;
+    final doc = snap.docs.first;
+    return {...doc.data(), 'id': doc.id};
+  }
+
+  // Busca documento do idoso pelo código
+  Future<Map<String, dynamic>?> getIdosoByCodigo(String codigo) async {
+    final snap = await _db.collection('idoso').where('codigo', isEqualTo: codigo).limit(1).get();
+    if (snap.docs.isEmpty) return null;
+    final doc = snap.docs.first;
+    return {...doc.data(), 'id': doc.id};
+  }
+
+
+  // Busca lista de idosos por IDs
+  Future<List<Map<String, dynamic>>> getIdososByIds(List<dynamic> ids) async {
+    if (ids.isEmpty) return [];
+    final snap = await _db.collection('idoso').where(FieldPath.documentId, whereIn: ids).get();
+    return snap.docs.map((doc) => {...doc.data(), 'id': doc.id}).toList();
+  }
+
+  // Vincula idoso ao responsável (adiciona id do idoso à lista)
+  Future<void> vincularIdosoAoResponsavel(String responsavelEmail, String idosoId) async {
+    final snap = await _db.collection('responsavel').where('email', isEqualTo: responsavelEmail).limit(1).get();
+    if (snap.docs.isEmpty) return;
+    final doc = snap.docs.first;
+    List<dynamic> ids = doc.data()['idosos_vinculados'] ?? [];
+    if (!ids.contains(idosoId)) {
+      ids.add(idosoId);
+      await _db.collection('responsavel').doc(doc.id).update({'idosos_vinculados': ids});
+    }
   }
 
   /// Atualiza os dados do idoso após o vínculo com o responsável
@@ -49,11 +85,27 @@ class FirestoreService {
     required String nome,
     required String email,
   }) async {
+    String codigo;
+    do {
+      codigo = _gerarCodigoCurto(6);
+    } while (await _codigoExiste(codigo));
     final docRef = await _db.collection('idoso').add({
       'nome': nome,
       'email': email,
+      'codigo': codigo,
     });
     return docRef.id;
+  }
+
+  String _gerarCodigoCurto(int tamanho) {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    final rand = Random.secure();
+    return List.generate(tamanho, (index) => chars[rand.nextInt(chars.length)]).join();
+  }
+
+  Future<bool> _codigoExiste(String codigo) async {
+    final snap = await _db.collection('idoso').where('codigo', isEqualTo: codigo).limit(1).get();
+    return snap.docs.isNotEmpty;
   }
 
   Future<String> addResponsavel({
@@ -69,6 +121,7 @@ class FirestoreService {
       'email': email,
       'data_nasc': dataNasc,
       'cpf': cpf,
+      'idosos_vinculados': [], // inicializa como lista vazia
     });
     return docRef.id;
   }
