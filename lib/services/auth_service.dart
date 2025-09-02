@@ -1,4 +1,3 @@
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
@@ -22,7 +21,7 @@ class AuthService {
   }
 
   Stream<User?> get userChanges => _auth.authStateChanges();
-  
+
   // Login com Google
   Future<User?> signInWithGoogle() async {
     try {
@@ -41,5 +40,10 @@ class AuthService {
     } catch (e) {
       rethrow;
     }
+  }
+
+  // Retorna o usuário atual logado
+  Future<User?> getCurrentUser() async {
+    return _auth.currentUser;
   }
 }

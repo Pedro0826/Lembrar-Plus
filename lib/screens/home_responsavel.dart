@@ -12,7 +12,7 @@ class HomeResponsavel extends StatefulWidget {
 }
 
 class _HomeResponsavelState extends State<HomeResponsavel> {
-  final TextEditingController cpfController = TextEditingController();
+  final TextEditingController codigoController = TextEditingController();
   List<Map<String, dynamic>> idosos = [];
   bool isLoading = true;
   String? errorMsg;
@@ -48,13 +48,13 @@ class _HomeResponsavelState extends State<HomeResponsavel> {
 
   Future<void> vincularIdoso() async {
     setState(() { errorMsg = null; });
-    final cpf = cpfController.text.trim();
-    if (cpf.isEmpty) {
-      setState(() { errorMsg = 'Digite o CPF do idoso.'; });
+    final codigo = codigoController.text.trim();
+    if (codigo.isEmpty) {
+      setState(() { errorMsg = 'Digite o código do idoso.'; });
       return;
     }
     final firestore = FirestoreService();
-    final idosoSnap = await firestore.getIdosoByCpf(cpf);
+    final idosoSnap = await firestore.getIdosoByCodigo(codigo);
     if (idosoSnap == null) {
       setState(() { errorMsg = 'Idoso não encontrado.'; });
       return;
@@ -62,7 +62,7 @@ class _HomeResponsavelState extends State<HomeResponsavel> {
     final user = await AuthService().getCurrentUser();
     if (user == null) return;
     await firestore.vincularIdosoAoResponsavel(user.email ?? '', idosoSnap['id']);
-    cpfController.clear();
+    codigoController.clear();
     await fetchIdososVinculados();
   }
 
@@ -78,31 +78,23 @@ class _HomeResponsavelState extends State<HomeResponsavel> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 16),
+                TextField(
+                  controller: codigoController,
+                  decoration: const InputDecoration(labelText: "Código do idoso"),
+                ),
+                if (errorMsg != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8.0),
+                    child: Text(errorMsg!, style: const TextStyle(color: Colors.red)),
+                  ),
+                ElevatedButton(
+                  onPressed: vincularIdoso,
+                  child: const Text("Vincular idoso"),
+                ),
                 if (isLoading)
                   const Center(child: CircularProgressIndicator()),
                 if (!isLoading && idosos.isEmpty)
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text("Nenhum idoso vinculado.", style: TextStyle(fontSize: 18)),
-                      const SizedBox(height: 16),
-                      TextField(
-                        controller: cpfController,
-                        decoration: const InputDecoration(labelText: "CPF do idoso"),
-                        keyboardType: TextInputType.number,
-                      ),
-                      const SizedBox(height: 8),
-                      ElevatedButton(
-                        onPressed: vincularIdoso,
-                        child: const Text("Vincular idoso"),
-                      ),
-                      if (errorMsg != null)
-                        Padding(
-                          padding: const EdgeInsets.only(top: 8.0),
-                          child: Text(errorMsg!, style: const TextStyle(color: Colors.red)),
-                        ),
-                    ],
-                  ),
+                  const Text("Nenhum idoso vinculado.", style: TextStyle(fontSize: 18)),
                 if (!isLoading && idosos.isNotEmpty)
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,

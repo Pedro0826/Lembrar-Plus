@@ -29,20 +29,20 @@ class _RegisterIdosoPageState extends State<RegisterIdosoPage> {
   }
 
   Future<void> registrarUsuario() async {
-    String nome = nomeController.text;
-    String email = emailController.text;
-    String senha = senhaController.text;
+  String nome = nomeController.text;
+  String email = emailController.text;
+  String senha = senhaController.text;
     try {
       UserCredential cred = await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: email,
         password: senha,
       );
       // Opcional: atualizar o displayName
-      await cred.user?.updateDisplayName(nome);
+  await cred.user?.updateDisplayName(nome);
 
-      // Salvar idoso no Firestore
-      final firestoreService = FirestoreService();
-      await firestoreService.addIdoso(nome: nome, email: email);
+  // Salvar idoso no Firestore
+  final firestoreService = FirestoreService();
+  await firestoreService.addIdoso(nome: nome, email: email);
 
       Navigator.pushReplacementNamed(context, '/home_idoso');
     } catch (e) {
