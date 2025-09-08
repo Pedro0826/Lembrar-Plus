@@ -2,6 +2,17 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:math';
 
 class FirestoreService {
+ 
+  Stream<QuerySnapshot> getMedicamentosByIdoso(String idosoId) {
+    return _db.collection('medicamentos')
+      .where('idosoId', isEqualTo: idosoId)
+      .orderBy('createdAt', descending: false)
+      .snapshots();
+  }
+
+  Future<void> removeMedicamentoApp(String medicamentoId) async {
+    await _db.collection('medicamentos').doc(medicamentoId).delete();
+  }
   final FirebaseFirestore _db = FirebaseFirestore.instance;
 
   Future<bool> isResponsavelByEmail(String email) async {
@@ -127,18 +138,19 @@ class FirestoreService {
   }
 
   Future<void> addMedicamento({
-    required int codigoMedicamento,
+    required String idosoId,
     required String nome,
     required String dosagem,
+    required int prazoDias,
     required String observacoes,
-    required int codigoIdoso,
   }) async {
-    await _db.collection('medicamento').doc(codigoMedicamento.toString()).set({
-      'codigo_medicamento': codigoMedicamento,
+    await _db.collection('medicamentos').add({
+      'idosoId': idosoId,
       'nome': nome,
       'dosagem': dosagem,
+      'prazoDias': prazoDias,
       'observacoes': observacoes,
-      'codigo_idoso': codigoIdoso,
+      'createdAt': FieldValue.serverTimestamp(),
     });
   }
 
