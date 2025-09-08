@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:circular_menu/circular_menu.dart';
 import 'idoso_info.dart';
+import 'medicamentos.dart';
 
 class IdosoPage extends StatefulWidget {
   final String idosoId;
@@ -59,6 +60,25 @@ class _IdosoPageState extends State<IdosoPage> {
                         );
                       },
                       child: const Text('Ver informações do idoso'),
+                    ),
+                    const SizedBox(width: 16),
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => MedicamentosPage(
+                              idosoId: widget.idosoId,
+                              apelido: idosoData?['apelido'] ?? idosoData?['nome'] ?? '',
+                            ),
+                          ),
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue,
+                        foregroundColor: Colors.white,
+                      ),
+                      child: const Text('Medicamentos'),
                     ),
                     // Adicione mais botões aqui futuramente
                   ],

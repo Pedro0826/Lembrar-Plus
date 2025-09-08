@@ -13,6 +13,8 @@ import 'screens/register_idoso_resto.dart';
 import 'screens/idoso_page.dart';
 import 'screens/idoso_info.dart';
 import 'screens/register_codigo_idoso.dart';
+import 'screens/medicamentos.dart';
+import 'screens/register_medicamentos.dart';
 
 class App extends StatelessWidget {
   const App({super.key});
@@ -46,6 +48,17 @@ class App extends StatelessWidget {
           final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
           final idosoId = args?['idosoId'] ?? '';
           return IdosoInfoPage(idosoId: idosoId);
+        },
+        '/medicamentos': (context) {
+          final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+          final idosoId = args?['idosoId'] ?? '';
+          final apelido = args?['apelido'] ?? '';
+          return MedicamentosPage(idosoId: idosoId, apelido: apelido);
+        },
+        '/register_medicamentos': (context) {
+          final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+          final idosoId = args?['idosoId'] ?? '';
+          return RegisterMedicamentosPage(idosoId: idosoId);
         },
       },
       home: const WelcomePage(),
