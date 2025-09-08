@@ -68,9 +68,11 @@ lembrar-plus/
 │   │   ├── idoso_info.dart                 # Tela para adicionar infos do idoso
 │   │   ├── idoso_page.dart                 # Tela do Idoso para o responsável
 │   │   ├── login.dart                      # Tela de login
+│   │   ├── medicamentos.dart               # Tela para mostrar medicamentos cadastrados
 │   │   ├── register_codigo_idoso.dart      # Tela para vincular responsável com idoso
 │   │   ├── register_idoso_resto.dart       # Complemento de cadastro do Idoso
 │   │   ├── register_idoso.dart             # Registro de idoso
+│   │   ├── register_medicamentos.dart      # Registro dos medicamentos
 │   │   ├── register_principal.dart         # Escolha de tipo de registro
 │   │   ├── register_responsavel.dart       # Registro de responsável
 │   │   ├── register_responsavel_resto.dart # Complemento de cadastro do responsável
