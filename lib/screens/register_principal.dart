@@ -6,7 +6,18 @@ class RegisterPrincipalPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Escolha o tipo de registro')),
+      appBar: AppBar(
+        title: const Text(
+          'Escolha o tipo de registro',
+          style: TextStyle(
+            color: Color(0xFF66B2B2),
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        iconTheme: const IconThemeData(color: Color(0xFF66B2B2)),
+        backgroundColor: Colors.white,
+        elevation: 0,
+      ),
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(24.0),
@@ -21,11 +32,17 @@ class RegisterPrincipalPage extends StatelessWidget {
                   'assets/images/registro_responsavel.png',
                   height: 32,
                   width: 32,
+                  color: Colors.white, 
                 ),
-                label: const Text('Registrar-se como Responsável'),
+                label: const Text(
+                  'Registrar-se como Responsável',
+                  style: TextStyle(color: Colors.white), 
+                ),
                 style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF66B2B2), 
                   minimumSize: const Size(double.infinity, 56),
                   textStyle: const TextStyle(fontSize: 18),
+                  elevation: 0,
                 ),
               ),
               const SizedBox(height: 24),
@@ -37,11 +54,17 @@ class RegisterPrincipalPage extends StatelessWidget {
                   'assets/images/registro_idoso.png',
                   height: 32,
                   width: 32,
+                  color: Colors.white, 
                 ),
-                label: const Text('Registrar-se como Idoso'),
+                label: const Text(
+                  'Registrar-se como Idoso',
+                  style: TextStyle(color: Colors.white), 
+                ),
                 style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF66B2B2), 
                   minimumSize: const Size(double.infinity, 56),
                   textStyle: const TextStyle(fontSize: 18),
+                  elevation: 0,
                 ),
               ),
             ],
