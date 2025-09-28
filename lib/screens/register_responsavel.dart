@@ -3,29 +3,29 @@ import '../services/auth_service.dart';
 import '../services/firestore_service.dart';
 import 'register_responsavel_resto.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-// ...existing code...
-  bool validarCPF(String cpf) {
-    cpf = cpf.replaceAll(RegExp(r'[^0-9]'), '');
-    if (cpf.length != 11 || RegExp(r'(\d)\1{10}').hasMatch(cpf)) return false;
-    List<int> digits = cpf.split('').map(int.parse).toList();
-    int calc(int n) {
-      int sum = 0;
-      for (int i = 0; i < n; i++) {
-        sum += digits[i] * (n + 1 - i);
-      }
-      int mod = (sum * 10) % 11;
-      return mod == 10 ? 0 : mod;
+
+bool validarCPF(String cpf) {
+  cpf = cpf.replaceAll(RegExp(r'[^0-9]'), '');
+  if (cpf.length != 11 || RegExp(r'(\d)\1{10}').hasMatch(cpf)) return false;
+  List<int> digits = cpf.split('').map(int.parse).toList();
+  int calc(int n) {
+    int sum = 0;
+    for (int i = 0; i < n; i++) {
+      sum += digits[i] * (n + 1 - i);
     }
-    return calc(9) == digits[9] && calc(10) == digits[10];
+    int mod = (sum * 10) % 11;
+    return mod == 10 ? 0 : mod;
   }
+  return calc(9) == digits[9] && calc(10) == digits[10];
+}
 
 class RegisterResponsavelPage extends StatefulWidget {
   const RegisterResponsavelPage({super.key});
 
   @override
-  State<RegisterResponsavelPage> createState() => _RegisterResponsavelPageState();
+  State<RegisterResponsavelPage> createState() =>
+      _RegisterResponsavelPageState();
 }
-
 
 class _RegisterResponsavelPageState extends State<RegisterResponsavelPage> {
   final TextEditingController nomeController = TextEditingController();
@@ -34,8 +34,6 @@ class _RegisterResponsavelPageState extends State<RegisterResponsavelPage> {
   final TextEditingController senhaController = TextEditingController();
   final TextEditingController cpfController = TextEditingController();
   DateTime? dataNascSelecionada;
-
-  // Não precisa de userType ou didChangeDependencies para idoso
 
   final AuthService _authService = AuthService();
 
@@ -52,6 +50,7 @@ class _RegisterResponsavelPageState extends State<RegisterResponsavelPage> {
     String senha = senhaController.text;
     String cpf = cpfController.text;
     DateTime? dataNasc = dataNascSelecionada;
+
     if (dataNasc == null) {
       mostrarErro('Selecione a data de nascimento.');
       return;
@@ -60,15 +59,12 @@ class _RegisterResponsavelPageState extends State<RegisterResponsavelPage> {
       mostrarErro('CPF inválido.');
       return;
     }
+
     try {
-      UserCredential cred = await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: email,
-        password: senha,
-      );
-      // Opcional: atualizar o displayName
+      UserCredential cred = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(email: email, password: senha);
       await cred.user?.updateDisplayName(nome);
 
-      // Salvar responsável no Firestore
       final firestoreService = FirestoreService();
       await firestoreService.addResponsavel(
         nome: nome,
@@ -90,7 +86,6 @@ class _RegisterResponsavelPageState extends State<RegisterResponsavelPage> {
       if (user != null) {
         String nome = user.displayName ?? '';
         String email = user.email ?? '';
-        // Navega para a tela de completar cadastro, passando nome e email
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
@@ -106,36 +101,63 @@ class _RegisterResponsavelPageState extends State<RegisterResponsavelPage> {
     }
   }
 
+  InputDecoration campoDecoration(String label) {
+    return InputDecoration(
+      labelText: label,
+      labelStyle: const TextStyle(color: Color(0xFF707070)), 
+      filled: true,
+      fillColor: const Color(0xFFE4FBFB),
+      enabledBorder: const OutlineInputBorder(
+        borderRadius: BorderRadius.all(Radius.circular(10)),
+        borderSide: BorderSide.none
+      ),
+      focusedBorder: const OutlineInputBorder(
+        borderRadius: BorderRadius.all(Radius.circular(10)),
+        borderSide: BorderSide.none
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Registrar como responsável")),
+      backgroundColor: Colors.white, // fundo branco
+      appBar: AppBar(
+        title: const Text(
+          "Registrar como responsável",
+          style: TextStyle(
+            color: Color(0xFF3A7CA5), // azul título
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        iconTheme: const IconThemeData(color: Color(0xFF3A7CA5)),
+        backgroundColor: Colors.white,
+        elevation: 0,
+      ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: SingleChildScrollView(
           child: Column(
             children: [
-              TextField(
-                controller: nomeController,
-                decoration: const InputDecoration(labelText: "Nome"),
-              ),
+              TextField(controller: nomeController, decoration: campoDecoration("Nome")),
+              const SizedBox(height: 10),
               TextField(
                 controller: telefoneController,
-                decoration: const InputDecoration(labelText: "Telefone"),
+                decoration: campoDecoration("Telefone"),
                 keyboardType: TextInputType.phone,
               ),
-              TextField(
-                controller: emailController,
-                decoration: const InputDecoration(labelText: "Email"),
-              ),
+              const SizedBox(height: 10),
+              TextField(controller: emailController, decoration: campoDecoration("Email")),
+              const SizedBox(height: 10),
               TextField(
                 controller: senhaController,
-                decoration: const InputDecoration(labelText: "Senha"),
+                decoration: campoDecoration("Senha"),
                 obscureText: true,
               ),
+              const SizedBox(height: 10),
               TextField(
                 controller: cpfController,
-                decoration: const InputDecoration(labelText: "CPF"),
+                decoration: campoDecoration("CPF"),
                 keyboardType: TextInputType.number,
               ),
               const SizedBox(height: 10),
@@ -165,12 +187,23 @@ class _RegisterResponsavelPageState extends State<RegisterResponsavelPage> {
               ),
               const SizedBox(height: 20),
 
-
+              // Botão Registrar
               ElevatedButton(
                 onPressed: registrarUsuario,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF3A7CA5), // mesma cor do login
+                  foregroundColor: Colors.white,
+                  minimumSize: const Size(double.infinity, 48),
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(10)),
+                  ),
+                  elevation: 2,
+                ),
                 child: const Text("Registrar"),
               ),
               const SizedBox(height: 10),
+
+              // Botão Google
               ElevatedButton.icon(
                 onPressed: registrarComGoogle,
                 icon: Image.asset(
@@ -184,6 +217,10 @@ class _RegisterResponsavelPageState extends State<RegisterResponsavelPage> {
                   foregroundColor: Colors.black,
                   minimumSize: const Size(double.infinity, 48),
                   side: const BorderSide(color: Colors.grey),
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(10)),
+                  ),
+                  elevation: 1,
                 ),
               ),
             ],
