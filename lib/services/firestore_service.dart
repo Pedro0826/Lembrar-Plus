@@ -167,4 +167,6 @@ class FirestoreService {
       'status': status,
     });
   }
+
+  Future<void> adicionarResponsavelNoIdoso(idosoSnap, String s) async {}
 }

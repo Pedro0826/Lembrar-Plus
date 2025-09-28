@@ -6,15 +6,16 @@ class RegisterPrincipalPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white, // fundo branco
       appBar: AppBar(
         title: const Text(
           'Escolha o tipo de registro',
           style: TextStyle(
-            color: Color(0xFF66B2B2),
+            color: Color(0xFF2F2F2F),
             fontWeight: FontWeight.bold,
           ),
         ),
-        iconTheme: const IconThemeData(color: Color(0xFF66B2B2)),
+        iconTheme: const IconThemeData(color: Color(0xFF2F2F2F)),
         backgroundColor: Colors.white,
         elevation: 0,
       ),
@@ -39,7 +40,7 @@ class RegisterPrincipalPage extends StatelessWidget {
                   style: TextStyle(color: Colors.white), 
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF66B2B2), 
+                  backgroundColor: const Color(0xFF3A7CA5), // azul
                   minimumSize: const Size(double.infinity, 56),
                   textStyle: const TextStyle(fontSize: 18),
                   elevation: 0,
@@ -61,7 +62,7 @@ class RegisterPrincipalPage extends StatelessWidget {
                   style: TextStyle(color: Colors.white), 
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF66B2B2), 
+                  backgroundColor: const Color(0xFF6DBE81), // verde
                   minimumSize: const Size(double.infinity, 56),
                   textStyle: const TextStyle(fontSize: 18),
                   elevation: 0,

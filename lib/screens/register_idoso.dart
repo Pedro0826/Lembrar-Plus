@@ -61,33 +61,35 @@ class _RegisterIdosoPageState extends State<RegisterIdosoPage> {
   }
 
   InputDecoration campoDecoration(String label) {
-    return InputDecoration(
-      labelText: label,
-      filled: true,
-      fillColor: Colors.white,
-      enabledBorder: const OutlineInputBorder(
-        borderRadius: BorderRadius.all(Radius.circular(10)),
-        borderSide: BorderSide(color: Color(0xFFCCCCCC), width: 1),
-      ),
-      focusedBorder: const OutlineInputBorder(
-        borderRadius: BorderRadius.all(Radius.circular(10)),
-        borderSide: BorderSide(color: Color(0xFFCCCCCC), width: 1),
-      ),
-    );
-  }
+  return InputDecoration(
+    labelText: label,
+    labelStyle: const TextStyle(color: Color(0xFF707070)),
+    filled: true,
+    fillColor: const Color(0xFFD8F8E1),
+    enabledBorder: const OutlineInputBorder(
+      borderRadius: BorderRadius.all(Radius.circular(10)),
+      borderSide: BorderSide.none, 
+    ),
+    focusedBorder: const OutlineInputBorder(
+      borderRadius: BorderRadius.all(Radius.circular(10)),
+      borderSide: BorderSide.none, 
+    ),
+  );
+}
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white, 
       appBar: AppBar(
         title: const Text(
           "Registrar como idoso",
           style: TextStyle(
-            color: Color(0xFF66B2B2),
+            color: Color(0xFF6DBE81),
             fontWeight: FontWeight.bold,
           ),
         ),
-        iconTheme: const IconThemeData(color: Color(0xFF66B2B2)),
+        iconTheme: const IconThemeData(color: Color(0xFF6DBE81)),
         backgroundColor: Colors.white,
         elevation: 0,
       ),
@@ -109,12 +111,12 @@ class _RegisterIdosoPageState extends State<RegisterIdosoPage> {
               ElevatedButton(
                 onPressed: registrarUsuario,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF66B2B2),
+                  backgroundColor: const Color(0xFF6DBE81), 
                   foregroundColor: Colors.white,
                   minimumSize: const Size(double.infinity, 48),
                   shape: const RoundedRectangleBorder(
                     borderRadius: BorderRadius.all(Radius.circular(10)),
-                    side: BorderSide(color: Color(0xFFCCCCCC), width: 1),
+                    side: BorderSide(color: Color(0xFF707070), width: 1), 
                   ),
                   elevation: 0,
                 ),
@@ -131,9 +133,9 @@ class _RegisterIdosoPageState extends State<RegisterIdosoPage> {
                 label: const Text("Registrar com Google"),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.white,
-                  foregroundColor: Colors.black,
+                  foregroundColor: const Color(0xFF707070),
                   minimumSize: const Size(double.infinity, 48),
-                  side: const BorderSide(color: Colors.grey),
+                  side: const BorderSide(color: Color(0xFF707070)), 
                 ),
               ),
             ],

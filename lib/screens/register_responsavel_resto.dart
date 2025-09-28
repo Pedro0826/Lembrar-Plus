@@ -1,6 +1,27 @@
 import 'package:flutter/material.dart';
 import '../services/firestore_service.dart';
-// ...existing code...
+
+class RegisterResponsavelRestoPage extends StatefulWidget {
+  final String nome;
+  final String email;
+  const RegisterResponsavelRestoPage({super.key, required this.nome, required this.email});
+
+  @override
+  State<RegisterResponsavelRestoPage> createState() => _RegisterResponsavelRestoPageState();
+}
+
+class _RegisterResponsavelRestoPageState extends State<RegisterResponsavelRestoPage> {
+  final TextEditingController telefoneController = TextEditingController();
+  final TextEditingController cpfController = TextEditingController();
+  DateTime? dataNascSelecionada;
+  bool isLoading = false;
+
+  void mostrarErro(String mensagem) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(mensagem)),
+    );
+  }
+
   bool validarCPF(String cpf) {
     cpf = cpf.replaceAll(RegExp(r'[^0-9]'), '');
     if (cpf.length != 11 || RegExp(r'(\d)\1{10}').hasMatch(cpf)) return false;
@@ -16,30 +37,11 @@ import '../services/firestore_service.dart';
     return calc(9) == digits[9] && calc(10) == digits[10];
   }
 
-class RegisterResponsavelRestoPage extends StatefulWidget {
-  final String nome;
-  final String email;
-  const RegisterResponsavelRestoPage({super.key, required this.nome, required this.email});
-
-  @override
-  State<RegisterResponsavelRestoPage> createState() => _RegisterResponsavelRestoPageState();
-}
-
-class _RegisterResponsavelRestoPageState extends State<RegisterResponsavelRestoPage> {
-  final TextEditingController telefoneController = TextEditingController();
-  final TextEditingController cpfController = TextEditingController();
-  DateTime? dataNascSelecionada;
-
-  void mostrarErro(String mensagem) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(mensagem)),
-    );
-  }
-
   Future<void> salvarDados() async {
-    String telefone = telefoneController.text;
-    String cpf = cpfController.text;
+    String telefone = telefoneController.text.trim();
+    String cpf = cpfController.text.trim();
     DateTime? dataNasc = dataNascSelecionada;
+
     if (telefone.isEmpty || cpf.isEmpty || dataNasc == null) {
       mostrarErro('Preencha todos os campos.');
       return;
@@ -48,6 +50,9 @@ class _RegisterResponsavelRestoPageState extends State<RegisterResponsavelRestoP
       mostrarErro('CPF inválido.');
       return;
     }
+
+    setState(() { isLoading = true; });
+
     try {
       final firestoreService = FirestoreService();
       await firestoreService.addResponsavel(
@@ -60,60 +65,104 @@ class _RegisterResponsavelRestoPageState extends State<RegisterResponsavelRestoP
       Navigator.pushReplacementNamed(context, '/home_responsavel');
     } catch (e) {
       mostrarErro('Erro ao salvar dados: ${e.toString()}');
+    } finally {
+      setState(() { isLoading = false; });
     }
+  }
+
+  InputDecoration campoDecoration(String label) {
+    return InputDecoration(
+      labelText: label,
+      labelStyle: const TextStyle(color: Color(0xFF707070)),
+      filled: true,
+      fillColor: const Color(0xFFE4FBFB),
+      enabledBorder: const OutlineInputBorder(
+        borderRadius: BorderRadius.all(Radius.circular(10)),
+        borderSide: BorderSide.none,
+      ),
+      focusedBorder: const OutlineInputBorder(
+        borderRadius: BorderRadius.all(Radius.circular(10)),
+        borderSide: BorderSide.none,
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Completar dados do responsável')),
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: const Text(
+          'Completar dados do cuidador',
+          style: TextStyle(
+            color: Color(0xFF3A7CA5),
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        iconTheme: const IconThemeData(color: Color(0xFF3A7CA5)),
+        backgroundColor: Colors.white,
+        elevation: 0,
+      ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
-        child: Column(
-          children: [
-            Text('Nome: ${widget.nome}'),
-            Text('Email: ${widget.email}'),
-            TextField(
-              controller: telefoneController,
-              decoration: const InputDecoration(labelText: 'Telefone'),
-              keyboardType: TextInputType.phone,
-            ),
-            TextField(
-              controller: cpfController,
-              decoration: const InputDecoration(labelText: 'CPF'),
-              keyboardType: TextInputType.number,
-            ),
-            const SizedBox(height: 10),
-            Row(
-              children: [
-                const Text('Data de Nascimento: '),
-                Text(dataNascSelecionada == null
-                    ? 'Selecione'
-                    : '${dataNascSelecionada!.day}/${dataNascSelecionada!.month}/${dataNascSelecionada!.year}'),
-                IconButton(
-                  icon: const Icon(Icons.calendar_today),
-                  onPressed: () async {
-                    DateTime? picked = await showDatePicker(
-                      context: context,
-                      initialDate: DateTime(2000, 1, 1),
-                      firstDate: DateTime(1900),
-                      lastDate: DateTime.now(),
-                    );
-                    if (picked != null) {
-                      setState(() {
-                        dataNascSelecionada = picked;
-                      });
-                    }
-                  },
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              TextField(
+                controller: telefoneController,
+                decoration: campoDecoration('Telefone'),
+                keyboardType: TextInputType.phone,
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: cpfController,
+                decoration: campoDecoration('CPF'),
+                keyboardType: TextInputType.number,
+              ),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  const Text("Data de Nascimento: ", style: TextStyle(fontSize: 16)),
+                  Text(
+                    dataNascSelecionada == null
+                        ? "Selecione"
+                        : "${dataNascSelecionada!.day}/${dataNascSelecionada!.month}/${dataNascSelecionada!.year}",
+                    style: const TextStyle(fontSize: 16),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.calendar_today, color: Color(0xFF3A7CA5)),
+                    onPressed: () async {
+                      DateTime? picked = await showDatePicker(
+                        context: context,
+                        initialDate: DateTime(2000, 1, 1),
+                        firstDate: DateTime(1900),
+                        lastDate: DateTime.now(),
+                      );
+                      if (picked != null) {
+                        setState(() { dataNascSelecionada = picked; });
+                      }
+                    },
+                  ),
+                ],
+              ),
+              const SizedBox(height: 24),
+              ElevatedButton(
+                onPressed: isLoading ? null : salvarDados,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF3A7CA5),
+                  foregroundColor: Colors.white,
+                  minimumSize: const Size(double.infinity, 48),
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(10)),
+                  ),
+                  elevation: 2,
                 ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: salvarDados,
-              child: const Text('Salvar'),
-            ),
-          ],
+                child: isLoading
+                    ? const CircularProgressIndicator(color: Colors.white)
+                    : const Text('Salvar'),
+              ),
+            ],
+          ),
         ),
       ),
     );

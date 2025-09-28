@@ -23,7 +23,8 @@ class RegisterResponsavelPage extends StatefulWidget {
   const RegisterResponsavelPage({super.key});
 
   @override
-  State<RegisterResponsavelPage> createState() => _RegisterResponsavelPageState();
+  State<RegisterResponsavelPage> createState() =>
+      _RegisterResponsavelPageState();
 }
 
 class _RegisterResponsavelPageState extends State<RegisterResponsavelPage> {
@@ -60,10 +61,8 @@ class _RegisterResponsavelPageState extends State<RegisterResponsavelPage> {
     }
 
     try {
-      UserCredential cred = await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: email,
-        password: senha,
-      );
+      UserCredential cred = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(email: email, password: senha);
       await cred.user?.updateDisplayName(nome);
 
       final firestoreService = FirestoreService();
@@ -105,15 +104,16 @@ class _RegisterResponsavelPageState extends State<RegisterResponsavelPage> {
   InputDecoration campoDecoration(String label) {
     return InputDecoration(
       labelText: label,
+      labelStyle: const TextStyle(color: Color(0xFF707070)), 
       filled: true,
-      fillColor: Colors.white,
+      fillColor: const Color(0xFFE4FBFB),
       enabledBorder: const OutlineInputBorder(
         borderRadius: BorderRadius.all(Radius.circular(10)),
-        borderSide: BorderSide(color: Color(0xFFCCCCCC), width: 1),
+        borderSide: BorderSide.none
       ),
       focusedBorder: const OutlineInputBorder(
         borderRadius: BorderRadius.all(Radius.circular(10)),
-        borderSide: BorderSide(color: Color(0xFFCCCCCC), width: 1),
+        borderSide: BorderSide.none
       ),
     );
   }
@@ -121,15 +121,16 @@ class _RegisterResponsavelPageState extends State<RegisterResponsavelPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white, // fundo branco
       appBar: AppBar(
         title: const Text(
           "Registrar como responsável",
           style: TextStyle(
-            color: Color(0xFF66B2B2),
+            color: Color(0xFF3A7CA5), // azul título
             fontWeight: FontWeight.bold,
           ),
         ),
-        iconTheme: const IconThemeData(color: Color(0xFF66B2B2)),
+        iconTheme: const IconThemeData(color: Color(0xFF3A7CA5)),
         backgroundColor: Colors.white,
         elevation: 0,
       ),
@@ -185,21 +186,24 @@ class _RegisterResponsavelPageState extends State<RegisterResponsavelPage> {
                 ],
               ),
               const SizedBox(height: 20),
+
+              // Botão Registrar
               ElevatedButton(
                 onPressed: registrarUsuario,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF66B2B2), // mesma cor do login
+                  backgroundColor: const Color(0xFF3A7CA5), // mesma cor do login
                   foregroundColor: Colors.white,
                   minimumSize: const Size(double.infinity, 48),
                   shape: const RoundedRectangleBorder(
                     borderRadius: BorderRadius.all(Radius.circular(10)),
-                    side: BorderSide(color: Color(0xFFCCCCCC), width: 1),
                   ),
-                  elevation: 0,
+                  elevation: 2,
                 ),
                 child: const Text("Registrar"),
               ),
               const SizedBox(height: 10),
+
+              // Botão Google
               ElevatedButton.icon(
                 onPressed: registrarComGoogle,
                 icon: Image.asset(
@@ -213,6 +217,10 @@ class _RegisterResponsavelPageState extends State<RegisterResponsavelPage> {
                   foregroundColor: Colors.black,
                   minimumSize: const Size(double.infinity, 48),
                   side: const BorderSide(color: Colors.grey),
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(10)),
+                  ),
+                  elevation: 1,
                 ),
               ),
             ],
