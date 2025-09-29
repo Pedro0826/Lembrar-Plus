@@ -12,38 +12,44 @@ class HomeIdoso extends StatelessWidget {
       future: _getIdosoData(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
-          return const Scaffold(body: Center(child: CircularProgressIndicator()));
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
         }
         final idoso = snapshot.data!;
         final codigo = idoso['codigo'] ?? '';
         final responsaveis = idoso['responsaveis'] ?? [];
         final temResponsavel = responsaveis.isNotEmpty;
         return Scaffold(
-          appBar: AppBar(title: const Text("Página do Idoso")),
+          appBar: AppBar(title: const Text("Página do Paciente")),
           body: Stack(
             children: [
               Center(
                 child: temResponsavel
-                  ? const Text("Bem-vindo, Idoso!")
-                  : Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Text(
-                          "Você não tem responsável vinculado.",
-                          style: TextStyle(fontSize: 18),
-                        ),
-                        const SizedBox(height: 12),
-                        Text(
-                          "O responsável deverá usar o código abaixo para te adicionar:",
-                          style: TextStyle(fontSize: 16),
-                        ),
-                        const SizedBox(height: 8),
-                        SelectableText(
-                          codigo,
-                          style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.blue),
-                        ),
-                      ],
-                    ),
+                    ? const Text("Bem-vindo, Paciente!")
+                    : Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text(
+                            "Você não tem responsável vinculado.",
+                            style: TextStyle(fontSize: 18),
+                          ),
+                          const SizedBox(height: 12),
+                          Text(
+                            "O responsável deverá usar o código abaixo para te adicionar:",
+                            style: TextStyle(fontSize: 16),
+                          ),
+                          const SizedBox(height: 8),
+                          SelectableText(
+                            codigo,
+                            style: const TextStyle(
+                              fontSize: 28,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.blue,
+                            ),
+                          ),
+                        ],
+                      ),
               ),
               CircularMenu(
                 alignment: Alignment.bottomCenter,
@@ -54,7 +60,11 @@ class HomeIdoso extends StatelessWidget {
                     onTap: () async {
                       await AuthService().signOut();
                       if (context.mounted) {
-                        Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
+                        Navigator.pushNamedAndRemoveUntil(
+                          context,
+                          '/login',
+                          (route) => false,
+                        );
                       }
                     },
                   ),
@@ -75,7 +85,11 @@ class HomeIdoso extends StatelessWidget {
   Future<Map<String, dynamic>?> _getIdosoData() async {
     final user = await AuthService().getCurrentUser();
     if (user == null) return null;
-    final snap = await FirebaseFirestore.instance.collection('idoso').where('email', isEqualTo: user.email).limit(1).get();
+    final snap = await FirebaseFirestore.instance
+        .collection('idoso')
+        .where('email', isEqualTo: user.email)
+        .limit(1)
+        .get();
     if (snap.docs.isEmpty) return null;
     final data = snap.docs.first.data();
     // Supondo que o campo 'responsaveis' seja uma lista de IDs/emails dos responsáveis

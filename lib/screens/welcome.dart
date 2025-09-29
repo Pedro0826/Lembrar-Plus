@@ -30,7 +30,7 @@ class _WelcomePageState extends State<WelcomePage> {
 
     // Se já tiver logado, redireciona
     if (userType == "idoso") {
-      Navigator.pushReplacementNamed(context, '/home_idoso');
+      Navigator.pushReplacementNamed(context, '/home_paciente');
     } else if (userType == "responsavel") {
       Navigator.pushReplacementNamed(context, '/home_responsavel');
     }

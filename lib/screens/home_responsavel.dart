@@ -25,7 +25,7 @@ class _HomeResponsavelState extends State<HomeResponsavel> {
     final result = await showDialog<String>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Definir apelido do idoso'),
+        title: const Text('Definir apelido do paciente'),
         content: TextField(
           controller: apelidoController,
           decoration: const InputDecoration(labelText: 'Apelido'),
@@ -149,7 +149,7 @@ class _HomeResponsavelState extends State<HomeResponsavel> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text(
-                        "Nenhum idoso vinculado.",
+                        "Nenhum paciente vinculado.",
                         style: TextStyle(fontSize: 18),
                       ),
                       const SizedBox(height: 16),
@@ -159,11 +159,11 @@ class _HomeResponsavelState extends State<HomeResponsavel> {
                           foregroundColor: Colors.white,
                         ),
                         icon: const Icon(Icons.add),
-                        label: const Text("Cadastrar idoso por código"),
+                        label: const Text("Cadastrar paciente por código"),
                         onPressed: () {
                           Navigator.pushNamed(
                             context,
-                            '/register_codigo_idoso',
+                            '/register_codigo_paciente',
                           );
                         },
                       ),
@@ -174,7 +174,7 @@ class _HomeResponsavelState extends State<HomeResponsavel> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text(
-                        "Idosos vinculados:",
+                        "Pacientes vinculados:",
                         style: TextStyle(fontSize: 18),
                       ),
                       const SizedBox(height: 8),
@@ -238,7 +238,7 @@ class _HomeResponsavelState extends State<HomeResponsavel> {
                 icon: Icons.add,
                 color: Colors.green,
                 onTap: () {
-                  Navigator.pushNamed(context, '/register_codigo_idoso');
+                  Navigator.pushNamed(context, '/register_codigo_paciente');
                 },
               ),
               CircularMenuItem(

@@ -33,11 +33,11 @@ class RegisterPrincipalPage extends StatelessWidget {
                   'assets/images/registro_responsavel.png',
                   height: 32,
                   width: 32,
-                  color: Colors.white, 
+                  color: Colors.white,
                 ),
                 label: const Text(
                   'Registrar-se como Responsável',
-                  style: TextStyle(color: Colors.white), 
+                  style: TextStyle(color: Colors.white),
                 ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF3A7CA5), // azul
@@ -49,17 +49,17 @@ class RegisterPrincipalPage extends StatelessWidget {
               const SizedBox(height: 24),
               ElevatedButton.icon(
                 onPressed: () {
-                  Navigator.pushNamed(context, '/register_idoso');
+                  Navigator.pushNamed(context, '/register_paciente');
                 },
                 icon: Image.asset(
                   'assets/images/registro_idoso.png',
                   height: 32,
                   width: 32,
-                  color: Colors.white, 
+                  color: Colors.white,
                 ),
                 label: const Text(
-                  'Registrar-se como Idoso',
-                  style: TextStyle(color: Colors.white), 
+                  'Registrar-se como Paciente',
+                  style: TextStyle(color: Colors.white),
                 ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF6DBE81), // verde

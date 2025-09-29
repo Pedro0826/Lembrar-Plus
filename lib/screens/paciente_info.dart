@@ -6,14 +6,17 @@ class IdosoInfoPage extends StatelessWidget {
   const IdosoInfoPage({super.key, required this.idosoId});
 
   Future<Map<String, dynamic>?> fetchIdosoData() async {
-    final doc = await FirebaseFirestore.instance.collection('idoso').doc(idosoId).get();
+    final doc = await FirebaseFirestore.instance
+        .collection('idoso')
+        .doc(idosoId)
+        .get();
     return doc.data();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Informações do Idoso')),
+      appBar: AppBar(title: const Text('Informações do Paciente')),
       body: FutureBuilder<Map<String, dynamic>?>(
         future: fetchIdosoData(),
         builder: (context, snapshot) {
@@ -25,21 +28,45 @@ class IdosoInfoPage extends StatelessWidget {
             padding: const EdgeInsets.all(24.0),
             child: ListView(
               children: [
-                Text('Nome: ${idoso['nome'] ?? ''}', style: const TextStyle(fontSize: 18)),
+                Text(
+                  'Nome: ${idoso['nome'] ?? ''}',
+                  style: const TextStyle(fontSize: 18),
+                ),
                 const SizedBox(height: 12),
-                Text('CPF: ${idoso['cpf'] ?? ''}', style: const TextStyle(fontSize: 18)),
+                Text(
+                  'CPF: ${idoso['cpf'] ?? ''}',
+                  style: const TextStyle(fontSize: 18),
+                ),
                 const SizedBox(height: 12),
-                Text('Data de Nascimento: ${idoso['data_nasc'] != null ? (idoso['data_nasc'] is String ? idoso['data_nasc'] : (idoso['data_nasc'] as Timestamp).toDate().toLocal().toString().split(' ')[0]) : ''}', style: const TextStyle(fontSize: 18)),
+                Text(
+                  'Data de Nascimento: ${idoso['data_nasc'] != null ? (idoso['data_nasc'] is String ? idoso['data_nasc'] : (idoso['data_nasc'] as Timestamp).toDate().toLocal().toString().split(' ')[0]) : ''}',
+                  style: const TextStyle(fontSize: 18),
+                ),
                 const SizedBox(height: 12),
-                Text('Telefone: ${idoso['telefone'] ?? ''}', style: const TextStyle(fontSize: 18)),
+                Text(
+                  'Telefone: ${idoso['telefone'] ?? ''}',
+                  style: const TextStyle(fontSize: 18),
+                ),
                 const SizedBox(height: 12),
-                Text('Convênio: ${idoso['convenio'] ?? ''}', style: const TextStyle(fontSize: 18)),
+                Text(
+                  'Convênio: ${idoso['convenio'] ?? ''}',
+                  style: const TextStyle(fontSize: 18),
+                ),
                 const SizedBox(height: 12),
-                Text('Tipo Sanguíneo: ${idoso['tipo_sanguineo'] ?? ''}', style: const TextStyle(fontSize: 18)),
+                Text(
+                  'Tipo Sanguíneo: ${idoso['tipo_sanguineo'] ?? ''}',
+                  style: const TextStyle(fontSize: 18),
+                ),
                 const SizedBox(height: 12),
-                Text('Peso: ${idoso['peso'] ?? ''} kg', style: const TextStyle(fontSize: 18)),
+                Text(
+                  'Peso: ${idoso['peso'] ?? ''} kg',
+                  style: const TextStyle(fontSize: 18),
+                ),
                 const SizedBox(height: 12),
-                Text('Altura: ${idoso['altura'] ?? ''} cm', style: const TextStyle(fontSize: 18)),
+                Text(
+                  'Altura: ${idoso['altura'] ?? ''} cm',
+                  style: const TextStyle(fontSize: 18),
+                ),
                 // Adicione mais campos se necessário
               ],
             ),

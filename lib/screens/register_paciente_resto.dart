@@ -78,7 +78,7 @@ class _RegisterIdosoRestoPageState extends State<RegisterIdosoRestoPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Informações adicionais do idoso',
+          'Informações adicionais do paciente',
           style: TextStyle(
             color: Color(0xFF66B2B2),
             fontWeight: FontWeight.bold,
@@ -116,9 +116,11 @@ class _RegisterIdosoRestoPageState extends State<RegisterIdosoRestoPage> {
               Row(
                 children: [
                   const Text("Data de Nascimento: "),
-                  Text(dataNascSelecionada == null
-                      ? "Selecione"
-                      : "${dataNascSelecionada!.day.toString().padLeft(2, '0')}/${dataNascSelecionada!.month.toString().padLeft(2, '0')}/${dataNascSelecionada!.year}"),
+                  Text(
+                    dataNascSelecionada == null
+                        ? "Selecione"
+                        : "${dataNascSelecionada!.day.toString().padLeft(2, '0')}/${dataNascSelecionada!.month.toString().padLeft(2, '0')}/${dataNascSelecionada!.year}",
+                  ),
                   IconButton(
                     icon: const Icon(Icons.calendar_today),
                     onPressed: () async {

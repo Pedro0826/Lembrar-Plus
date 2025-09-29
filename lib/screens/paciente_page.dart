@@ -65,7 +65,7 @@ class _IdosoPageState extends State<IdosoPage> {
                           ),
                         );
                       },
-                      child: const Text('Ver informações do idoso'),
+                      child: const Text('Ver informações do paciente'),
                     ),
                     const SizedBox(width: 16),
                     ElevatedButton(
