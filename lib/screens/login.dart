@@ -17,15 +17,17 @@ class _LoginPageState extends State<LoginPage> {
   final AuthService _authService = AuthService();
 
   void mostrarErro(String mensagem) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(mensagem)),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(mensagem)));
   }
 
   Future<void> fazerLogin() async {
     try {
-      User? user =
-          await _authService.signIn(emailController.text, senhaController.text);
+      User? user = await _authService.signIn(
+        emailController.text,
+        senhaController.text,
+      );
       if (user != null) {
         final firestore = FirestoreService();
         if (await firestore.isResponsavelByEmail(user.email ?? '')) {
@@ -33,10 +35,10 @@ class _LoginPageState extends State<LoginPage> {
           return;
         }
         if (await firestore.isIdosoByEmail(user.email ?? '')) {
-          Navigator.pushReplacementNamed(context, '/home_idoso');
+          Navigator.pushReplacementNamed(context, '/home_paciente');
           return;
         }
-        mostrarErro('Usuário não encontrado como responsável ou idoso.');
+        mostrarErro('Usuário não encontrado como responsável ou paciente.');
       }
     } catch (e) {
       mostrarErro('Falha no login: ${e.toString()}');
@@ -53,10 +55,10 @@ class _LoginPageState extends State<LoginPage> {
           return;
         }
         if (await firestore.isIdosoByEmail(user.email ?? '')) {
-          Navigator.pushReplacementNamed(context, '/home_idoso');
+          Navigator.pushReplacementNamed(context, '/home_paciente');
           return;
         }
-        mostrarErro('Usuário não encontrado como responsável ou idoso.');
+        mostrarErro('Usuário não encontrado como responsável ou paciente.');
       }
     } catch (e) {
       mostrarErro('Falha no login com Google: ${e.toString()}');
@@ -98,7 +100,8 @@ class _LoginPageState extends State<LoginPage> {
           padding: const EdgeInsets.all(20),
           child: ConstrainedBox(
             constraints: BoxConstraints(
-              minHeight: MediaQuery.of(context).size.height -
+              minHeight:
+                  MediaQuery.of(context).size.height -
                   MediaQuery.of(context).padding.top -
                   kToolbarHeight -
                   40,
@@ -139,8 +142,10 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     child: const Text(
                       "Entrar",
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 12),
