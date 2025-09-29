@@ -2,13 +2,13 @@
 
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue)]()
 
-Este repositório contém o aplicativo **Lembrar+**, desenvolvido em Flutter (Dart), voltado para ajudar idosos a se comunicarem com seus responsáveis. O app oferece funcionalidades de **login**, **registro**, **chamadas**, **mensagens** e **avisos rápidos** entre idoso e responsável.
+Este repositório contém o aplicativo **Lembrar+**, desenvolvido em Flutter (Dart), voltado para ajudar dependentes a se comunicarem com seus responsáveis. O app oferece funcionalidades de **login**, **registro**, **chamadas**, **mensagens** e **avisos rápidos** entre paciente e responsável.
 
 ## 🧩 Funcionalidades
 
-- Login e registro de usuários (*Paciente* ou *Cuidador*).  
+- Login e registro de usuários (*Paciente* ou *Responsável*).  
 - Tela inicial de boas-vindas.  
-- Comunicação entre idoso e responsável:  
+- Comunicação entre o paciente e responsável:  
   - Ligar  
   - Enviar mensagens  
   - Enviar alertas/notificações  
@@ -63,15 +63,15 @@ lembrar-plus/
 │   ├── firebase_options.dart     # Opções de inicialização do Firebase
 │   ├── main.dart                 # Ponto de entrada do app
 │   ├── screens/                  # Telas do aplicativo
-│   │   ├── home_idoso.dart                 # Tela principal do idoso
+│   │   ├── home_paciente.dart              # Tela principal do paciente
 │   │   ├── home_responsavel.dart           # Tela principal do responsável
-│   │   ├── idoso_info.dart                 # Tela para adicionar infos do idoso
-│   │   ├── idoso_page.dart                 # Tela do Idoso para o responsável
+│   │   ├── paciente_info.dart              # Tela para adicionar infos do paciente
+│   │   ├── paciente_page.dart              # Tela do paciente para o responsável
 │   │   ├── login.dart                      # Tela de login
 │   │   ├── medicamentos.dart               # Tela para mostrar medicamentos cadastrados
-│   │   ├── register_codigo_idoso.dart      # Tela para vincular responsável com idoso
-│   │   ├── register_idoso_resto.dart       # Complemento de cadastro do Idoso
-│   │   ├── register_idoso.dart             # Registro de idoso
+│   │   ├── register_codigo_paciente.dart   # Tela para vincular responsável com paciente
+│   │   ├── register_paciente_resto.dart    # Complemento de cadastro do paciente
+│   │   ├── register_paciente.dart          # Registro de paciente
 │   │   ├── register_medicamentos.dart      # Registro dos medicamentos
 │   │   ├── register_principal.dart         # Escolha de tipo de registro
 │   │   ├── register_responsavel.dart       # Registro de responsável

@@ -1,11 +1,9 @@
-
-
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
 import 'package:circular_menu/circular_menu.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../services/firestore_service.dart';
-import 'idoso_page.dart';
+import 'paciente_page.dart';
 
 class HomeResponsavel extends StatefulWidget {
   const HomeResponsavel({super.key});
@@ -21,7 +19,9 @@ class _HomeResponsavelState extends State<HomeResponsavel> {
   String? errorMsg;
 
   Future<void> editarApelidoIdoso(String idosoId, String apelidoAtual) async {
-    final TextEditingController apelidoController = TextEditingController(text: apelidoAtual);
+    final TextEditingController apelidoController = TextEditingController(
+      text: apelidoAtual,
+    );
     final result = await showDialog<String>(
       context: context,
       builder: (context) => AlertDialog(
@@ -36,36 +36,49 @@ class _HomeResponsavelState extends State<HomeResponsavel> {
             child: const Text('Cancelar'),
           ),
           ElevatedButton(
-            onPressed: () => Navigator.pop(context, apelidoController.text.trim()),
+            onPressed: () =>
+                Navigator.pop(context, apelidoController.text.trim()),
             child: const Text('Salvar'),
           ),
         ],
       ),
     );
     if (result != null) {
-      await FirebaseFirestore.instance.collection('idoso').doc(idosoId).update({'apelido': result});
+      await FirebaseFirestore.instance.collection('idoso').doc(idosoId).update({
+        'apelido': result,
+      });
       await fetchIdososVinculados();
     }
   }
 
   Future<void> removerVinculoIdoso(String idosoId) async {
-  final firestore = FirestoreService();
-  final user = await AuthService().getCurrentUser();
-  if (user == null) return;
-  final responsavelSnap = await firestore.getResponsavelByEmail(user.email ?? '');
-  if (responsavelSnap == null) return;
-  List<dynamic> ids = responsavelSnap['idosos_vinculados'] ?? [];
-  ids.remove(idosoId);
-  await FirebaseFirestore.instance.collection('responsavel').doc(responsavelSnap['id']).update({'idosos_vinculados': ids});
+    final firestore = FirestoreService();
+    final user = await AuthService().getCurrentUser();
+    if (user == null) return;
+    final responsavelSnap = await firestore.getResponsavelByEmail(
+      user.email ?? '',
+    );
+    if (responsavelSnap == null) return;
+    List<dynamic> ids = responsavelSnap['idosos_vinculados'] ?? [];
+    ids.remove(idosoId);
+    await FirebaseFirestore.instance
+        .collection('responsavel')
+        .doc(responsavelSnap['id'])
+        .update({'idosos_vinculados': ids});
 
-  // Remove o responsável da lista 'responsaveis' do idoso e o apelido
-  final idosoDocRef = FirebaseFirestore.instance.collection('idoso').doc(idosoId);
-  final idosoDoc = await idosoDocRef.get();
-  List<dynamic> responsaveis = idosoDoc.data()?['responsaveis'] ?? [];
-  responsaveis.remove(user.email);
-  await idosoDocRef.update({'responsaveis': responsaveis, 'apelido': FieldValue.delete()});
+    // Remove o responsável da lista 'responsaveis' do idoso e o apelido
+    final idosoDocRef = FirebaseFirestore.instance
+        .collection('idoso')
+        .doc(idosoId);
+    final idosoDoc = await idosoDocRef.get();
+    List<dynamic> responsaveis = idosoDoc.data()?['responsaveis'] ?? [];
+    responsaveis.remove(user.email);
+    await idosoDocRef.update({
+      'responsaveis': responsaveis,
+      'apelido': FieldValue.delete(),
+    });
 
-  await fetchIdososVinculados();
+    await fetchIdososVinculados();
   }
 
   @override
@@ -75,26 +88,40 @@ class _HomeResponsavelState extends State<HomeResponsavel> {
   }
 
   Future<void> fetchIdososVinculados() async {
-    setState(() { isLoading = true; });
+    setState(() {
+      isLoading = true;
+    });
     final firestore = FirestoreService();
     final user = await AuthService().getCurrentUser();
     if (user == null) {
-      setState(() { isLoading = false; });
+      setState(() {
+        isLoading = false;
+      });
       return;
     }
-    final responsavelSnap = await firestore.getResponsavelByEmail(user.email ?? '');
+    final responsavelSnap = await firestore.getResponsavelByEmail(
+      user.email ?? '',
+    );
     if (responsavelSnap == null) {
-      setState(() { isLoading = false; });
+      setState(() {
+        isLoading = false;
+      });
       return;
     }
     List<dynamic> ids = responsavelSnap['idosos_vinculados'] ?? [];
     if (ids.isEmpty) {
-      setState(() { idosos = []; isLoading = false; });
+      setState(() {
+        idosos = [];
+        isLoading = false;
+      });
       return;
     }
     // Buscar dados dos idosos
     final idososSnap = await firestore.getIdososByIds(ids);
-    setState(() { idosos = idososSnap; isLoading = false; });
+    setState(() {
+      idosos = idososSnap;
+      isLoading = false;
+    });
   }
 
   @override
@@ -111,15 +138,20 @@ class _HomeResponsavelState extends State<HomeResponsavel> {
                 if (errorMsg != null)
                   Padding(
                     padding: const EdgeInsets.only(top: 8.0),
-                    child: Text(errorMsg!, style: const TextStyle(color: Colors.red)),
+                    child: Text(
+                      errorMsg!,
+                      style: const TextStyle(color: Colors.red),
+                    ),
                   ),
-                if (isLoading)
-                  const Center(child: CircularProgressIndicator()),
+                if (isLoading) const Center(child: CircularProgressIndicator()),
                 if (!isLoading && idosos.isEmpty)
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text("Nenhum idoso vinculado.", style: TextStyle(fontSize: 18)),
+                      const Text(
+                        "Nenhum idoso vinculado.",
+                        style: TextStyle(fontSize: 18),
+                      ),
                       const SizedBox(height: 16),
                       ElevatedButton.icon(
                         style: ElevatedButton.styleFrom(
@@ -129,7 +161,10 @@ class _HomeResponsavelState extends State<HomeResponsavel> {
                         icon: const Icon(Icons.add),
                         label: const Text("Cadastrar idoso por código"),
                         onPressed: () {
-                          Navigator.pushNamed(context, '/register_codigo_idoso');
+                          Navigator.pushNamed(
+                            context,
+                            '/register_codigo_idoso',
+                          );
                         },
                       ),
                     ],
@@ -138,49 +173,59 @@ class _HomeResponsavelState extends State<HomeResponsavel> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text("Idosos vinculados:", style: TextStyle(fontSize: 18)),
+                      const Text(
+                        "Idosos vinculados:",
+                        style: TextStyle(fontSize: 18),
+                      ),
                       const SizedBox(height: 8),
-                      ...idosos.map((idoso) => Card(
-                        child: ListTile(
-                          title: GestureDetector(
-                            child: Text(
-                              (idoso['apelido'] != null && idoso['apelido'].toString().isNotEmpty)
-                                ? idoso['apelido']
-                                : (idoso['nome'] ?? 'Sem nome'),
-                            ),
-                            onTap: () async {
+                      ...idosos.map(
+                        (idoso) => Card(
+                          child: ListTile(
+                            title: GestureDetector(
+                              child: Text(
+                                (idoso['apelido'] != null &&
+                                        idoso['apelido'].toString().isNotEmpty)
+                                    ? idoso['apelido']
+                                    : (idoso['nome'] ?? 'Sem nome'),
+                              ),
+                              onTap: () async {
                                 await Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => IdosoPage(idosoId: idoso['id']),
+                                    builder: (context) =>
+                                        IdosoPage(idosoId: idoso['id']),
                                   ),
                                 );
                                 await fetchIdososVinculados();
                               },
-                          ),
-                          subtitle: Text('CPF: ${idoso['cpf'] ?? ''}'),
-                          trailing: PopupMenuButton<String>(
-                            icon: const Icon(Icons.more_vert),
-                            onSelected: (value) async {
-                              if (value == 'remover') {
-                                await removerVinculoIdoso(idoso['id']);
-                              } else if (value == 'editar_apelido') {
-                                await editarApelidoIdoso(idoso['id'], idoso['apelido'] ?? '');
-                              }
-                            },
-                            itemBuilder: (context) => [
-                              const PopupMenuItem(
-                                value: 'editar_apelido',
-                                child: Text('Definir apelido'),
-                              ),
-                              const PopupMenuItem(
-                                value: 'remover',
-                                child: Text('Remover vínculo'),
-                              ),
-                            ],
+                            ),
+                            subtitle: Text('CPF: ${idoso['cpf'] ?? ''}'),
+                            trailing: PopupMenuButton<String>(
+                              icon: const Icon(Icons.more_vert),
+                              onSelected: (value) async {
+                                if (value == 'remover') {
+                                  await removerVinculoIdoso(idoso['id']);
+                                } else if (value == 'editar_apelido') {
+                                  await editarApelidoIdoso(
+                                    idoso['id'],
+                                    idoso['apelido'] ?? '',
+                                  );
+                                }
+                              },
+                              itemBuilder: (context) => [
+                                const PopupMenuItem(
+                                  value: 'editar_apelido',
+                                  child: Text('Definir apelido'),
+                                ),
+                                const PopupMenuItem(
+                                  value: 'remover',
+                                  child: Text('Remover vínculo'),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-                      )),
+                      ),
                     ],
                   ),
               ],
@@ -202,7 +247,11 @@ class _HomeResponsavelState extends State<HomeResponsavel> {
                 onTap: () async {
                   await AuthService().signOut();
                   if (context.mounted) {
-                    Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
+                    Navigator.pushNamedAndRemoveUntil(
+                      context,
+                      '/login',
+                      (route) => false,
+                    );
                   }
                 },
               ),

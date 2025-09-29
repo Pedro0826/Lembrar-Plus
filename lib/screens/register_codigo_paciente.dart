@@ -1,15 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../services/firestore_service.dart';
-import 'idoso_page.dart';
+import 'paciente_page.dart';
 import '../services/auth_service.dart';
-import 'register_idoso_resto.dart';
+import 'register_paciente_resto.dart';
 
 class RegisterCodigoIdosoPage extends StatefulWidget {
   const RegisterCodigoIdosoPage({super.key});
 
   @override
-  State<RegisterCodigoIdosoPage> createState() => _RegisterCodigoIdosoPageState();
+  State<RegisterCodigoIdosoPage> createState() =>
+      _RegisterCodigoIdosoPageState();
 }
 
 class _RegisterCodigoIdosoPageState extends State<RegisterCodigoIdosoPage> {
@@ -25,11 +26,11 @@ class _RegisterCodigoIdosoPageState extends State<RegisterCodigoIdosoPage> {
       fillColor: const Color(0xFFE4FBFB),
       enabledBorder: const OutlineInputBorder(
         borderRadius: BorderRadius.all(Radius.circular(10)),
-        borderSide: BorderSide.none, 
+        borderSide: BorderSide.none,
       ),
       focusedBorder: const OutlineInputBorder(
         borderRadius: BorderRadius.all(Radius.circular(10)),
-        borderSide: BorderSide.none, 
+        borderSide: BorderSide.none,
       ),
     );
   }
@@ -59,12 +60,17 @@ class _RegisterCodigoIdosoPageState extends State<RegisterCodigoIdosoPage> {
     // Vincula idoso ao responsável
     final user = await AuthService().getCurrentUser();
     if (user == null) {
-      setState(() { errorMsg = 'Usuário não autenticado.'; isLoading = false; });
+      setState(() {
+        errorMsg = 'Usuário não autenticado.';
+        isLoading = false;
+      });
       return;
     }
 
     // Atualiza o documento do idoso para adicionar o responsável
-    final idosoDocRef = FirebaseFirestore.instance.collection('idoso').doc(idosoSnap['id']);
+    final idosoDocRef = FirebaseFirestore.instance
+        .collection('idoso')
+        .doc(idosoSnap['id']);
     final idosoDoc = await idosoDocRef.get();
     List<dynamic> responsaveis = idosoDoc.data()?['responsaveis'] ?? [];
     if (!responsaveis.contains(user.email)) {
@@ -72,7 +78,9 @@ class _RegisterCodigoIdosoPageState extends State<RegisterCodigoIdosoPage> {
       await idosoDocRef.update({'responsaveis': responsaveis});
     }
 
-    setState(() { isLoading = false; });
+    setState(() {
+      isLoading = false;
+    });
 
     // Navega para tela de informações adicionais
     final resultado = await Navigator.push(
@@ -96,7 +104,7 @@ class _RegisterCodigoIdosoPageState extends State<RegisterCodigoIdosoPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white, 
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text(
           'Cadastrar idoso por código',
@@ -120,7 +128,10 @@ class _RegisterCodigoIdosoPageState extends State<RegisterCodigoIdosoPage> {
             if (errorMsg != null)
               Padding(
                 padding: const EdgeInsets.only(top: 8.0),
-                child: Text(errorMsg!, style: const TextStyle(color: Colors.red)),
+                child: Text(
+                  errorMsg!,
+                  style: const TextStyle(color: Colors.red),
+                ),
               ),
             const SizedBox(height: 24),
             ElevatedButton(

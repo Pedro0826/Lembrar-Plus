@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:circular_menu/circular_menu.dart';
-import 'idoso_info.dart';
+import 'paciente_info.dart';
 import 'medicamentos.dart';
 
 class IdosoPage extends StatefulWidget {
@@ -23,8 +23,13 @@ class _IdosoPageState extends State<IdosoPage> {
   }
 
   Future<void> fetchIdoso() async {
-    setState(() { isLoading = true; });
-    final doc = await FirebaseFirestore.instance.collection('idoso').doc(widget.idosoId).get();
+    setState(() {
+      isLoading = true;
+    });
+    final doc = await FirebaseFirestore.instance
+        .collection('idoso')
+        .doc(widget.idosoId)
+        .get();
     setState(() {
       idosoData = doc.data();
       isLoading = false;
@@ -38,8 +43,8 @@ class _IdosoPageState extends State<IdosoPage> {
         automaticallyImplyLeading: false,
         title: Text(
           idosoData != null
-            ? 'Cuidando de: ${idosoData!['apelido'] != null && idosoData!['apelido'].toString().isNotEmpty ? idosoData!['apelido'] : (idosoData!['nome'] ?? '')}'
-            : 'Cuidando de:',
+              ? 'Cuidando de: ${idosoData!['apelido'] != null && idosoData!['apelido'].toString().isNotEmpty ? idosoData!['apelido'] : (idosoData!['nome'] ?? '')}'
+              : 'Cuidando de:',
         ),
       ),
       body: isLoading
@@ -55,7 +60,8 @@ class _IdosoPageState extends State<IdosoPage> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => IdosoInfoPage(idosoId: widget.idosoId),
+                            builder: (context) =>
+                                IdosoInfoPage(idosoId: widget.idosoId),
                           ),
                         );
                       },
@@ -69,7 +75,10 @@ class _IdosoPageState extends State<IdosoPage> {
                           MaterialPageRoute(
                             builder: (context) => MedicamentosPage(
                               idosoId: widget.idosoId,
-                              apelido: idosoData?['apelido'] ?? idosoData?['nome'] ?? '',
+                              apelido:
+                                  idosoData?['apelido'] ??
+                                  idosoData?['nome'] ??
+                                  '',
                             ),
                           ),
                         );
