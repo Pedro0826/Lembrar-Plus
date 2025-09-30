@@ -35,9 +35,13 @@ class _RegisterIdosoPageState extends State<RegisterIdosoPage> {
 
       final firestoreService = FirestoreService();
       // Use o UID como ID do documento no Firestore
-      await firestoreService.addIdoso(nome: nome, email: email);
+      await firestoreService.addIdoso(
+        uid: cred.user!.uid,
+        nome: nome,
+        email: email,
+      );
 
-      Navigator.pushReplacementNamed(context, '/home_idoso');
+      Navigator.pushReplacementNamed(context, '/home_paciente');
     } catch (e) {
       mostrarErro('Erro ao registrar: ${e.toString()}');
     }
@@ -50,10 +54,11 @@ class _RegisterIdosoPageState extends State<RegisterIdosoPage> {
         final firestoreService = FirestoreService();
         // Use o UID como ID do documento no Firestore
         await firestoreService.addIdoso(
+          uid: user.uid,
           nome: user.displayName ?? '',
           email: user.email ?? '',
         );
-        Navigator.pushReplacementNamed(context, '/home_idoso');
+        Navigator.pushReplacementNamed(context, '/home_paciente');
       }
     } catch (e) {
       mostrarErro('Erro ao registrar com Google: ${e.toString()}');

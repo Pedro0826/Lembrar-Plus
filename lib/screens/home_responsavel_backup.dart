@@ -359,9 +359,7 @@ class _HomeResponsavelState extends State<HomeResponsavel> {
                                   vertical: 32,
                                   horizontal: 24,
                                 ),
-                                margin: const EdgeInsets.symmetric(
-                                  horizontal: 16,
-                                ),
+                                margin: const EdgeInsets.symmetric(horizontal: 16),
                                 decoration: BoxDecoration(
                                   color: Colors.white.withOpacity(0.92),
                                   borderRadius: BorderRadius.circular(20),
@@ -391,14 +389,10 @@ class _HomeResponsavelState extends State<HomeResponsavel> {
                                       height: 48,
                                       child: ElevatedButton.icon(
                                         style: ElevatedButton.styleFrom(
-                                          backgroundColor: const Color(
-                                            0xFF6DBE81,
-                                          ),
+                                          backgroundColor: const Color(0xFF6DBE81),
                                           foregroundColor: Colors.white,
                                           shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(
-                                              12,
-                                            ),
+                                            borderRadius: BorderRadius.circular(12),
                                           ),
                                           textStyle: const TextStyle(
                                             fontWeight: FontWeight.bold,
@@ -431,167 +425,128 @@ class _HomeResponsavelState extends State<HomeResponsavel> {
                                   child: RefreshIndicator(
                                     onRefresh: _loadIdososVinculados,
                                     child: ListView.separated(
-                                      padding: const EdgeInsets.only(
-                                        bottom: 16,
-                                      ),
-                                      itemCount: idosos.length + 1,
+                                      padding: const EdgeInsets.only(bottom: 16),
+                                      itemCount: idosos.length,
                                       separatorBuilder: (context, index) =>
                                           const SizedBox(height: 12),
                                       itemBuilder: (context, index) {
-                                        if (index < idosos.length) {
-                                          final idoso = idosos[index];
-                                          return SizedBox(
-                                            height: 90,
-                                            child: Card(
-                                              elevation: 3,
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(18),
-                                              ),
-                                              color: Colors.white.withOpacity(
-                                                0.96,
-                                              ),
-                                              child: ListTile(
-                                                contentPadding:
-                                                    const EdgeInsets.symmetric(
-                                                      vertical: 10,
-                                                      horizontal: 18,
-                                                    ),
-                                                leading: CircleAvatar(
-                                                  radius: 28,
-                                                  backgroundColor:
-                                                      Colors.grey[200],
-                                                  backgroundImage:
-                                                      (idoso['fotoUrl'] !=
-                                                              null &&
-                                                          idoso['fotoUrl']
-                                                              .toString()
-                                                              .isNotEmpty)
-                                                      ? (idoso['isAsset'] ==
-                                                                    true
-                                                                ? AssetImage(
-                                                                    idoso['fotoUrl'],
-                                                                  )
-                                                                : NetworkImage(
-                                                                    idoso['fotoUrl'],
-                                                                  ))
-                                                            as ImageProvider
-                                                      : const AssetImage(
-                                                          'assets/images/default_profile.jpg',
-                                                        ),
-                                                ),
-                                                title: Text(
-                                                  (idoso['apelido'] != null &&
-                                                          idoso['apelido']
-                                                              .toString()
-                                                              .isNotEmpty)
-                                                      ? idoso['apelido']
-                                                            .toString()
-                                                            .trim()
-                                                      : (idoso['nome'] ??
-                                                                'Sem nome')
-                                                            .toString()
-                                                            .trim(),
-                                                  style: const TextStyle(
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 17,
-                                                    color: Color(0xFF3A7CA5),
-                                                  ),
-                                                ),
-                                                subtitle: Text(
-                                                  'CPF: ${(idoso['cpf'] ?? '').toString().trim()}',
-                                                  style: const TextStyle(
-                                                    fontSize: 14,
-                                                    color: Color(0xFF6B7A8F),
-                                                  ),
-                                                ),
-                                                onTap: () async {
-                                                  await Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          IdosoPage(
-                                                            idosoId:
-                                                                idoso['id'],
-                                                          ),
-                                                    ),
-                                                  );
-                                                },
-                                                trailing: PopupMenuButton<String>(
-                                                  icon: const Icon(
-                                                    Icons.more_vert,
-                                                  ),
-                                                  onSelected: (value) async {
-                                                    if (value ==
-                                                        'editar_apelido') {
-                                                      _editarApelido(idoso);
-                                                    } else if (value ==
-                                                        'remover') {
-                                                      _removerVinculo(
-                                                        idoso['id'],
-                                                      );
-                                                    }
-                                                  },
-                                                  itemBuilder: (context) => [
-                                                    const PopupMenuItem(
-                                                      value: 'editar_apelido',
-                                                      child: Text(
-                                                        'Definir apelido',
-                                                      ),
-                                                    ),
-                                                    const PopupMenuItem(
-                                                      value: 'remover',
-                                                      child: Text(
-                                                        'Remover vínculo',
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                            ),
-                                          );
-                                        } else {
-                                          // Botão de adicionar paciente como último item da lista
-                                          return Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                              vertical: 8.0,
-                                              horizontal: 16.0,
-                                            ),
-                                            child: SizedBox(
-                                              width: double.infinity,
-                                              height: 48,
-                                              child: ElevatedButton.icon(
-                                                style: ElevatedButton.styleFrom(
-                                                  backgroundColor: const Color(
-                                                    0xFF6DBE81,
-                                                  ),
-                                                  foregroundColor: Colors.white,
-                                                  shape: RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                          12,
-                                                        ),
-                                                  ),
-                                                  textStyle: const TextStyle(
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 17,
-                                                  ),
-                                                ),
-                                                icon: const Icon(Icons.add),
-                                                label: const Text(
-                                                  "Cadastrar novo paciente",
-                                                ),
-                                                onPressed: () async {
-                                                  await Navigator.pushNamed(
-                                                    context,
-                                                    '/register_codigo_paciente',
-                                                  );
-                                                  _loadIdososVinculados();
-                                                },
-                                              ),
-                                            ),
-                                          );
-                                        }
+                          if (index < idosos.length) {
+                            final idoso = idosos[index];
+                            return SizedBox(
+                              height: 90, // Garante altura igual para todos
+                              child: Card(
+                                elevation: 3,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(18),
+                                ),
+                                color: Colors.white.withOpacity(0.96),
+                                child: ListTile(
+                                  contentPadding: const EdgeInsets.symmetric(
+                                    vertical: 10,
+                                    horizontal: 18,
+                                  ),
+                                  leading: CircleAvatar(
+                                    radius: 28,
+                                    backgroundColor: Colors.grey[200],
+                                    backgroundImage:
+                                        (idoso['fotoUrl'] != null &&
+                                            idoso['fotoUrl']
+                                                .toString()
+                                                .isNotEmpty)
+                                        ? (idoso['isAsset'] == true
+                                                  ? AssetImage(idoso['fotoUrl'])
+                                                  : NetworkImage(
+                                                      idoso['fotoUrl'],
+                                                    ))
+                                              as ImageProvider
+                                        : const AssetImage(
+                                            'assets/images/default_profile.jpg',
+                                          ),
+                                  ),
+                                  title: Text(
+                                    (idoso['apelido'] != null &&
+                                            idoso['apelido']
+                                                .toString()
+                                                .isNotEmpty)
+                                        ? idoso['apelido'].toString().trim()
+                                        : (idoso['nome'] ?? 'Sem nome')
+                                              .toString()
+                                              .trim(),
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 17,
+                                      color: Color(0xFF3A7CA5),
+                                    ),
+                                  ),
+                                  subtitle: Text(
+                                    'CPF: ${(idoso['cpf'] ?? '').toString().trim()}',
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      color: Color(0xFF6B7A8F),
+                                    ),
+                                  ),
+                                  onTap: () async {
+                                    await Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            IdosoPage(idosoId: idoso['id']),
+                                      ),
+                                    );
+                                  },
+                                  trailing: PopupMenuButton<String>(
+                                    icon: const Icon(Icons.more_vert),
+                                    onSelected: (value) async {
+                                      if (value == 'editar_apelido') {
+                                        _editarApelido(idoso);
+                                      } else if (value == 'remover') {
+                                        _removerVinculo(idoso['id']);
+                                      }
+                                    },
+                                    itemBuilder: (context) => [
+                                      const PopupMenuItem(
+                                        value: 'editar_apelido',
+                                        child: Text('Definir apelido'),
+                                      ),
+                                      const PopupMenuItem(
+                                        value: 'remover',
+                                        child: Text('Remover vínculo'),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            );
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                // Botão de adicionar paciente sempre presente quando há lista
+                                Padding(
+                                  padding: const EdgeInsets.all(16.0),
+                                  child: SizedBox(
+                                    width: double.infinity,
+                                    height: 48,
+                                    child: ElevatedButton.icon(
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: const Color(0xFF6DBE81),
+                                        foregroundColor: Colors.white,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(12),
+                                        ),
+                                        textStyle: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 17,
+                                        ),
+                                      ),
+                                      icon: const Icon(Icons.add),
+                                      label: const Text("Cadastrar novo paciente"),
+                                      onPressed: () async {
+                                        await Navigator.pushNamed(
+                                          context,
+                                          '/register_codigo_paciente',
+                                        );
+                                        _loadIdososVinculados();
                                       },
                                     ),
                                   ),

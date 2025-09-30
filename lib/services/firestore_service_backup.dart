@@ -47,7 +47,7 @@ class FirestoreService {
   }
 
   Future<Map<String, dynamic>?> getIdosoByCodigo(String codigo) async {
-    final query = await _db
+    final query = await FirebaseFirestore.instance
         .collection('idoso')
         .where('codigo', isEqualTo: codigo)
         .limit(1)
@@ -157,6 +157,7 @@ class FirestoreService {
       'responsaveis': [],
     });
   }
+  }
 
   String _gerarCodigoCurto(int tamanho) {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -234,19 +235,24 @@ class FirestoreService {
     String idosoId,
   ) async {
     // Busca o documento do responsável
-    final responsavelDoc = await _db.collection('responsavel').doc(responsavelId).get();
-    List<dynamic> idososVinculados = responsavelDoc.data()?['idosos_vinculados'] ?? [];
-    
+    final responsavelDoc = await _db
+        .collection('responsavel')
+        .doc(responsavelId)
+        .get();
+    List<dynamic> idososVinculados =
+        responsavelDoc.data()?['idosos_vinculados'] ?? [];
+
     // Remove o idoso da lista do responsável
     idososVinculados.remove(idosoId);
-    
+
     // Busca o documento do idoso
     final idosoDoc = await _db.collection('idoso').doc(idosoId).get();
-    List<dynamic> responsaveisVinculados = idosoDoc.data()?['responsaveis'] ?? [];
-    
+    List<dynamic> responsaveisVinculados =
+        idosoDoc.data()?['responsaveis'] ?? [];
+
     // Remove o responsável da lista do idoso
     responsaveisVinculados.remove(responsavelId);
-    
+
     // Atualiza ambos os documentos simultaneamente
     await Future.wait([
       _db.collection('responsavel').doc(responsavelId).update({

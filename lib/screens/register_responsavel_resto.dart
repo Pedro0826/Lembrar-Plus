@@ -1,25 +1,32 @@
 import 'package:flutter/material.dart';
 import '../services/firestore_service.dart';
+import '../services/auth_service.dart';
 
 class RegisterResponsavelRestoPage extends StatefulWidget {
   final String nome;
   final String email;
-  const RegisterResponsavelRestoPage({super.key, required this.nome, required this.email});
+  const RegisterResponsavelRestoPage({
+    super.key,
+    required this.nome,
+    required this.email,
+  });
 
   @override
-  State<RegisterResponsavelRestoPage> createState() => _RegisterResponsavelRestoPageState();
+  State<RegisterResponsavelRestoPage> createState() =>
+      _RegisterResponsavelRestoPageState();
 }
 
-class _RegisterResponsavelRestoPageState extends State<RegisterResponsavelRestoPage> {
+class _RegisterResponsavelRestoPageState
+    extends State<RegisterResponsavelRestoPage> {
   final TextEditingController telefoneController = TextEditingController();
   final TextEditingController cpfController = TextEditingController();
   DateTime? dataNascSelecionada;
   bool isLoading = false;
 
   void mostrarErro(String mensagem) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(mensagem)),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(mensagem)));
   }
 
   bool validarCPF(String cpf) {
@@ -34,6 +41,7 @@ class _RegisterResponsavelRestoPageState extends State<RegisterResponsavelRestoP
       int mod = (sum * 10) % 11;
       return mod == 10 ? 0 : mod;
     }
+
     return calc(9) == digits[9] && calc(10) == digits[10];
   }
 
@@ -51,11 +59,20 @@ class _RegisterResponsavelRestoPageState extends State<RegisterResponsavelRestoP
       return;
     }
 
-    setState(() { isLoading = true; });
+    setState(() {
+      isLoading = true;
+    });
 
     try {
+      final user = await AuthService().getCurrentUser();
+      if (user == null) {
+        mostrarErro('Usuário não autenticado.');
+        return;
+      }
+
       final firestoreService = FirestoreService();
       await firestoreService.addResponsavel(
+        uid: user.uid, // Usa o UID do usuário autenticado
         nome: widget.nome,
         telefone: telefone,
         email: widget.email,
@@ -66,7 +83,9 @@ class _RegisterResponsavelRestoPageState extends State<RegisterResponsavelRestoP
     } catch (e) {
       mostrarErro('Erro ao salvar dados: ${e.toString()}');
     } finally {
-      setState(() { isLoading = false; });
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 
@@ -122,7 +141,10 @@ class _RegisterResponsavelRestoPageState extends State<RegisterResponsavelRestoP
               const SizedBox(height: 16),
               Row(
                 children: [
-                  const Text("Data de Nascimento: ", style: TextStyle(fontSize: 16)),
+                  const Text(
+                    "Data de Nascimento: ",
+                    style: TextStyle(fontSize: 16),
+                  ),
                   Text(
                     dataNascSelecionada == null
                         ? "Selecione"
@@ -130,7 +152,10 @@ class _RegisterResponsavelRestoPageState extends State<RegisterResponsavelRestoP
                     style: const TextStyle(fontSize: 16),
                   ),
                   IconButton(
-                    icon: const Icon(Icons.calendar_today, color: Color(0xFF3A7CA5)),
+                    icon: const Icon(
+                      Icons.calendar_today,
+                      color: Color(0xFF3A7CA5),
+                    ),
                     onPressed: () async {
                       DateTime? picked = await showDatePicker(
                         context: context,
@@ -139,7 +164,9 @@ class _RegisterResponsavelRestoPageState extends State<RegisterResponsavelRestoP
                         lastDate: DateTime.now(),
                       );
                       if (picked != null) {
-                        setState(() { dataNascSelecionada = picked; });
+                        setState(() {
+                          dataNascSelecionada = picked;
+                        });
                       }
                     },
                   ),

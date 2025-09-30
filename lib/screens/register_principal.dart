@@ -151,7 +151,7 @@ class _RegisterPrincipalPageState extends State<RegisterPrincipalPage> {
                   const SizedBox(height: 24),
                   _customRegisterButton(
                     onTap: () {
-                      Navigator.pushNamed(context, '/register_idoso');
+                      Navigator.pushNamed(context, '/register_paciente');
                     },
                     color: const Color(0xFF6DBE81),
                     label: 'Registrar-se como Paciente',
