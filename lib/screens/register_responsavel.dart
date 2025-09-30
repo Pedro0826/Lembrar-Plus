@@ -16,6 +16,7 @@ bool validarCPF(String cpf) {
     int mod = (sum * 10) % 11;
     return mod == 10 ? 0 : mod;
   }
+
   return calc(9) == digits[9] && calc(10) == digits[10];
 }
 
@@ -38,9 +39,9 @@ class _RegisterResponsavelPageState extends State<RegisterResponsavelPage> {
   final AuthService _authService = AuthService();
 
   void mostrarErro(String mensagem) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(mensagem)),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(mensagem)));
   }
 
   Future<void> registrarUsuario() async {
@@ -67,6 +68,7 @@ class _RegisterResponsavelPageState extends State<RegisterResponsavelPage> {
 
       final firestoreService = FirestoreService();
       await firestoreService.addResponsavel(
+        uid: cred.user!.uid, // Usa o UID do usuário autenticado
         nome: nome,
         telefone: telefone,
         email: email,
@@ -89,10 +91,8 @@ class _RegisterResponsavelPageState extends State<RegisterResponsavelPage> {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => RegisterResponsavelRestoPage(
-              nome: nome,
-              email: email,
-            ),
+            builder: (context) =>
+                RegisterResponsavelRestoPage(nome: nome, email: email),
           ),
         );
       }
@@ -104,16 +104,16 @@ class _RegisterResponsavelPageState extends State<RegisterResponsavelPage> {
   InputDecoration campoDecoration(String label) {
     return InputDecoration(
       labelText: label,
-      labelStyle: const TextStyle(color: Color(0xFF707070)), 
+      labelStyle: const TextStyle(color: Color(0xFF707070)),
       filled: true,
       fillColor: const Color(0xFFE4FBFB),
       enabledBorder: const OutlineInputBorder(
         borderRadius: BorderRadius.all(Radius.circular(10)),
-        borderSide: BorderSide.none
+        borderSide: BorderSide.none,
       ),
       focusedBorder: const OutlineInputBorder(
         borderRadius: BorderRadius.all(Radius.circular(10)),
-        borderSide: BorderSide.none
+        borderSide: BorderSide.none,
       ),
     );
   }
@@ -139,7 +139,10 @@ class _RegisterResponsavelPageState extends State<RegisterResponsavelPage> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              TextField(controller: nomeController, decoration: campoDecoration("Nome")),
+              TextField(
+                controller: nomeController,
+                decoration: campoDecoration("Nome"),
+              ),
               const SizedBox(height: 10),
               TextField(
                 controller: telefoneController,
@@ -147,7 +150,10 @@ class _RegisterResponsavelPageState extends State<RegisterResponsavelPage> {
                 keyboardType: TextInputType.phone,
               ),
               const SizedBox(height: 10),
-              TextField(controller: emailController, decoration: campoDecoration("Email")),
+              TextField(
+                controller: emailController,
+                decoration: campoDecoration("Email"),
+              ),
               const SizedBox(height: 10),
               TextField(
                 controller: senhaController,
@@ -164,9 +170,11 @@ class _RegisterResponsavelPageState extends State<RegisterResponsavelPage> {
               Row(
                 children: [
                   const Text("Data de Nascimento: "),
-                  Text(dataNascSelecionada == null
-                      ? "Selecione"
-                      : "${dataNascSelecionada!.day}/${dataNascSelecionada!.month}/${dataNascSelecionada!.year}"),
+                  Text(
+                    dataNascSelecionada == null
+                        ? "Selecione"
+                        : "${dataNascSelecionada!.day}/${dataNascSelecionada!.month}/${dataNascSelecionada!.year}",
+                  ),
                   IconButton(
                     icon: const Icon(Icons.calendar_today),
                     onPressed: () async {
@@ -191,7 +199,9 @@ class _RegisterResponsavelPageState extends State<RegisterResponsavelPage> {
               ElevatedButton(
                 onPressed: registrarUsuario,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF3A7CA5), // mesma cor do login
+                  backgroundColor: const Color(
+                    0xFF3A7CA5,
+                  ), // mesma cor do login
                   foregroundColor: Colors.white,
                   minimumSize: const Size(double.infinity, 48),
                   shape: const RoundedRectangleBorder(

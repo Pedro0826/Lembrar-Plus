@@ -107,6 +107,10 @@ class _HomeIdosoState extends State<HomeIdoso> {
     });
   }
 
+  Future<void> _refreshData() async {
+    setState(() {}); // Força a reconstrução do FutureBuilder
+  }
+
   @override
   Widget build(BuildContext context) {
     int columnCount = 2;
@@ -132,261 +136,276 @@ class _HomeIdosoState extends State<HomeIdoso> {
 
         return Scaffold(
           extendBodyBehindAppBar: true,
-          body: Stack(
-            children: [
-              Positioned.fill(
-                child: Image.asset(
-                  'assets/images/Background3.png',
-                  fit: BoxFit.cover,
-                ),
-              ),
-              // Cabeçalho igual ao idoso_page.dart
-              Positioned(
-                top: 64,
-                left: 24,
-                right: 24,
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
+          body: RefreshIndicator(
+            onRefresh: _refreshData,
+            child: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              child: SizedBox(
+                height: MediaQuery.of(context).size.height,
+                child: Stack(
                   children: [
-                    GestureDetector(
-                      onTap: () async {
-                        final picker = ImagePicker();
-                        final pickedFile = await picker.pickImage(
-                          source: ImageSource.gallery,
-                        );
-                        if (pickedFile != null) {
-                          // Faça upload para o Firebase Storage
-                          final user = await AuthService().getCurrentUser();
-                          final storageRef = FirebaseStorage.instance
-                              .ref()
-                              .child('profile_images/${user!.uid}.jpg');
-                          await storageRef.putFile(File(pickedFile.path));
-                          final downloadUrl = await storageRef.getDownloadURL();
-
-                          // Atualize o campo fotoUrl no Firestore
-                          await FirebaseFirestore.instance
-                              .collection('idoso')
-                              .doc(user.uid)
-                              .update({'fotoUrl': downloadUrl});
-
-                          setState(
-                            () {},
-                          ); // Atualiza a tela para mostrar a nova foto
-                        }
-                      },
-                      child: CircleAvatar(
-                        radius: 34,
-                        backgroundColor: Colors.white,
-                        backgroundImage: fotoUrl != null && fotoUrl.isNotEmpty
-                            ? (isAsset
-                                      ? AssetImage(fotoUrl)
-                                      : NetworkImage(fotoUrl))
-                                  as ImageProvider
-                            : null,
-                        child: fotoUrl == null || fotoUrl.isEmpty
-                            ? const Icon(
-                                Icons.camera_alt,
-                                color: Colors.grey,
-                                size: 32,
-                              )
-                            : null,
+                    Positioned.fill(
+                      child: Image.asset(
+                        'assets/images/Background3.png',
+                        fit: BoxFit.cover,
                       ),
                     ),
-                    const SizedBox(width: 18),
-                    Expanded(
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 16,
-                          horizontal: 24,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.90),
-                          borderRadius: BorderRadius.circular(38),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.08),
-                              blurRadius: 8,
-                              offset: const Offset(0, 2),
+                    // Cabeçalho igual ao idoso_page.dart
+                    Positioned(
+                      top: 64,
+                      left: 24,
+                      right: 24,
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          GestureDetector(
+                            onTap: () async {
+                              final picker = ImagePicker();
+                              final pickedFile = await picker.pickImage(
+                                source: ImageSource.gallery,
+                              );
+                              if (pickedFile != null) {
+                                // Faça upload para o Firebase Storage
+                                final user = await AuthService()
+                                    .getCurrentUser();
+                                final storageRef = FirebaseStorage.instance
+                                    .ref()
+                                    .child('profile_images/${user!.uid}.jpg');
+                                await storageRef.putFile(File(pickedFile.path));
+                                final downloadUrl = await storageRef
+                                    .getDownloadURL();
+
+                                // Atualize o campo fotoUrl no Firestore
+                                await FirebaseFirestore.instance
+                                    .collection('idoso')
+                                    .doc(user.uid)
+                                    .update({'fotoUrl': downloadUrl});
+
+                                setState(
+                                  () {},
+                                ); // Atualiza a tela para mostrar a nova foto
+                              }
+                            },
+                            child: CircleAvatar(
+                              radius: 34,
+                              backgroundColor: Colors.white,
+                              backgroundImage:
+                                  fotoUrl != null && fotoUrl.isNotEmpty
+                                  ? (isAsset
+                                            ? AssetImage(fotoUrl)
+                                            : NetworkImage(fotoUrl))
+                                        as ImageProvider
+                                  : null,
+                              child: fotoUrl == null || fotoUrl.isEmpty
+                                  ? const Icon(
+                                      Icons.camera_alt,
+                                      color: Colors.grey,
+                                      size: 32,
+                                    )
+                                  : null,
                             ),
-                          ],
-                        ),
-                        child: RichText(
-                          text: TextSpan(
-                            style: const TextStyle(
-                              fontFamily: 'Montserrat',
-                              fontWeight: FontWeight.bold,
-                              fontSize: 17,
-                              letterSpacing: 1.1,
-                              color: Color(0xFF3A7CA5),
+                          ),
+                          const SizedBox(width: 18),
+                          Expanded(
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 16,
+                                horizontal: 24,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.90),
+                                borderRadius: BorderRadius.circular(38),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.08),
+                                    blurRadius: 8,
+                                    offset: const Offset(0, 2),
+                                  ),
+                                ],
+                              ),
+                              child: RichText(
+                                text: TextSpan(
+                                  style: const TextStyle(
+                                    fontFamily: 'Montserrat',
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 17,
+                                    letterSpacing: 1.1,
+                                    color: Color(0xFF3A7CA5),
+                                  ),
+                                  children: [
+                                    const TextSpan(text: 'PACIENTE: '),
+                                    TextSpan(
+                                      text: nome.toUpperCase(),
+                                      style: const TextStyle(
+                                        color: Color(0xFF3A7CA5),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
                             ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    // Grid de botões reordenável
+                    if (temResponsavel)
+                      Padding(
+                        padding: const EdgeInsets.only(
+                          top: 180,
+                          left: 12,
+                          right: 12,
+                          bottom: 90,
+                        ),
+                        child: RefreshIndicator(
+                          onRefresh: _refreshData,
+                          child: ReorderableGridView.count(
+                            crossAxisCount: columnCount,
+                            mainAxisSpacing: 28,
+                            crossAxisSpacing: 28,
+                            onReorder: _onReorder,
+                            childAspectRatio: 1,
+                            children: List.generate(
+                              _actions.length,
+                              (index) => _IdosoActionButton(
+                                key: ValueKey(_actions[index].label),
+                                action: _actions[index],
+                              ),
+                            ),
+                          ),
+                        ),
+                      )
+                    else
+                      Center(
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 32,
+                            horizontal: 24,
+                          ),
+                          margin: const EdgeInsets.symmetric(horizontal: 24),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.92),
+                            borderRadius: BorderRadius.circular(20),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.08),
+                                blurRadius: 8,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
                             children: [
-                              const TextSpan(text: 'PACIENTE: '),
-                              TextSpan(
-                                text: nome.toUpperCase(),
-                                style: const TextStyle(
+                              const Text(
+                                "Você não tem responsável vinculado.",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
                                   color: Color(0xFF3A7CA5),
                                 ),
                               ),
-                            ],
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              // Grid de botões reordenável
-              if (temResponsavel)
-                Padding(
-                  padding: const EdgeInsets.only(
-                    top: 180,
-                    left: 12,
-                    right: 12,
-                    bottom: 90,
-                  ),
-                  child: ReorderableGridView.count(
-                    crossAxisCount: columnCount,
-                    mainAxisSpacing: 28,
-                    crossAxisSpacing: 28,
-                    onReorder: _onReorder,
-                    childAspectRatio: 1,
-                    children: List.generate(
-                      _actions.length,
-                      (index) => _IdosoActionButton(
-                        key: ValueKey(_actions[index].label),
-                        action: _actions[index],
-                      ),
-                    ),
-                  ),
-                )
-              else
-                Center(
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 32,
-                      horizontal: 24,
-                    ),
-                    margin: const EdgeInsets.symmetric(horizontal: 24),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.92),
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.08),
-                          blurRadius: 8,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Text(
-                          "Você não tem responsável vinculado.",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF3A7CA5),
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        const Text(
-                          "O responsável deverá usar o código abaixo para te adicionar:",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Color(0xFF3A7CA5),
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        SelectableText(
-                          codigo,
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            fontSize: 28,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.blue,
-                            letterSpacing: 2,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              // Botões auxiliares grandes na parte inferior
-              Positioned(
-                left: 32,
-                right: 32,
-                bottom: 24,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        foregroundColor: Colors.grey,
-                        shape: const CircleBorder(),
-                        elevation: 4,
-                        padding: const EdgeInsets.all(18),
-                      ),
-                      onPressed: () async {
-                        await AuthService().signOut();
-                        if (context.mounted) {
-                          Navigator.pushNamedAndRemoveUntil(
-                            context,
-                            '/login',
-                            (route) => false,
-                          );
-                        }
-                      },
-                      child: const Icon(Icons.logout, size: 36),
-                    ),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        foregroundColor: Color(0xFF7C4DFF),
-                        shape: const CircleBorder(),
-                        elevation: 4,
-                        padding: const EdgeInsets.all(18),
-                      ),
-                      onPressed: () {
-                        showDialog(
-                          context: context,
-                          builder: (context) => AlertDialog(
-                            title: const Text(
-                              'Ajuda',
-                              style: TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
-                                color: Color(0xFFD32F2F),
+                              const SizedBox(height: 16),
+                              const Text(
+                                "O responsável deverá usar o código abaixo para te adicionar:",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Color(0xFF3A7CA5),
+                                ),
                               ),
-                            ),
-                            content: const Text(
-                              'Toque em um dos botões para avisar seu responsável.\n'
-                              'Cada botão tem uma função diferente e envia uma notificação apropriada.',
-                              style: TextStyle(fontSize: 20),
-                            ),
-                            actions: [
-                              TextButton(
-                                onPressed: () => Navigator.pop(context),
-                                child: const Text(
-                                  'OK',
-                                  style: TextStyle(fontSize: 18),
+                              const SizedBox(height: 16),
+                              SelectableText(
+                                codigo,
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(
+                                  fontSize: 28,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.blue,
+                                  letterSpacing: 2,
                                 ),
                               ),
                             ],
                           ),
-                        );
-                      },
-                      child: const Icon(Icons.info_outline, size: 36),
+                        ),
+                      ),
+                    // Botões auxiliares grandes na parte inferior
+                    Positioned(
+                      left: 32,
+                      right: 32,
+                      bottom: 24,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.white,
+                              foregroundColor: Colors.grey,
+                              shape: const CircleBorder(),
+                              elevation: 4,
+                              padding: const EdgeInsets.all(18),
+                            ),
+                            onPressed: () async {
+                              await AuthService().signOut();
+                              if (context.mounted) {
+                                Navigator.pushNamedAndRemoveUntil(
+                                  context,
+                                  '/login',
+                                  (route) => false,
+                                );
+                              }
+                            },
+                            child: const Icon(Icons.logout, size: 36),
+                          ),
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.white,
+                              foregroundColor: Color(0xFF7C4DFF),
+                              shape: const CircleBorder(),
+                              elevation: 4,
+                              padding: const EdgeInsets.all(18),
+                            ),
+                            onPressed: () {
+                              showDialog(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                  title: const Text(
+                                    'Ajuda',
+                                    style: TextStyle(
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.bold,
+                                      color: Color(0xFFD32F2F),
+                                    ),
+                                  ),
+                                  content: const Text(
+                                    'Toque em um dos botões para avisar seu responsável.\n'
+                                    'Cada botão tem uma função diferente e envia uma notificação apropriada.',
+                                    style: TextStyle(fontSize: 20),
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () => Navigator.pop(context),
+                                      child: const Text(
+                                        'OK',
+                                        style: TextStyle(fontSize: 18),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                            child: const Icon(Icons.info_outline, size: 36),
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
               ),
-            ],
+            ),
           ),
         );
       },
@@ -434,12 +453,11 @@ class _IdosoActionButton extends StatelessWidget {
         onTap: () => action.onTap(context),
         child: Container(
           decoration: BoxDecoration(
-            color: action.color.withOpacity(0.18),
+            color: action.color,
             borderRadius: BorderRadius.circular(32),
-            border: Border.all(color: action.color, width: 2),
             boxShadow: [
               BoxShadow(
-                color: action.color.withOpacity(0.10),
+                color: Colors.black.withOpacity(0.20),
                 blurRadius: 8,
                 offset: const Offset(0, 4),
               ),
@@ -449,16 +467,16 @@ class _IdosoActionButton extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(action.icon, color: action.color, size: 54),
+              Icon(action.icon, color: Colors.white, size: 64),
               const SizedBox(height: 16),
               Text(
                 action.label,
                 textAlign: TextAlign.center,
-                style: TextStyle(
+                style: const TextStyle(
                   fontFamily: 'Montserrat',
                   fontWeight: FontWeight.bold,
                   fontSize: 18,
-                  color: action.color,
+                  color: Colors.white,
                 ),
               ),
             ],
