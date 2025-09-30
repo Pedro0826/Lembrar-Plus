@@ -78,7 +78,7 @@ class _RegisterIdosoRestoPageState extends State<RegisterIdosoRestoPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Informações adicionais do idoso',
+          'Informações adicionais do paciente',
           style: TextStyle(
             color: Color(0xFF66B2B2),
             fontWeight: FontWeight.bold,

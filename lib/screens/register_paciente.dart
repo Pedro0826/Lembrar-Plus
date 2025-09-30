@@ -83,7 +83,7 @@ class _RegisterIdosoPageState extends State<RegisterIdosoPage> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text(
-          "Registrar como idoso",
+          "Registrar como paciente",
           style: TextStyle(
             color: Color(0xFF6DBE81),
             fontWeight: FontWeight.bold,

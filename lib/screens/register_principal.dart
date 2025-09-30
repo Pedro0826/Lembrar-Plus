@@ -41,7 +41,7 @@ class _RegisterPrincipalPageState extends State<RegisterPrincipalPage> {
           ),
         ),
         content: const Text(
-          'Selecione se deseja se registrar como Responsável ou como Idoso.',
+          'Selecione se deseja se registrar como Responsável ou como Paciente.',
           style: TextStyle(fontSize: 17),
         ),
         actions: [
@@ -154,7 +154,7 @@ class _RegisterPrincipalPageState extends State<RegisterPrincipalPage> {
                       Navigator.pushNamed(context, '/register_idoso');
                     },
                     color: const Color(0xFF6DBE81),
-                    label: 'Registrar-se como Idoso',
+                    label: 'Registrar-se como Paciente',
                     iconAsset: 'assets/images/registro_idoso.png',
                   ),
                 ],

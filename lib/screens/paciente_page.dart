@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:circular_menu/circular_menu.dart';
-import 'idoso_info.dart';
+import 'paciente_info.dart';
 import 'medicamentos.dart';
-import 'ligar_idoso.dart';
+import 'ligar_paciente.dart';
 import 'notificacoes_responsavel.dart';
 
 class IdosoPage extends StatefulWidget {
