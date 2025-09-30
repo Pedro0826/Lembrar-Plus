@@ -1,0 +1,58 @@
+name: lembrar_mais
+description: "A new Flutter project."
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.8.1
+
+dependencies:
+  flutter:
+    sdk: flutter
+  carousel_slider: ^5.1.1
+  cupertino_icons: ^1.0.8
+  firebase_core: ^4.0.0
+  firebase_auth: ^6.0.1
+  google_sign_in: ^6.3.0
+  circular_menu: ^4.0.0
+  cloud_firestore: ^6.0.0
+  flutter_staggered_animations: ^1.0.0
+  uuid: ^4.5.1
+  reorderable_grid: ^1.0.12
+  video_player: ^2.8.2
+  image_picker: ^1.0.7
+  firebase_storage: ^13.0.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+fonts:
+
+- family: Montserrat
+  fonts:
+    - asset: assets/fonts/Montserrat-Bold.ttf
+    - asset: assets/fonts/Montserrat-Regular.ttf
+
+flutter:
+
+  uses-material-design: true
+  assets:
+    - assets/images/default_profile.jpg
+    - assets/images/google_logo.png
+    - assets/images/registro_responsavel.png
+    - assets/images/registro_idoso.png
+    - assets/images/logo.png
+    - assets/images/Carrosel1.png
+    - assets/images/Carrosel2.png
+    - assets/images/Carrosel3.png
+    - assets/images/Carrosel4.png
+    - assets/images/Background.png
+    - assets/images/Background2.png
+    - assets/images/Background3.png
+    - assets/images/MariaSilva.jpg
+    - assets/images/AnaCosta.jpg
+    - assets/images/JoaoSouza.jpg
+    - assets/videos/background.mp4
+    - assets/videos/background2.mp4
