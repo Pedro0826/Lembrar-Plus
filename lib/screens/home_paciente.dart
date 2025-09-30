@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:reorderable_grid/reorderable_grid.dart';
-import 'idoso_info.dart';
+import 'paciente_info.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'dart:io';

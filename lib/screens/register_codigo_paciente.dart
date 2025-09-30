@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../services/firestore_service.dart';
-import 'register_idoso_resto.dart';
+import 'register_paciente_resto.dart';
 import '../services/auth_service.dart';
 
 class RegisterCodigoIdosoPage extends StatefulWidget {
@@ -42,7 +42,7 @@ class _RegisterCodigoIdosoPageState extends State<RegisterCodigoIdosoPage> {
     final codigo = codigoController.text.trim();
     if (codigo.isEmpty) {
       setState(() {
-        errorMsg = 'Digite o código do idoso.';
+        errorMsg = 'Digite o código do paciente.';
         isLoading = false;
       });
       return;
@@ -51,7 +51,7 @@ class _RegisterCodigoIdosoPageState extends State<RegisterCodigoIdosoPage> {
     final idosoSnap = await firestore.getIdosoByCodigo(codigo);
     if (idosoSnap == null) {
       setState(() {
-        errorMsg = 'Idoso não encontrado.';
+        errorMsg = 'Paciente não encontrado.';
         isLoading = false;
       });
       return;
@@ -107,7 +107,7 @@ class _RegisterCodigoIdosoPageState extends State<RegisterCodigoIdosoPage> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text(
-          'Cadastrar idoso por código',
+          'Cadastrar paciente por código',
           style: TextStyle(
             color: Color(0xFF3A7CA5),
             fontWeight: FontWeight.bold,
@@ -123,7 +123,7 @@ class _RegisterCodigoIdosoPageState extends State<RegisterCodigoIdosoPage> {
           children: [
             TextField(
               controller: codigoController,
-              decoration: campoDecoration('Código do idoso'),
+              decoration: campoDecoration('Código do paciente'),
             ),
             if (errorMsg != null)
               Padding(
@@ -147,7 +147,7 @@ class _RegisterCodigoIdosoPageState extends State<RegisterCodigoIdosoPage> {
               ),
               child: isLoading
                   ? const CircularProgressIndicator(color: Colors.white)
-                  : const Text('Vincular idoso'),
+                  : const Text('Vincular paciente'),
             ),
           ],
         ),

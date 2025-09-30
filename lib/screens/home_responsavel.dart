@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:circular_menu/circular_menu.dart';
-import 'idoso_page.dart';
+import 'paciente_page.dart';
 
 class HomeResponsavel extends StatefulWidget {
   const HomeResponsavel({super.key});
@@ -73,7 +73,7 @@ class _HomeResponsavelState extends State<HomeResponsavel> {
       });
     } catch (e) {
       setState(() {
-        errorMsg = "Erro ao carregar idosos.";
+        errorMsg = "Erro ao carregar pacientes.";
         isLoading = false;
       });
     }
@@ -198,7 +198,7 @@ class _HomeResponsavelState extends State<HomeResponsavel> {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 const Text(
-                                  "Você ainda não tem idosos cadastrados.",
+                                  "Você ainda não tem pacientes cadastrados.",
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                     fontSize: 18,

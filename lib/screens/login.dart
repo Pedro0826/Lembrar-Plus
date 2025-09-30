@@ -67,7 +67,7 @@ class _LoginPageState extends State<LoginPage> {
           Navigator.pushReplacementNamed(context, '/home_idoso');
           return;
         }
-        mostrarErro('Usuário não encontrado como responsável ou idoso.');
+        mostrarErro('Usuário não encontrado como responsável ou paciente.');
       }
     } catch (e) {
       mostrarErro('Falha no login: ${e.toString()}');
@@ -87,7 +87,7 @@ class _LoginPageState extends State<LoginPage> {
           Navigator.pushReplacementNamed(context, '/home_idoso');
           return;
         }
-        mostrarErro('Usuário não encontrado como responsável ou idoso.');
+        mostrarErro('Usuário não encontrado como responsável ou paciente.');
       }
     } catch (e) {
       mostrarErro('Falha no login com Google: ${e.toString()}');
