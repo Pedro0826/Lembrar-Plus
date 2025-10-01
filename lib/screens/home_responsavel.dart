@@ -340,6 +340,67 @@ class _HomeResponsavelState extends State<HomeResponsavel> {
                       style: const TextStyle(color: Colors.red, fontSize: 14),
                     ),
                   ),
+                // Aviso de nenhum paciente logo abaixo do cabeçalho
+                if (!isLoading && idosos.isEmpty)
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 20,
+                      horizontal: 24,
+                    ),
+                    margin: const EdgeInsets.only(bottom: 16),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.92),
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.08),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Text(
+                          "Você ainda não tem pacientes cadastrados.",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF3A7CA5),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        SizedBox(
+                          width: double.infinity,
+                          height: 48,
+                          child: ElevatedButton.icon(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF6DBE81),
+                              foregroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              textStyle: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 17,
+                              ),
+                            ),
+                            icon: const Icon(Icons.add),
+                            label: const Text("Cadastrar paciente"),
+                            onPressed: () async {
+                              await Navigator.pushNamed(
+                                context,
+                                '/register_codigo_paciente',
+                              );
+                              _loadIdososVinculados();
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 // Loading indicator
                 if (isLoading)
                   const Expanded(
@@ -350,77 +411,6 @@ class _HomeResponsavelState extends State<HomeResponsavel> {
                   Expanded(
                     child: Column(
                       children: [
-                        // Aviso de nenhum paciente na parte superior
-                        if (idosos.isEmpty)
-                          Expanded(
-                            child: Center(
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 32,
-                                  horizontal: 24,
-                                ),
-                                margin: const EdgeInsets.symmetric(
-                                  horizontal: 16,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.92),
-                                  borderRadius: BorderRadius.circular(20),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withOpacity(0.08),
-                                      blurRadius: 8,
-                                      offset: const Offset(0, 2),
-                                    ),
-                                  ],
-                                ),
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    const Text(
-                                      "Você ainda não tem pacientes cadastrados.",
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                        color: Color(0xFF3A7CA5),
-                                      ),
-                                    ),
-                                    const SizedBox(height: 24),
-                                    SizedBox(
-                                      width: double.infinity,
-                                      height: 48,
-                                      child: ElevatedButton.icon(
-                                        style: ElevatedButton.styleFrom(
-                                          backgroundColor: const Color(
-                                            0xFF6DBE81,
-                                          ),
-                                          foregroundColor: Colors.white,
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(
-                                              12,
-                                            ),
-                                          ),
-                                          textStyle: const TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 17,
-                                          ),
-                                        ),
-                                        icon: const Icon(Icons.add),
-                                        label: const Text("Cadastrar paciente"),
-                                        onPressed: () async {
-                                          await Navigator.pushNamed(
-                                            context,
-                                            '/register_codigo_paciente',
-                                          );
-                                          _loadIdososVinculados();
-                                        },
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
                         // Lista de pacientes quando há pacientes
                         if (idosos.isNotEmpty)
                           Expanded(
