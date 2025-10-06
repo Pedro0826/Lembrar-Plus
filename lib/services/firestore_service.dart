@@ -198,16 +198,26 @@ class FirestoreService {
     required String idosoId,
     required String nome,
     required String dosagem,
-    required int prazoDias,
+    required String unidadeDosagem,
+    required Timestamp dataInicio, // Agora é Timestamp
+    Timestamp? dataFim, // Opcional
+    String? horarioInicio, // String no formato "HH:mm"
+    required int periodo,
+    required String unidadePeriodo,
     required String observacoes,
   }) async {
-    await _db.collection('medicamentos').add({
+    await FirebaseFirestore.instance.collection('medicamentos').add({
       'idosoId': idosoId,
       'nome': nome,
       'dosagem': dosagem,
-      'prazoDias': prazoDias,
+      'unidadeDosagem': unidadeDosagem,
+      'dataInicio': dataInicio, // Salva como Timestamp
+      'dataFim': dataFim, // Salva como Timestamp ou null
+      'horarioInicio': horarioInicio, // Salva como String
+      'periodo': periodo,
+      'unidadePeriodo': unidadePeriodo,
       'observacoes': observacoes,
-      'createdAt': FieldValue.serverTimestamp(),
+      'createdAt': FieldValue.serverTimestamp(), // Timestamp gerado no servidor
     });
   }
 
@@ -234,19 +244,24 @@ class FirestoreService {
     String idosoId,
   ) async {
     // Busca o documento do responsável
-    final responsavelDoc = await _db.collection('responsavel').doc(responsavelId).get();
-    List<dynamic> idososVinculados = responsavelDoc.data()?['idosos_vinculados'] ?? [];
-    
+    final responsavelDoc = await _db
+        .collection('responsavel')
+        .doc(responsavelId)
+        .get();
+    List<dynamic> idososVinculados =
+        responsavelDoc.data()?['idosos_vinculados'] ?? [];
+
     // Remove o idoso da lista do responsável
     idososVinculados.remove(idosoId);
-    
+
     // Busca o documento do idoso
     final idosoDoc = await _db.collection('idoso').doc(idosoId).get();
-    List<dynamic> responsaveisVinculados = idosoDoc.data()?['responsaveis'] ?? [];
-    
+    List<dynamic> responsaveisVinculados =
+        idosoDoc.data()?['responsaveis'] ?? [];
+
     // Remove o responsável da lista do idoso
     responsaveisVinculados.remove(responsavelId);
-    
+
     // Atualiza ambos os documentos simultaneamente
     await Future.wait([
       _db.collection('responsavel').doc(responsavelId).update({
