@@ -1,5 +1,5 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-// ...existing code...
 import 'screens/welcome.dart';
 import 'screens/login.dart';
 import 'screens/register_principal.dart';
@@ -15,8 +15,29 @@ import 'screens/register_codigo_paciente.dart';
 import 'screens/medicamentos.dart';
 import 'screens/register_medicamentos.dart';
 
-class App extends StatelessWidget {
-  const App({super.key});
+class App extends StatefulWidget {
+  const App({Key? key}) : super(key: key);
+
+  @override
+  State<App> createState() => _AppState();
+}
+
+class _AppState extends State<App> {
+  @override
+  void initState() {
+    super.initState();
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      if (message.notification != null) {
+        showDialog(
+          context: context,
+          builder: (_) => AlertDialog(
+            title: Text(message.notification!.title ?? ''),
+            content: Text(message.notification!.body ?? ''),
+          ),
+        );
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
