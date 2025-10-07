@@ -9,6 +9,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  timezone: ^0.10.1
   carousel_slider: ^5.1.1
   cupertino_icons: ^1.0.8
   firebase_core: ^4.0.0
@@ -22,6 +23,8 @@ dependencies:
   video_player: ^2.8.2
   image_picker: ^1.0.7
   firebase_storage: ^13.0.2
+  flutter_local_notifications: ^19.4.2
+  firebase_messaging: ^16.0.2      
 
 dev_dependencies:
   flutter_test:
