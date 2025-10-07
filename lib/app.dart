@@ -1,4 +1,3 @@
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'screens/welcome.dart';
 import 'screens/login.dart';
@@ -26,17 +25,6 @@ class _AppState extends State<App> {
   @override
   void initState() {
     super.initState();
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      if (message.notification != null) {
-        showDialog(
-          context: context,
-          builder: (_) => AlertDialog(
-            title: Text(message.notification!.title ?? ''),
-            content: Text(message.notification!.body ?? ''),
-          ),
-        );
-      }
-    });
   }
 
   @override

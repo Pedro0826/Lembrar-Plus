@@ -1,5 +1,4 @@
 import '../services/firestore_service.dart';
-import '../services/notification_service.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -51,8 +50,6 @@ class _RegisterMedicamentosPageState extends State<RegisterMedicamentosPage> {
     );
   }
 
-  // ...existing code...
-
   Future<void> adicionarMedicamento() async {
     final nome = nomeController.text.trim();
     final dosagem = dosagemController.text.trim();
@@ -92,48 +89,6 @@ class _RegisterMedicamentosPageState extends State<RegisterMedicamentosPage> {
         unidadePeriodo: unidadePeriodo,
         observacoes: observacoes,
       );
-
-      // Agendar notificações recorrentes
-      // Calcula todos os horários das doses futuras
-      DateTime inicio = DateTime(
-        dataInicio!.year,
-        dataInicio!.month,
-        dataInicio!.day,
-        horarioInicio!.hour,
-        horarioInicio!.minute,
-      );
-      DateTime? fim = temDataFim && dataFim != null ? dataFim : null;
-      int intervalo = periodo;
-      int maxNotificacoes = 100; // Limite de segurança
-      int count = 0;
-      DateTime atual = inicio;
-      while ((fim == null || atual.isBefore(fim) || atual.isAtSameMomentAs(fim)) && count < maxNotificacoes) {
-        await ServicoNotificacao.agendarNotificacao(
-          id: atual.millisecondsSinceEpoch % 1000000000, // id único
-          titulo: 'Hora de tomar $nome',
-          mensagem: 'Dosagem: $dosagem $unidadeDosagem',
-          horarioAgendado: atual,
-        );
-        // Avança para o próximo horário
-        switch (unidadePeriodo) {
-          case 'horas':
-            atual = atual.add(Duration(hours: intervalo));
-            break;
-          case 'dias':
-            atual = atual.add(Duration(days: intervalo));
-            break;
-          case 'semanas':
-            atual = atual.add(Duration(days: 7 * intervalo));
-            break;
-          case 'meses':
-            atual = DateTime(atual.year, atual.month + intervalo, atual.day, atual.hour, atual.minute);
-            break;
-          default:
-            atual = atual.add(Duration(hours: intervalo));
-        }
-        count++;
-      }
-
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Medicamento salvo com sucesso!')),
@@ -376,35 +331,6 @@ class _RegisterMedicamentosPageState extends State<RegisterMedicamentosPage> {
                 child: isLoading
                     ? const CircularProgressIndicator(color: Colors.white)
                     : const Text('Salvar'),
-              ),
-              const SizedBox(height: 16),
-
-              // Botão Testar Notificação
-              ElevatedButton(
-                onPressed: isLoading
-                    ? null
-                    : () async {
-                        final agora = DateTime.now().add(const Duration(seconds: 10));
-                        await ServicoNotificacao.agendarNotificacao(
-                          id: DateTime.now().millisecondsSinceEpoch % 1000000000,
-                          titulo: 'Teste de Notificação',
-                          mensagem: 'Esta é uma notificação de teste agendada para 10 segundos.',
-                          horarioAgendado: agora,
-                        );
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Notificação de teste agendada para daqui a 10 segundos!')),
-                        );
-                      },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.orange,
-                  foregroundColor: Colors.white,
-                  minimumSize: const Size(double.infinity, 48),
-                  shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(10)),
-                  ),
-                  elevation: 0,
-                ),
-                child: const Text('Testar Notificação'),
               ),
             ],
           ),

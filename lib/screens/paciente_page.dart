@@ -4,7 +4,6 @@ import 'package:circular_menu/circular_menu.dart';
 import 'paciente_info.dart';
 import 'medicamentos.dart';
 import 'ligar_paciente.dart';
-import 'notificacoes_responsavel.dart';
 
 class IdosoPage extends StatefulWidget {
   final String idosoId;
@@ -207,39 +206,6 @@ class _IdosoPageState extends State<IdosoPage> {
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFFE57373),
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(18),
-                          ),
-                          textStyle: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 22),
-                    SizedBox(
-                      width: 290,
-                      height: 56,
-                      child: ElevatedButton.icon(
-                        icon: const Icon(
-                          Icons.chat_bubble_outline,
-                          color: Colors.white,
-                        ),
-                        label: const Text('Notificações'),
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => NotificacoesResponsavelPage(
-                                idosoId: widget.idosoId,
-                              ),
-                            ),
-                          );
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFFF9800),
                           foregroundColor: Colors.white,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(18),
