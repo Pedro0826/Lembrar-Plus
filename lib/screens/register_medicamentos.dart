@@ -1,9 +1,7 @@
 import '../services/firestore_service.dart';
+import '../services/notification_service.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:timezone/data/latest.dart' as tz;
-import 'package:timezone/timezone.dart' as tz;
 
 class RegisterMedicamentosPage extends StatefulWidget {
   final String idosoId;
@@ -30,24 +28,10 @@ class _RegisterMedicamentosPageState extends State<RegisterMedicamentosPage> {
 
   final FirestoreService _firestoreService = FirestoreService();
 
-  final FlutterLocalNotificationsPlugin _localNotificationsPlugin =
-      FlutterLocalNotificationsPlugin();
 
   @override
   void initState() {
     super.initState();
-    _initializeLocalNotifications();
-    tz.initializeTimeZones(); // Inicializa os timezones
-  }
-
-  void _initializeLocalNotifications() async {
-    const AndroidInitializationSettings androidSettings =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
-    const InitializationSettings initSettings = InitializationSettings(
-      android: androidSettings,
-    );
-
-    await _localNotificationsPlugin.initialize(initSettings);
   }
 
   InputDecoration campoDecoration(String label) {
@@ -67,128 +51,7 @@ class _RegisterMedicamentosPageState extends State<RegisterMedicamentosPage> {
     );
   }
 
-  Future<void> testarNotificacao() async {
-    const AndroidNotificationDetails androidDetails =
-        AndroidNotificationDetails(
-          'test_channel', // ID do canal
-          'Testes', // Nome do canal
-          importance: Importance.high,
-          priority: Priority.high,
-        );
-
-    const NotificationDetails notificationDetails = NotificationDetails(
-      android: androidDetails,
-    );
-
-    await _localNotificationsPlugin.show(
-      0, // ID da notificação
-      'Teste de Notificação', // Título
-      'Esta é uma notificação de teste.', // Corpo
-      notificationDetails,
-    );
-  }
-
-  Future<void> testarNotificacaoAgendada() async {
-    const AndroidNotificationDetails androidDetails =
-        AndroidNotificationDetails(
-          'test_channel', // ID do canal
-          'Testes', // Nome do canal
-          importance: Importance.high,
-          priority: Priority.high,
-        );
-
-    const NotificationDetails notificationDetails = NotificationDetails(
-      android: androidDetails,
-    );
-
-    final DateTime horario = DateTime.now().add(const Duration(minutes: 1));
-
-    await _localNotificationsPlugin.zonedSchedule(
-      1, // ID único para a notificação
-      'Teste de Notificação Agendada', // Título
-      'Esta notificação foi agendada para 1 minuto no futuro.', // Corpo
-      tz.TZDateTime.from(horario, tz.local),
-      notificationDetails,
-      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-      matchDateTimeComponents: DateTimeComponents.time,
-    );
-  }
-
-  Future<void> _agendarNotificacoes({
-    required String nome,
-    required DateTime dataInicio,
-    required TimeOfDay horarioInicio,
-    required int periodo,
-    required String unidadePeriodo,
-    DateTime? dataFim,
-  }) async {
-    // Converter TimeOfDay para DateTime
-    DateTime horarioInicial = DateTime(
-      dataInicio.year,
-      dataInicio.month,
-      dataInicio.day,
-      horarioInicio.hour,
-      horarioInicio.minute,
-    );
-
-    // Determinar o intervalo em horas
-    int intervaloHoras;
-    switch (unidadePeriodo) {
-      case 'horas':
-        intervaloHoras = periodo;
-        break;
-      case 'dias':
-        intervaloHoras = periodo * 24;
-        break;
-      case 'semanas':
-        intervaloHoras = periodo * 24 * 7;
-        break;
-      case 'meses':
-        intervaloHoras = periodo * 24 * 30; // Aproximação para meses
-        break;
-      default:
-        intervaloHoras = 0;
-    }
-
-    if (intervaloHoras <= 0) return;
-
-    // Agendar notificações até a data final (ou por 30 dias se não houver data final)
-    DateTime limite = dataFim ?? dataInicio.add(const Duration(days: 30));
-    while (horarioInicial.isBefore(limite)) {
-      await _agendarNotificacaoLocal(horarioInicial, nome);
-      horarioInicial = horarioInicial.add(Duration(hours: intervaloHoras));
-    }
-  }
-
-  Future<void> _agendarNotificacaoLocal(
-    DateTime horario,
-    String medicamento,
-  ) async {
-    const AndroidNotificationDetails androidDetails =
-        AndroidNotificationDetails(
-          'medicamentos_channel',
-          'Medicamentos',
-          importance: Importance.high,
-          priority: Priority.high,
-        );
-
-    const NotificationDetails notificationDetails = NotificationDetails(
-      android: androidDetails,
-    );
-
-    await _localNotificationsPlugin.zonedSchedule(
-      horario.hashCode, // ID único para cada notificação
-      'Hora do medicamento',
-      'Está na hora de tomar $medicamento',
-      tz.TZDateTime.from(
-        horario,
-        tz.local,
-      ), // Certifique-se de que 'horario' é um DateTime válido
-      notificationDetails,
-      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-      matchDateTimeComponents: DateTimeComponents.time,
-    );
-  }
+  // ...existing code...
 
   Future<void> adicionarMedicamento() async {
     final nome = nomeController.text.trim();
@@ -230,15 +93,47 @@ class _RegisterMedicamentosPageState extends State<RegisterMedicamentosPage> {
         observacoes: observacoes,
       );
 
-      // Agendar notificações
-      await _agendarNotificacoes(
-        nome: nome,
-        dataInicio: dataInicio!,
-        horarioInicio: horarioInicio!,
-        periodo: periodo,
-        unidadePeriodo: unidadePeriodo,
-        dataFim: temDataFim ? dataFim : null,
+      // Agendar notificações recorrentes
+      // Calcula todos os horários das doses futuras
+      DateTime inicio = DateTime(
+        dataInicio!.year,
+        dataInicio!.month,
+        dataInicio!.day,
+        horarioInicio!.hour,
+        horarioInicio!.minute,
       );
+      DateTime? fim = temDataFim && dataFim != null ? dataFim : null;
+      int intervalo = periodo;
+      int maxNotificacoes = 100; // Limite de segurança
+      int count = 0;
+      DateTime atual = inicio;
+      while ((fim == null || atual.isBefore(fim) || atual.isAtSameMomentAs(fim)) && count < maxNotificacoes) {
+        await ServicoNotificacao.agendarNotificacao(
+          id: atual.millisecondsSinceEpoch % 1000000000, // id único
+          titulo: 'Hora de tomar $nome',
+          mensagem: 'Dosagem: $dosagem $unidadeDosagem',
+          horarioAgendado: atual,
+        );
+        // Avança para o próximo horário
+        switch (unidadePeriodo) {
+          case 'horas':
+            atual = atual.add(Duration(hours: intervalo));
+            break;
+          case 'dias':
+            atual = atual.add(Duration(days: intervalo));
+            break;
+          case 'semanas':
+            atual = atual.add(Duration(days: 7 * intervalo));
+            break;
+          case 'meses':
+            atual = DateTime(atual.year, atual.month + intervalo, atual.day, atual.hour, atual.minute);
+            break;
+          default:
+            atual = atual.add(Duration(hours: intervalo));
+        }
+        count++;
+      }
+
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Medicamento salvo com sucesso!')),
@@ -465,33 +360,6 @@ class _RegisterMedicamentosPageState extends State<RegisterMedicamentosPage> {
                 maxLines: 3, // Permite que o usuário digite várias linhas
               ),
               const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: testarNotificacao,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF66B2B2),
-                  foregroundColor: Colors.white,
-                  minimumSize: const Size(double.infinity, 48),
-                  shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(10)),
-                  ),
-                  elevation: 0,
-                ),
-                child: const Text('Testar Notificação'),
-              ),
-
-              ElevatedButton(
-                onPressed: testarNotificacaoAgendada,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF66B2B2),
-                  foregroundColor: Colors.white,
-                  minimumSize: const Size(double.infinity, 48),
-                  shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(10)),
-                  ),
-                  elevation: 0,
-                ),
-                child: const Text('Testar Notificação Agendada'),
-              ),
 
               // Botão Salvar
               ElevatedButton(
@@ -508,6 +376,35 @@ class _RegisterMedicamentosPageState extends State<RegisterMedicamentosPage> {
                 child: isLoading
                     ? const CircularProgressIndicator(color: Colors.white)
                     : const Text('Salvar'),
+              ),
+              const SizedBox(height: 16),
+
+              // Botão Testar Notificação
+              ElevatedButton(
+                onPressed: isLoading
+                    ? null
+                    : () async {
+                        final agora = DateTime.now().add(const Duration(seconds: 10));
+                        await ServicoNotificacao.agendarNotificacao(
+                          id: DateTime.now().millisecondsSinceEpoch % 1000000000,
+                          titulo: 'Teste de Notificação',
+                          mensagem: 'Esta é uma notificação de teste agendada para 10 segundos.',
+                          horarioAgendado: agora,
+                        );
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Notificação de teste agendada para daqui a 10 segundos!')),
+                        );
+                      },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.orange,
+                  foregroundColor: Colors.white,
+                  minimumSize: const Size(double.infinity, 48),
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(10)),
+                  ),
+                  elevation: 0,
+                ),
+                child: const Text('Testar Notificação'),
               ),
             ],
           ),
