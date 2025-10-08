@@ -40,7 +40,13 @@ class _AppState extends State<App> {
         '/register_responsavel': (context) => const RegisterResponsavelPage(),
         '/register_responsavel_resto': (context) =>
             const RegisterResponsavelRestoPage(nome: '', email: ''),
-        '/home_paciente': (context) => const HomeIdoso(),
+        '/home_paciente': (context) {
+          final args =
+              ModalRoute.of(context)?.settings.arguments
+                  as Map<String, dynamic>?;
+          final idosoId = args?['idosoId'] ?? '';
+          return HomeIdoso(idosoId: idosoId);
+        },
         '/home_responsavel': (context) => const HomeResponsavel(),
         '/register_codigo_paciente': (context) =>
             const RegisterCodigoIdosoPage(),

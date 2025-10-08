@@ -221,6 +221,26 @@ class FirestoreService {
     });
   }
 
+  Future<void> criarNotificacao({
+    required String codigoIdoso,
+    required String conteudo,
+    required DateTime hora,
+    required String importancia,
+    required bool status,
+  }) async {
+    try {
+      await FirebaseFirestore.instance.collection('notificacao').add({
+        'codigoIdoso': codigoIdoso,
+        'conteudo': conteudo,
+        'hora': Timestamp.fromDate(hora),
+        'importancia': importancia,
+        'status': status,
+      });
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   Future<void> addCalendarioMedicamento({
     required int codigoCalendario,
     required int codigoMedicamento,
