@@ -25,41 +25,19 @@ class _HomeIdosoState extends State<HomeIdoso> {
     required String importancia,
   }) async {
     try {
-      print('🔹 [DEBUG] Iniciando enviarNotificacao...');
-      final codigoIdoso = widget.idosoId;
-      print('🔹 [DEBUG] código do idoso: $codigoIdoso');
-
-      // Buscar o documento do idoso
-      print('🔹 [DEBUG] Buscando documento do idoso...');
+      // Buscar o documento do idoso pelo UID
       final idosoSnapshot = await FirebaseFirestore.instance
           .collection('idoso')
-          .doc(codigoIdoso)
+          .doc(widget.idosoId)
           .get();
 
       if (!idosoSnapshot.exists) {
-        print('⚠️ Documento do idoso não encontrado.');
         throw Exception('Documento do idoso não encontrado.');
       }
 
-      final idosoData = idosoSnapshot.data();
-      print('🔹 [DEBUG] Dados do idoso: $idosoData');
+      // Usar o id do documento (UID do paciente) como codigoIdoso
+      final codigoIdoso = idosoSnapshot.id;
 
-      // Obter a lista de emails dos responsáveis
-      final responsaveisEmails = (idosoData?['responsaveis'] as List<dynamic>?)
-          ?.map((email) => email as String)
-          .toList();
-
-      if (responsaveisEmails == null || responsaveisEmails.isEmpty) {
-        print('⚠️ Nenhum responsável encontrado para este idoso.');
-        throw Exception('Nenhum responsável encontrado para este idoso.');
-      }
-
-      print(
-        '🔹 [DEBUG] Lista de e-mails dos responsáveis: $responsaveisEmails',
-      );
-
-      // Criar uma única notificação
-      print('🔹 [DEBUG] Criando notificação...');
       await _firestoreService.criarNotificacao(
         codigoIdoso: codigoIdoso,
         conteudo: conteudo,
@@ -67,19 +45,13 @@ class _HomeIdosoState extends State<HomeIdoso> {
         importancia: importancia,
         status: false,
       );
-      print('✅ [DEBUG] Notificação criada com sucesso.');
-
-      print('✅ [DEBUG] Função enviarNotificacao finalizada com sucesso.');
-    } catch (e, stack) {
-      print('❌ [ERRO] enviarNotificacao falhou: $e');
-      print('📜 Stack trace: $stack');
+    } catch (e) {
       rethrow;
     }
   }
 
   @override
   void initState() {
-    print('🟢 ID do idoso logado: ${widget.idosoId}');
     super.initState();
     _actions = [
       _IdosoAction(
@@ -88,7 +60,6 @@ class _HomeIdosoState extends State<HomeIdoso> {
         label: 'Preciso de ajuda!',
         onTap: (ctx) async {
           try {
-            print('🔹 [DEBUG] Botão "Preciso de ajuda!" clicado.');
             await enviarNotificacao(
               conteudo: 'Preciso de ajuda!',
               importancia: 'Extrema',
@@ -97,7 +68,6 @@ class _HomeIdosoState extends State<HomeIdoso> {
               const SnackBar(content: Text('Notificação de ajuda enviada!')),
             );
           } catch (e) {
-            print('❌ [ERRO] Falha ao enviar notificação: $e');
             ScaffoldMessenger.of(ctx).showSnackBar(
               const SnackBar(content: Text('Erro ao enviar notificação!')),
             );
@@ -462,6 +432,76 @@ class _HomeIdosoState extends State<HomeIdoso> {
                           ),
                         ),
                       ),
+                    // Botões auxiliares grandes na parte inferior
+                    Positioned(
+                      left: 32,
+                      right: 32,
+                      bottom: 24,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.white,
+                              foregroundColor: Colors.grey,
+                              shape: const CircleBorder(),
+                              elevation: 4,
+                              padding: const EdgeInsets.all(18),
+                            ),
+                            onPressed: () async {
+                              await AuthService().signOut();
+                              if (context.mounted) {
+                                Navigator.pushNamedAndRemoveUntil(
+                                  context,
+                                  '/login',
+                                  (route) => false,
+                                );
+                              }
+                            },
+                            child: const Icon(Icons.logout, size: 36),
+                          ),
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.white,
+                              foregroundColor: Color(0xFF7C4DFF),
+                              shape: const CircleBorder(),
+                              elevation: 4,
+                              padding: const EdgeInsets.all(18),
+                            ),
+                            onPressed: () {
+                              showDialog(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                  title: const Text(
+                                    'Ajuda',
+                                    style: TextStyle(
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.bold,
+                                      color: Color(0xFFD32F2F),
+                                    ),
+                                  ),
+                                  content: const Text(
+                                    'Toque em um dos botões para avisar seu responsável.\n'
+                                    'Cada botão tem uma função diferente e envia uma notificação apropriada.',
+                                    style: TextStyle(fontSize: 20),
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () => Navigator.pop(context),
+                                      child: const Text(
+                                        'OK',
+                                        style: TextStyle(fontSize: 18),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                            child: const Icon(Icons.info_outline, size: 36),
+                          ),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -471,7 +511,7 @@ class _HomeIdosoState extends State<HomeIdoso> {
       },
     );
   }
-
+      
   Future<Map<String, dynamic>?> _getIdosoData() async {
     try {
       final user = await AuthService().getCurrentUser();

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:circular_menu/circular_menu.dart';
 import 'paciente_info.dart';
@@ -61,7 +60,7 @@ class _IdosoPageState extends State<IdosoPage> {
             ),
           ),
           // Cabeçalho menor, mais longe do topo, nome ao lado de "PACIENTE:"
-          if (!isLoading && fotoUrl != null && fotoUrl.isNotEmpty)
+          if (!isLoading)
             Positioned(
               top: 64, // mais longe do topo/câmera
               left: 24,
@@ -72,9 +71,14 @@ class _IdosoPageState extends State<IdosoPage> {
                   CircleAvatar(
                     radius: 34, // Aumentado
                     backgroundColor: Colors.white,
-                    backgroundImage: isAsset
-                        ? AssetImage(fotoUrl)
-                        : NetworkImage(fotoUrl) as ImageProvider,
+                    backgroundImage: (fotoUrl != null && fotoUrl.isNotEmpty)
+                        ? (isAsset
+                            ? AssetImage(fotoUrl)
+                            : NetworkImage(fotoUrl) as ImageProvider)
+                        : null,
+                    child: (fotoUrl == null || fotoUrl.isEmpty)
+                        ? const Icon(Icons.person, color: Colors.grey, size: 32)
+                        : null,
                   ),
                   const SizedBox(width: 18), // Espaço um pouco maior
                   Expanded(
