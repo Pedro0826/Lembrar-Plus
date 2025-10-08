@@ -64,7 +64,11 @@ class _LoginPageState extends State<LoginPage> {
           return;
         }
         if (await firestore.isIdosoByEmail(user.email ?? '')) {
-          Navigator.pushReplacementNamed(context, '/home_paciente');
+          Navigator.pushReplacementNamed(
+            context,
+            '/home_paciente',
+            arguments: {'idosoId': user.uid},
+          );
           return;
         }
         mostrarErro('Usuário não encontrado como responsável ou paciente.');
@@ -84,7 +88,11 @@ class _LoginPageState extends State<LoginPage> {
           return;
         }
         if (await firestore.isIdosoByEmail(user.email ?? '')) {
-          Navigator.pushReplacementNamed(context, '/home_paciente');
+          Navigator.pushReplacementNamed(
+            context,
+            '/home_paciente',
+            arguments: {'idosoId': user.uid},
+          );
           return;
         }
         mostrarErro('Usuário não encontrado como responsável ou paciente.');
