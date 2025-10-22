@@ -2,9 +2,17 @@ import '../services/firestore_service.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+
 class RegisterMedicamentosPage extends StatefulWidget {
   final String idosoId;
-  const RegisterMedicamentosPage({super.key, required this.idosoId});
+  final String? medicamentoId;
+  final Map<String, dynamic>? medicamentoData;
+  const RegisterMedicamentosPage({
+    super.key,
+    required this.idosoId,
+    this.medicamentoId,
+    this.medicamentoData,
+  });
 
   @override
   State<RegisterMedicamentosPage> createState() =>
@@ -31,6 +39,41 @@ class _RegisterMedicamentosPageState extends State<RegisterMedicamentosPage> {
   @override
   void initState() {
     super.initState();
+    // Se for edição, preenche os campos
+    if (widget.medicamentoData != null) {
+      final data = widget.medicamentoData!;
+      nomeController.text = data['nome'] ?? '';
+      dosagemController.text = data['dosagem']?.toString() ?? '';
+      periodoController.text = data['periodo']?.toString() ?? '';
+      observacoesController.text = data['observacoes'] ?? '';
+      unidadeDosagem = data['unidadeDosagem'] ?? 'mg';
+      unidadePeriodo = data['unidadePeriodo'] ?? 'horas';
+      if (data['dataInicio'] != null) {
+        if (data['dataInicio'] is Timestamp) {
+          dataInicio = (data['dataInicio'] as Timestamp).toDate();
+        } else if (data['dataInicio'] is DateTime) {
+          dataInicio = data['dataInicio'];
+        }
+      }
+      if (data['dataFim'] != null) {
+        temDataFim = true;
+        if (data['dataFim'] is Timestamp) {
+          dataFim = (data['dataFim'] as Timestamp).toDate();
+        } else if (data['dataFim'] is DateTime) {
+          dataFim = data['dataFim'];
+        }
+      }
+      if (data['horarioInicio'] != null && data['horarioInicio'] is String) {
+        final parts = (data['horarioInicio'] as String).split(':');
+        if (parts.length == 2) {
+          final hour = int.tryParse(parts[0]);
+          final minute = int.tryParse(parts[1]);
+          if (hour != null && minute != null) {
+            horarioInicio = TimeOfDay(hour: hour, minute: minute);
+          }
+        }
+      }
+    }
   }
 
   InputDecoration campoDecoration(String label) {
@@ -73,36 +116,71 @@ class _RegisterMedicamentosPageState extends State<RegisterMedicamentosPage> {
     });
 
     try {
-      await _firestoreService.addMedicamento(
-        idosoId: widget.idosoId,
-        nome: nome,
-        dosagem: dosagem,
-        unidadeDosagem: unidadeDosagem,
-        dataInicio: Timestamp.fromDate(dataInicio!),
-        dataFim: temDataFim && dataFim != null
-            ? Timestamp.fromDate(dataFim!)
-            : null,
-        horarioInicio: horarioInicio != null
-            ? '${horarioInicio!.hour.toString().padLeft(2, '0')}:${horarioInicio!.minute.toString().padLeft(2, '0')}'
-            : null,
-        periodo: periodo,
-        unidadePeriodo: unidadePeriodo,
-        observacoes: observacoes,
-      );
+      if (widget.medicamentoId != null) {
+        // Atualizar medicamento existente
+        await FirebaseFirestore.instance
+            .collection('medicamentos')
+            .doc(widget.medicamentoId)
+            .update({
+          'idosoId': widget.idosoId,
+          'nome': nome,
+          'dosagem': dosagem,
+          'unidadeDosagem': unidadeDosagem,
+          'dataInicio': Timestamp.fromDate(dataInicio!),
+          'dataFim': temDataFim && dataFim != null
+              ? Timestamp.fromDate(dataFim!)
+              : null,
+          'horarioInicio': horarioInicio != null
+              ? '${horarioInicio!.hour.toString().padLeft(2, '0')}:${horarioInicio!.minute.toString().padLeft(2, '0')}'
+              : null,
+          'periodo': periodo,
+          'unidadePeriodo': unidadePeriodo,
+          'observacoes': observacoes,
+        }).timeout(const Duration(seconds: 3), onTimeout: () {
+          return;
+        });
+      } else {
+        // Criar novo medicamento
+        await _firestoreService.addMedicamento(
+          idosoId: widget.idosoId,
+          nome: nome,
+          dosagem: dosagem,
+          unidadeDosagem: unidadeDosagem,
+          dataInicio: Timestamp.fromDate(dataInicio!),
+          dataFim: temDataFim && dataFim != null
+              ? Timestamp.fromDate(dataFim!)
+              : null,
+          horarioInicio: horarioInicio != null
+              ? '${horarioInicio!.hour.toString().padLeft(2, '0')}:${horarioInicio!.minute.toString().padLeft(2, '0')}'
+              : null,
+          periodo: periodo,
+          unidadePeriodo: unidadePeriodo,
+          observacoes: observacoes,
+        ).timeout(const Duration(seconds: 3), onTimeout: () {
+          return;
+        });
+      }
+
+      setState(() {
+        isLoading = false;
+      });
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Medicamento salvo com sucesso!')),
+        SnackBar(
+          content: Text(widget.medicamentoId != null
+              ? 'Medicamento atualizado com sucesso!'
+              : 'Medicamento salvo com sucesso!'),
+        ),
       );
 
       Navigator.pop(context);
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Erro ao salvar: ${e.toString()}')),
-      );
-    } finally {
       setState(() {
         isLoading = false;
       });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Erro ao salvar: ${e.toString()}')),
+      );
     }
   }
 

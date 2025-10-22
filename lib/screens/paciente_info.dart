@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'editar_paciente.dart';
 
 class IdosoInfoPage extends StatelessWidget {
   final String idosoId;
@@ -63,7 +64,7 @@ class IdosoInfoPage extends StatelessWidget {
                 return ListView(
                   padding: const EdgeInsets.all(24.0),
                   children: [
-                    // Cabeçalho com foto e nome
+                    // Cabeçalho com foto, nome e menu de edição
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
@@ -72,9 +73,9 @@ class IdosoInfoPage extends StatelessWidget {
                           backgroundColor: Colors.white,
                           backgroundImage: fotoUrl != null && fotoUrl.isNotEmpty
                               ? (isAsset
-                                        ? AssetImage(fotoUrl)
-                                        : NetworkImage(fotoUrl))
-                                    as ImageProvider
+                                    ? AssetImage(fotoUrl)
+                                    : NetworkImage(fotoUrl))
+                                as ImageProvider
                               : null,
                         ),
                         const SizedBox(width: 18),
@@ -119,6 +120,7 @@ class IdosoInfoPage extends StatelessWidget {
                             ),
                           ),
                         ),
+                        // ...
                       ],
                     ),
                     const SizedBox(height: 32),
@@ -171,6 +173,44 @@ class IdosoInfoPage extends StatelessWidget {
                 Navigator.pop(context);
               },
               child: const Icon(Icons.arrow_back, size: 36),
+            ),
+          ),
+          // Botão editar na parte inferior direita
+          Positioned(
+            right: 32,
+            bottom: 24,
+            child: Builder(
+              builder: (context) => ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white,
+                  foregroundColor: Colors.orange,
+                  shape: const CircleBorder(),
+                  elevation: 4,
+                  padding: const EdgeInsets.all(18),
+                ),
+                onPressed: () async {
+                  // Busca os dados atuais do paciente
+                  final doc = await FirebaseFirestore.instance.collection('idoso').doc(idosoId).get();
+                  final dados = doc.data() ?? {};
+                  if (context.mounted) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => EditarPacientePage(
+                          idosoId: idosoId,
+                          dados: dados,
+                        ),
+                      ),
+                    ).then((value) {
+                      if (value == true) {
+                        // Atualiza a tela após edição
+                        (context as Element).markNeedsBuild();
+                      }
+                    });
+                  }
+                },
+                child: const Icon(Icons.edit, size: 32),
+              ),
             ),
           ),
         ],
