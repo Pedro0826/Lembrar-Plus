@@ -55,6 +55,7 @@ lembrar-plus/
 ├── android/                      # Projeto Android nativo
 ├── assets/                       # Imagens e recursos visuais
 │   ├── images/                   # Imagens utilizadas no app
+│   └── videos/                   # Vídeos utilizados no app
 ├── build/                        # Arquivos gerados na build
 ├── firebase.json                 # Configuração do Firebase para web
 ├── ios/                          # Projeto iOS nativo
@@ -63,24 +64,29 @@ lembrar-plus/
 │   ├── firebase_options.dart     # Opções de inicialização do Firebase
 │   ├── main.dart                 # Ponto de entrada do app
 │   ├── screens/                  # Telas do aplicativo
-│   │   ├── home_idoso.dart                 # Tela principal do idoso
+│   │   ├── home_paciente.dart              # Tela principal do paciente
 │   │   ├── home_responsavel.dart           # Tela principal do responsável
-│   │   ├── idoso_info.dart                 # Tela para adicionar infos do idoso
-│   │   ├── idoso_page.dart                 # Tela do Idoso para o responsável
+│   │   ├── paciente_info.dart              # Tela de informações do paciente
+│   │   ├── paciente_page.dart              # Tela do paciente para o responsável
+│   │   ├── editar_paciente.dart            # Tela de edição do paciente
 │   │   ├── login.dart                      # Tela de login
-│   │   ├── medicamentos.dart               # Tela para mostrar medicamentos cadastrados
-│   │   ├── register_codigo_idoso.dart      # Tela para vincular responsável com idoso
-│   │   ├── register_idoso_resto.dart       # Complemento de cadastro do Idoso
-│   │   ├── register_idoso.dart             # Registro de idoso
-│   │   ├── register_medicamentos.dart      # Registro dos medicamentos
+│   │   ├── medicamentos.dart               # Lista de medicamentos
+│   │   ├── register_codigo_paciente.dart   # Vincular responsável ao paciente
+│   │   ├── register_paciente_resto.dart    # Complemento de cadastro do paciente
+│   │   ├── register_paciente.dart          # Registro de paciente
+│   │   ├── register_medicamentos.dart      # Cadastro/edição de medicamentos
 │   │   ├── register_principal.dart         # Escolha de tipo de registro
 │   │   ├── register_responsavel.dart       # Registro de responsável
 │   │   ├── register_responsavel_resto.dart # Complemento de cadastro do responsável
+│   │   ├── ligar_paciente.dart             # Tela de ligação para paciente
+│   │   ├── notificacoes_responsavel.dart   # Notificações para responsável
 │   │   └── welcome.dart                    # Tela de boas-vindas
 │   ├── services/                # Lógica de autenticação e banco
 │   │   ├── auth_service.dart             # Serviço de autenticação (login, registro, Google)
-│   │   └── firestore_service.dart        # Serviço de banco de dados (Firestore)
+│   │   ├── firestore_service.dart        # Serviço de banco de dados (Firestore)
+│   │   └── notification_service.dart     # Serviço de notificações locais
 │   └── widgets/                 # Componentes reutilizáveis
+│       ├── custom_button.dart            # Botão customizado
 ├── LICENSE                      # Licença do projeto
 ├── linux/                       # Projeto Linux nativo
 ├── macos/                       # Projeto macOS nativo

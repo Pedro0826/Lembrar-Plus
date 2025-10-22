@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:circular_menu/circular_menu.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'paciente_info.dart';
 import 'medicamentos.dart';
 import 'ligar_paciente.dart';
@@ -15,6 +16,7 @@ class IdosoPage extends StatefulWidget {
 }
 
 class _IdosoPageState extends State<IdosoPage> {
+  bool isOffline = false;
   Map<String, dynamic>? idosoData;
   bool isLoading = true;
 
@@ -22,6 +24,28 @@ class _IdosoPageState extends State<IdosoPage> {
   void initState() {
     super.initState();
     fetchIdoso();
+    checkConnectivity();
+    Connectivity().onConnectivityChanged.listen((result) {
+      // Suporte para quando result é uma lista (ex: [ConnectivityResult.none])
+      bool offline;
+      // ignore: unnecessary_type_check
+      if (result is List) {
+        offline = result.contains(ConnectivityResult.none);
+      } else {
+        offline = result == ConnectivityResult.none;
+      }
+      setState(() {
+        isOffline = offline;
+      });
+    });
+  }
+
+  Future<void> checkConnectivity() async {
+    final result = await Connectivity().checkConnectivity();
+    final offline = result == ConnectivityResult.none;
+    setState(() {
+      isOffline = offline;
+    });
   }
 
   Future<void> fetchIdoso() async {
@@ -62,14 +86,14 @@ class _IdosoPageState extends State<IdosoPage> {
           // Cabeçalho menor, mais longe do topo, nome ao lado de "PACIENTE:"
           if (!isLoading)
             Positioned(
-              top: 64, // mais longe do topo/câmera
+              top: 64,
               left: 24,
               right: 24,
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   CircleAvatar(
-                    radius: 34, // Aumentado
+                    radius: 34,
                     backgroundColor: Colors.white,
                     backgroundImage: (fotoUrl != null && fotoUrl.isNotEmpty)
                         ? (isAsset
@@ -80,7 +104,7 @@ class _IdosoPageState extends State<IdosoPage> {
                         ? const Icon(Icons.person, color: Colors.grey, size: 32)
                         : null,
                   ),
-                  const SizedBox(width: 18), // Espaço um pouco maior
+                  const SizedBox(width: 18),
                   Expanded(
                     child: Container(
                       padding: const EdgeInsets.symmetric(
@@ -103,7 +127,7 @@ class _IdosoPageState extends State<IdosoPage> {
                           style: const TextStyle(
                             fontFamily: 'Montserrat',
                             fontWeight: FontWeight.bold,
-                            fontSize: 17, // Fonte maior
+                            fontSize: 17,
                             letterSpacing: 1.1,
                             color: Color(0xFF3A7CA5),
                           ),
@@ -132,7 +156,7 @@ class _IdosoPageState extends State<IdosoPage> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const SizedBox(height: 0), // espaço para não colar no topo
+                    const SizedBox(height: 0),
                     SizedBox(
                       width: 290,
                       height: 56,
@@ -168,7 +192,7 @@ class _IdosoPageState extends State<IdosoPage> {
                         icon: const Icon(
                           Icons.medication,
                           color: Colors.white,
-                        ), // Ícone de remédio
+                        ),
                         label: const Text('Medicamentos'),
                         onPressed: () {
                           Navigator.push(
@@ -194,68 +218,97 @@ class _IdosoPageState extends State<IdosoPage> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 22),
-                    SizedBox(
-                      width: 290,
-                      height: 56,
-                      child: ElevatedButton.icon(
-                        icon: const Icon(Icons.phone, color: Colors.white),
-                        label: const Text('Ligar'),
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  LigarIdosoPage(idosoId: widget.idosoId),
-                            ),
-                          );
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFE57373),
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(18),
-                          ),
-                          textStyle: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 22),
-                    SizedBox(
-                      width: 290,
-                      height: 56,
-                      child: ElevatedButton.icon(
-                        icon: const Icon(
-                          Icons.chat_bubble_outline,
-                          color: Colors.white,
-                        ),
-                        label: const Text('Notificações'),
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => NotificacoesResponsavelPage(
-                                idosoId: widget.idosoId,
+                    if (!isOffline) ...[
+                      const SizedBox(height: 22),
+                      SizedBox(
+                        width: 290,
+                        height: 56,
+                        child: ElevatedButton.icon(
+                          icon: const Icon(Icons.phone, color: Colors.white),
+                          label: const Text('Ligar'),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    LigarIdosoPage(idosoId: widget.idosoId),
                               ),
+                            );
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFFE57373),
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(18),
                             ),
-                          );
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFFF9800),
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(18),
-                          ),
-                          textStyle: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
+                            textStyle: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                            ),
                           ),
                         ),
                       ),
-                    ),
+                      const SizedBox(height: 22),
+                      SizedBox(
+                        width: 290,
+                        height: 56,
+                        child: ElevatedButton.icon(
+                          icon: const Icon(
+                            Icons.chat_bubble_outline,
+                            color: Colors.white,
+                          ),
+                          label: const Text('Notificações'),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => NotificacoesResponsavelPage(
+                                  idosoId: widget.idosoId,
+                                ),
+                              ),
+                            );
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFFFF9800),
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(18),
+                            ),
+                            textStyle: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                    if (isOffline) ...[
+                      const SizedBox(height: 22),
+                      Container(
+                        width: 290,
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.95),
+                          borderRadius: BorderRadius.circular(18),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.08),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: const Text(
+                          'Você está offline. Funcionalidades restritas.',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: Colors.red,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
+                    ],
                   ],
                 ),
               ),

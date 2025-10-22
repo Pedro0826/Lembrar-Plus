@@ -95,6 +95,7 @@ class _MedicamentosPageState extends State<MedicamentosPage> {
                             >?; // Garante que o tipo seja seguro
                     return Card(
                       child: ListTile(
+                        leading: null,
                         title: Text(data?['nome'] ?? 'Sem nome'),
                         subtitle: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -130,14 +131,34 @@ class _MedicamentosPageState extends State<MedicamentosPage> {
                               ),
                           ],
                         ),
-                        trailing: IconButton(
-                          icon: const Icon(Icons.delete),
-                          onPressed: () async {
-                            await _firestoreService.removeMedicamentoApp(
-                              doc.id,
-                            );
-                            setState(() {});
+                        trailing: PopupMenuButton<String>(
+                          onSelected: (value) async {
+                            if (value == 'editar') {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => RegisterMedicamentosPage(
+                                    idosoId: widget.idosoId,
+                                    medicamentoId: doc.id,
+                                    medicamentoData: data,
+                                  ),
+                                ),
+                              );
+                            } else if (value == 'excluir') {
+                              await _firestoreService.removeMedicamentoApp(doc.id);
+                              setState(() {});
+                            }
                           },
+                          itemBuilder: (context) => [
+                            const PopupMenuItem(
+                              value: 'editar',
+                              child: Text('Editar'),
+                            ),
+                            const PopupMenuItem(
+                              value: 'excluir',
+                              child: Text('Excluir'),
+                            ),
+                          ],
                         ),
                       ),
                     );
