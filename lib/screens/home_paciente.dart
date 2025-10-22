@@ -231,10 +231,7 @@ class _HomeIdosoState extends State<HomeIdoso> {
         final codigo = idoso['codigo'] ?? '';
         final responsaveis = idoso['responsaveis'] ?? [];
         final temResponsavel = responsaveis.isNotEmpty;
-        final nome =
-            idoso['apelido'] != null && (idoso['apelido'] as String).isNotEmpty
-            ? idoso['apelido']
-            : (idoso['nome'] ?? '');
+        final nome = idoso['nome'] ?? '';
         final fotoUrl = idoso['fotoUrl'] as String?;
         final isAsset = idoso['isAsset'] == true;
 
