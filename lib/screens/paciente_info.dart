@@ -2,16 +2,34 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'editar_paciente.dart';
 
-class IdosoInfoPage extends StatelessWidget {
+class IdosoInfoPage extends StatefulWidget {
   final String idosoId;
   const IdosoInfoPage({super.key, required this.idosoId});
 
-  Future<Map<String, dynamic>?> fetchIdosoData() async {
+  @override
+  State<IdosoInfoPage> createState() => _IdosoInfoPageState();
+}
+
+class _IdosoInfoPageState extends State<IdosoInfoPage> {
+  Map<String, dynamic>? idosoData;
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchIdosoData();
+  }
+
+  Future<void> fetchIdosoData() async {
+    setState(() { isLoading = true; });
     final doc = await FirebaseFirestore.instance
         .collection('idoso')
-        .doc(idosoId)
+        .doc(widget.idosoId)
         .get();
-    return doc.data();
+    setState(() {
+      idosoData = doc.data();
+      isLoading = false;
+    });
   }
 
   String _formatCpf(String cpf) {
@@ -36,7 +54,6 @@ class IdosoInfoPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // Usa o background3 como fundo
       body: Stack(
         children: [
           Positioned.fill(
@@ -46,116 +63,99 @@ class IdosoInfoPage extends StatelessWidget {
             ),
           ),
           SafeArea(
-            child: FutureBuilder<Map<String, dynamic>?>(
-              future: fetchIdosoData(),
-              builder: (context, snapshot) {
-                if (!snapshot.hasData) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-                final idoso = snapshot.data!;
-                final nome =
-                    idoso['apelido'] != null &&
-                        (idoso['apelido'] as String).isNotEmpty
-                    ? idoso['apelido']
-                    : (idoso['nome'] ?? '');
-                final fotoUrl = idoso['fotoUrl'] as String?;
-                final isAsset = idoso['isAsset'] == true;
-
-                return ListView(
-                  padding: const EdgeInsets.all(24.0),
-                  children: [
-                    // Cabeçalho com foto, nome e menu de edição
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        CircleAvatar(
-                          radius: 34,
-                          backgroundColor: Colors.white,
-                          backgroundImage: fotoUrl != null && fotoUrl.isNotEmpty
-                              ? (isAsset
-                                    ? AssetImage(fotoUrl)
-                                    : NetworkImage(fotoUrl))
-                                as ImageProvider
-                              : null,
-                        ),
-                        const SizedBox(width: 18),
-                        Expanded(
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                              vertical: 16,
-                              horizontal: 24,
-                            ),
-                            decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.90),
-                              borderRadius: BorderRadius.circular(38),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.08),
-                                  blurRadius: 8,
-                                  offset: const Offset(0, 2),
-                                ),
-                              ],
-                            ),
-                            child: RichText(
-                              text: TextSpan(
-                                style: const TextStyle(
-                                  fontFamily: 'Montserrat',
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 17,
-                                  letterSpacing: 1.1,
-                                  color: Color(0xFF3A7CA5),
-                                ),
-                                children: [
-                                  const TextSpan(text: 'PACIENTE: '),
-                                  TextSpan(
-                                    text: nome.toUpperCase(),
-                                    style: const TextStyle(
-                                      color: Color(0xFF3A7CA5),
-                                    ),
+            child: isLoading || idosoData == null
+                ? const Center(child: CircularProgressIndicator())
+                : ListView(
+                    padding: const EdgeInsets.all(24.0),
+                    children: [
+                      // Cabeçalho com foto, nome e menu de edição
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          CircleAvatar(
+                            radius: 34,
+                            backgroundColor: Colors.white,
+                            backgroundImage: idosoData!['fotoUrl'] != null && (idosoData!['fotoUrl'] as String).isNotEmpty
+                                ? (idosoData!['isAsset'] == true
+                                    ? AssetImage(idosoData!['fotoUrl'])
+                                    : NetworkImage(idosoData!['fotoUrl']))
+                                  as ImageProvider
+                                : null,
+                          ),
+                          const SizedBox(width: 18),
+                          Expanded(
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 16,
+                                horizontal: 24,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.90),
+                                borderRadius: BorderRadius.circular(38),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.08),
+                                    blurRadius: 8,
+                                    offset: const Offset(0, 2),
                                   ),
                                 ],
                               ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
+                              child: RichText(
+                                text: TextSpan(
+                                  style: const TextStyle(
+                                    fontFamily: 'Montserrat',
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 17,
+                                    letterSpacing: 1.1,
+                                    color: Color(0xFF3A7CA5),
+                                  ),
+                                  children: [
+                                    const TextSpan(text: 'PACIENTE: '),
+                                    TextSpan(
+                                      text: (idosoData!['apelido'] != null && (idosoData!['apelido'] as String).isNotEmpty
+                                          ? idosoData!['apelido']
+                                          : (idosoData!['nome'] ?? '')).toString().toUpperCase(),
+                                      style: const TextStyle(
+                                        color: Color(0xFF3A7CA5),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
                             ),
                           ),
-                        ),
-                        // ...
-                      ],
-                    ),
-                    const SizedBox(height: 32),
-
-                    // Informações em caixas de texto
-                    _InfoBox(
-                      label: 'Data de Nascimento',
-                      value: _formatDataNasc(idoso['data_nasc']),
-                    ),
-                    _InfoBox(
-                      label: 'CPF',
-                      value: _formatCpf(idoso['cpf'] ?? ''),
-                    ),
-                    _InfoBox(label: 'Telefone', value: idoso['telefone'] ?? ''),
-                    _InfoBox(label: 'Convênio', value: idoso['convenio'] ?? ''),
-                    _InfoBox(
-                      label: 'Tipo Sanguíneo',
-                      value: idoso['tipo_sanguineo'] ?? '',
-                    ),
-                    _InfoBox(
-                      label: 'Peso',
-                      value: idoso['peso'] != null ? '${idoso['peso']} kg' : '',
-                    ),
-                    _InfoBox(
-                      label: 'Altura',
-                      value: idoso['altura'] != null
-                          ? '${idoso['altura']} cm'
-                          : '',
-                    ),
-                    const SizedBox(height: 100),
-                    // Adicione mais campos conforme necessário
-                  ],
-                );
-              },
-            ),
+                        ],
+                      ),
+                      const SizedBox(height: 32),
+                      _InfoBox(
+                        label: 'Data de Nascimento',
+                        value: _formatDataNasc(idosoData!['data_nasc']),
+                      ),
+                      _InfoBox(
+                        label: 'CPF',
+                        value: _formatCpf(idosoData!['cpf'] ?? ''),
+                      ),
+                      _InfoBox(label: 'Telefone', value: idosoData!['telefone'] ?? ''),
+                      _InfoBox(label: 'Convênio', value: idosoData!['convenio'] ?? ''),
+                      _InfoBox(
+                        label: 'Tipo Sanguíneo',
+                        value: idosoData!['tipo_sanguineo'] ?? '',
+                      ),
+                      _InfoBox(
+                        label: 'Peso',
+                        value: idosoData!['peso'] != null ? '${idosoData!['peso']} kg' : '',
+                      ),
+                      _InfoBox(
+                        label: 'Altura',
+                        value: idosoData!['altura'] != null
+                            ? '${idosoData!['altura']} cm'
+                            : '',
+                      ),
+                      const SizedBox(height: 100),
+                    ],
+                  ),
           ),
           // Botão voltar na parte inferior esquerda
           Positioned(
@@ -190,21 +190,18 @@ class IdosoInfoPage extends StatelessWidget {
                 ),
                 onPressed: () async {
                   // Busca os dados atuais do paciente
-                  final doc = await FirebaseFirestore.instance.collection('idoso').doc(idosoId).get();
-                  final dados = doc.data() ?? {};
                   if (context.mounted) {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) => EditarPacientePage(
-                          idosoId: idosoId,
-                          dados: dados,
+                          idosoId: widget.idosoId,
+                          dados: idosoData ?? {},
                         ),
                       ),
                     ).then((value) {
-                      if (value == true) {
-                        // Atualiza a tela após edição
-                        (context as Element).markNeedsBuild();
+                      if (value == true && mounted) {
+                        fetchIdosoData();
                       }
                     });
                   }

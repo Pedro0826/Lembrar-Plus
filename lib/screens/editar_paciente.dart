@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:async';
 
 // Caixa de edição no mesmo estilo do paciente_info
 class _EditBox extends StatelessWidget {
@@ -71,12 +72,12 @@ class _EditarPacientePageState extends State<EditarPacientePage> {
   late TextEditingController nomeController;
   late TextEditingController apelidoController;
   late TextEditingController cpfController;
-  late TextEditingController dataNascController;
   late TextEditingController telefoneController;
-  late TextEditingController convenioController;
-  late TextEditingController tipoSanguineoController;
   late TextEditingController pesoController;
   late TextEditingController alturaController;
+  DateTime? dataNascSelecionada;
+  String convenioSelecionado = 'Unimed';
+  String tipoSangSelecionado = 'A+';
 
   @override
   void initState() {
@@ -84,46 +85,59 @@ class _EditarPacientePageState extends State<EditarPacientePage> {
     nomeController = TextEditingController(text: widget.dados['nome'] ?? '');
     apelidoController = TextEditingController(text: widget.dados['apelido'] ?? '');
     cpfController = TextEditingController(text: widget.dados['cpf'] ?? '');
-    dataNascController = TextEditingController(
-      text: _formatDataNasc(widget.dados['data_nasc']),
-    );
     telefoneController = TextEditingController(text: widget.dados['telefone'] ?? '');
-    convenioController = TextEditingController(text: widget.dados['convenio'] ?? '');
-    tipoSanguineoController = TextEditingController(text: widget.dados['tipo_sanguineo'] ?? '');
     pesoController = TextEditingController(text: widget.dados['peso']?.toString() ?? '');
     alturaController = TextEditingController(text: widget.dados['altura']?.toString() ?? '');
+    // Data de nascimento
+    final dn = widget.dados['data_nasc'];
+    if (dn is Timestamp) {
+      dataNascSelecionada = dn.toDate();
+    } else if (dn is String && dn.isNotEmpty) {
+      final parts = dn.split('/');
+      if (parts.length == 3) {
+        dataNascSelecionada = DateTime(
+          int.parse(parts[2]),
+          int.parse(parts[1]),
+          int.parse(parts[0]),
+        );
+      }
+    }
+    // Convênio
+    convenioSelecionado = widget.dados['convenio'] ?? 'Unimed';
+    // Tipo sanguíneo
+    tipoSangSelecionado = widget.dados['tipo_sanguineo'] ?? 'A+';
   }
 
-  String _formatDataNasc(dynamic dataNasc) {
-    if (dataNasc == null) return '';
-    if (dataNasc is String) return dataNasc;
-    if (dataNasc is Timestamp) {
-      final date = dataNasc.toDate();
-      return '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}';
-    }
-    return dataNasc.toString();
-  }
 
   Future<void> salvarEdicao() async {
-    try {
-      await FirebaseFirestore.instance.collection('idoso').doc(widget.idosoId).update({
-        'nome': nomeController.text.trim(),
-        'apelido': apelidoController.text.trim(),
-        'cpf': cpfController.text.trim(),
-        'data_nasc': dataNascController.text.trim(),
-        'telefone': telefoneController.text.trim(),
-        'convenio': convenioController.text.trim(),
-        'tipo_sanguineo': tipoSanguineoController.text.trim(),
-        'peso': double.tryParse(pesoController.text.trim()),
-        'altura': double.tryParse(alturaController.text.trim()),
-      });
+    bool completed = false;
+    Future updateFuture = FirebaseFirestore.instance.collection('idoso').doc(widget.idosoId).update({
+      'nome': nomeController.text.trim(),
+      'apelido': apelidoController.text.trim(),
+      'cpf': cpfController.text.trim(),
+      'data_nasc': dataNascSelecionada ?? '',
+      'telefone': telefoneController.text.trim(),
+      'convenio': convenioSelecionado,
+      'tipo_sanguineo': tipoSangSelecionado,
+      'peso': double.tryParse(pesoController.text.trim()),
+      'altura': double.tryParse(alturaController.text.trim()),
+    }).then((_) {
+      completed = true;
       if (mounted) {
         Navigator.pop(context, true);
       }
-    } catch (e) {
+    }).catchError((e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Erro ao salvar: ${e.toString()}')),
       );
+    });
+
+    await Future.any([
+      updateFuture,
+      Future.delayed(const Duration(seconds: 3)),
+    ]);
+    if (!completed && mounted) {
+      Navigator.pop(context, true);
     }
   }
 
@@ -158,10 +172,103 @@ class _EditarPacientePageState extends State<EditarPacientePage> {
                 _EditBox(label: 'Nome', controller: nomeController),
                 _EditBox(label: 'Apelido', controller: apelidoController),
                 _EditBox(label: 'CPF', controller: cpfController),
-                _EditBox(label: 'Data de Nascimento', controller: dataNascController),
+                // Data de nascimento com seletor
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 18.0),
+                  child: Row(
+                    children: [
+                      const Text(
+                        'Data de Nascimento',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF3A7CA5),
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Text(
+                        dataNascSelecionada == null
+                            ? 'Selecione'
+                            : '${dataNascSelecionada!.day.toString().padLeft(2, '0')}/${dataNascSelecionada!.month.toString().padLeft(2, '0')}/${dataNascSelecionada!.year}',
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.calendar_today),
+                        onPressed: () async {
+                          DateTime? picked = await showDatePicker(
+                            context: context,
+                            initialDate: dataNascSelecionada ?? DateTime(2000, 1, 1),
+                            firstDate: DateTime(1900),
+                            lastDate: DateTime.now(),
+                          );
+                          if (picked != null) {
+                            setState(() {
+                              dataNascSelecionada = picked;
+                            });
+                          }
+                        },
+                      ),
+                    ],
+                  ),
+                ),
                 _EditBox(label: 'Telefone', controller: telefoneController),
-                _EditBox(label: 'Convênio', controller: convenioController),
-                _EditBox(label: 'Tipo Sanguíneo', controller: tipoSanguineoController),
+                // Convênio como dropdown
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 18.0),
+                  child: DropdownButtonFormField<String>(
+                    value: convenioSelecionado,
+                    decoration: const InputDecoration(
+                      labelText: 'Convênio',
+                      filled: true,
+                      fillColor: Colors.white,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(16)),
+                        borderSide: BorderSide(color: Color(0xFFCCCCCC), width: 1),
+                      ),
+                    ),
+                    items: const [
+                      DropdownMenuItem(value: 'Unimed', child: Text('Unimed')),
+                      DropdownMenuItem(value: 'Ipsemg', child: Text('Ipsemg')),
+                    ],
+                    onChanged: (value) {
+                      setState(() {
+                        convenioSelecionado = value ?? 'Unimed';
+                      });
+                    },
+                  ),
+                ),
+                // Tipo sanguíneo como dropdown
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 18.0),
+                  child: DropdownButtonFormField<String>(
+                    value: tipoSangSelecionado,
+                    decoration: const InputDecoration(
+                      labelText: 'Tipo Sanguíneo',
+                      filled: true,
+                      fillColor: Colors.white,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(16)),
+                        borderSide: BorderSide(color: Color(0xFFCCCCCC), width: 1),
+                      ),
+                    ),
+                    items: const [
+                      DropdownMenuItem(value: 'A+', child: Text('A+')),
+                      DropdownMenuItem(value: 'A-', child: Text('A-')),
+                      DropdownMenuItem(value: 'B+', child: Text('B+')),
+                      DropdownMenuItem(value: 'B-', child: Text('B-')),
+                      DropdownMenuItem(value: 'AB+', child: Text('AB+')),
+                      DropdownMenuItem(value: 'AB-', child: Text('AB-')),
+                      DropdownMenuItem(value: 'O+', child: Text('O+')),
+                      DropdownMenuItem(value: 'O-', child: Text('O-')),
+                    ],
+                    onChanged: (value) {
+                      setState(() {
+                        tipoSangSelecionado = value ?? 'A+';
+                      });
+                    },
+                  ),
+                ),
                 _EditBox(label: 'Peso (kg)', controller: pesoController),
                 _EditBox(label: 'Altura (cm)', controller: alturaController),
                 const SizedBox(height: 32),
