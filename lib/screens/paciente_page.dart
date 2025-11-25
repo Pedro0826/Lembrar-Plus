@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:circular_menu/circular_menu.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'paciente_info.dart';
 import 'medicamentos.dart';
-import 'ligar_paciente.dart';
 import 'notificacoes_responsavel.dart';
 
 class IdosoPage extends StatefulWidget {
@@ -16,6 +16,24 @@ class IdosoPage extends StatefulWidget {
 }
 
 class _IdosoPageState extends State<IdosoPage> {
+
+  Future<void> ligarParaPaciente() async {
+    final numero = idosoData?['telefone']?.toString() ?? '';
+    if (numero.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Número de telefone não disponível.')),
+      );
+      return;
+    }
+    final uri = Uri(scheme: 'tel', path: numero);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Não foi possível abrir o app de telefone.')),
+      );
+    }
+  }
   bool isOffline = false;
   Map<String, dynamic>? idosoData;
   bool isLoading = true;
@@ -226,15 +244,7 @@ class _IdosoPageState extends State<IdosoPage> {
                         child: ElevatedButton.icon(
                           icon: const Icon(Icons.phone, color: Colors.white),
                           label: const Text('Ligar'),
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    LigarIdosoPage(idosoId: widget.idosoId),
-                              ),
-                            );
-                          },
+                          onPressed: ligarParaPaciente,
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFFE57373),
                             foregroundColor: Colors.white,
