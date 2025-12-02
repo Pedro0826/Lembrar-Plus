@@ -95,19 +95,51 @@ class _RegisterMedicamentosPageState extends State<RegisterMedicamentosPage> {
     super.dispose();
   }
 
-  InputDecoration campoDecoration(String label) {
-    return InputDecoration(
-      hintText: label,
-      hintStyle: const TextStyle(color: Color(0xFF707070)),
-      filled: true,
-      fillColor: const Color(0xFFF5F5F5),
-      enabledBorder: const OutlineInputBorder(
-        borderSide: BorderSide.none,
-        borderRadius: BorderRadius.all(Radius.circular(10)),
-      ),
-      focusedBorder: const OutlineInputBorder(
-        borderSide: BorderSide(color: Color(0xFF66B2B2)),
-        borderRadius: BorderRadius.all(Radius.circular(10)),
+  Widget _buildField(
+    String label,
+    TextEditingController controller, {
+    TextInputType? keyboardType,
+    int maxLines = 1,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 18.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF3A7CA5),
+              letterSpacing: 0.5,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+            decoration: BoxDecoration(
+              color: const Color(0xFFF5F5F5),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: TextField(
+              controller: controller,
+              keyboardType: keyboardType,
+              maxLines: maxLines,
+              decoration: const InputDecoration(
+                border: InputBorder.none,
+                isDense: true,
+                contentPadding: EdgeInsets.zero,
+              ),
+              style: const TextStyle(
+                fontSize: 16,
+                color: Colors.black87,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -217,240 +249,555 @@ class _RegisterMedicamentosPageState extends State<RegisterMedicamentosPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Registrar Medicamento'),
-        backgroundColor: Colors.white,
-        elevation: 0,
-        iconTheme: const IconThemeData(color: Color(0xFF66B2B2)),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Nome do Medicamento
-              TextField(
-                controller: nomeController,
-                decoration: campoDecoration('Nome do medicamento'),
-              ),
-              const SizedBox(height: 16),
-
-              // Dosagem com opções mg/ml
-              Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: dosagemController,
-                      decoration: campoDecoration('Dosagem'),
-                      keyboardType: TextInputType.number,
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: Image.asset(
+              'assets/images/Background3.png',
+              fit: BoxFit.cover,
+            ),
+          ),
+          SafeArea(
+            child: ListView(
+              padding: const EdgeInsets.all(24),
+              children: [
+                Center(
+                  child: Text(
+                    widget.medicamentoId != null
+                        ? 'Editar Medicamento'
+                        : 'Registrar Medicamento',
+                    style: const TextStyle(
+                      fontFamily: 'Montserrat',
+                      fontWeight: FontWeight.bold,
+                      fontSize: 22,
+                      color: Color(0xFF3A7CA5),
+                      letterSpacing: 1.1,
                     ),
                   ),
-                  const SizedBox(width: 16),
-                  Column(
+                ),
+                const SizedBox(height: 24),
+                // Nome do Medicamento
+                _buildField('Nome do Medicamento', nomeController),
+
+                // Dosagem
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 18.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
-                        children: [
-                          Radio<String>(
-                            value: 'mg',
-                            groupValue: unidadeDosagem,
-                            onChanged: (value) {
-                              if (value != null && value != unidadeDosagem) {
-                                setState(() {
-                                  unidadeDosagem = value;
-                                });
-                              }
-                            },
-                          ),
-                          const Text('mg'),
-                        ],
+                      const Text(
+                        'Dosagem',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF3A7CA5),
+                          letterSpacing: 0.5,
+                        ),
                       ),
+                      const SizedBox(height: 6),
                       Row(
                         children: [
-                          Radio<String>(
-                            value: 'ml',
-                            groupValue: unidadeDosagem,
-                            onChanged: (value) {
-                              if (value != null && value != unidadeDosagem) {
-                                setState(() {
-                                  unidadeDosagem = value;
-                                });
-                              }
-                            },
+                          Expanded(
+                            flex: 2,
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 8,
+                                horizontal: 12,
+                              ),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFF5F5F5),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: TextField(
+                                controller: dosagemController,
+                                keyboardType: TextInputType.number,
+                                decoration: const InputDecoration(
+                                  border: InputBorder.none,
+                                  isDense: true,
+                                  contentPadding: EdgeInsets.zero,
+                                ),
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.black87,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
                           ),
-                          const Text('ml'),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            flex: 1,
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 4,
+                                vertical: 4,
+                              ),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFF5F5F5),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Flexible(
+                                    child: Radio<String>(
+                                      value: 'mg',
+                                      groupValue: unidadeDosagem,
+                                      materialTapTargetSize:
+                                          MaterialTapTargetSize.shrinkWrap,
+                                      visualDensity: VisualDensity.compact,
+                                      onChanged: (value) {
+                                        if (value != null &&
+                                            value != unidadeDosagem) {
+                                          setState(() {
+                                            unidadeDosagem = value;
+                                          });
+                                        }
+                                      },
+                                    ),
+                                  ),
+                                  const Text(
+                                    'mg',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Flexible(
+                                    child: Radio<String>(
+                                      value: 'ml',
+                                      groupValue: unidadeDosagem,
+                                      materialTapTargetSize:
+                                          MaterialTapTargetSize.shrinkWrap,
+                                      visualDensity: VisualDensity.compact,
+                                      onChanged: (value) {
+                                        if (value != null &&
+                                            value != unidadeDosagem) {
+                                          setState(() {
+                                            unidadeDosagem = value;
+                                          });
+                                        }
+                                      },
+                                    ),
+                                  ),
+                                  const Text(
+                                    'ml',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
                         ],
                       ),
                     ],
                   ),
-                ],
-              ),
-              const SizedBox(height: 16),
+                ),
 
-              // Data de Início
-              Row(
-                children: [
-                  const Text('Data de Início:'),
-                  const SizedBox(width: 16),
-                  TextButton(
-                    onPressed: () async {
-                      final pickedDate = await showDatePicker(
-                        context: context,
-                        initialDate: DateTime.now(),
-                        firstDate: DateTime(2000),
-                        lastDate: DateTime(2100),
-                      );
-                      if (pickedDate != null) {
-                        setState(() {
-                          dataInicio = pickedDate;
-                        });
-                      }
-                    },
-                    child: Text(
-                      dataInicio != null
-                          ? '${dataInicio!.day}/${dataInicio!.month}/${dataInicio!.year}'
-                          : 'Selecionar',
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-
-              // Checkbox para Data de Fim
-              Row(
-                children: [
-                  Checkbox(
-                    value: temDataFim,
-                    onChanged: (value) {
-                      if (value != null && value != temDataFim) {
-                        setState(() {
-                          temDataFim = value;
-                          if (!temDataFim) {
-                            dataFim = null;
-                          }
-                        });
-                      }
-                    },
-                  ),
-                  const Text('Tem Data de Fim?'),
-                ],
-              ),
-              if (temDataFim)
-                Row(
-                  children: [
-                    const Text('Data de Fim:'),
-                    const SizedBox(width: 16),
-                    TextButton(
-                      onPressed: () async {
-                        final pickedDate = await showDatePicker(
-                          context: context,
-                          initialDate: DateTime.now(),
-                          firstDate: DateTime(2000),
-                          lastDate: DateTime(2100),
-                        );
-                        if (pickedDate != null) {
-                          setState(() {
-                            dataFim = pickedDate;
-                          });
-                        }
-                      },
-                      child: Text(
-                        dataFim != null
-                            ? '${dataFim!.day}/${dataFim!.month}/${dataFim!.year}'
-                            : 'Selecionar',
+                // Data de Início
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 18.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Data de Início',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF3A7CA5),
+                          letterSpacing: 0.5,
+                        ),
                       ),
-                    ),
-                  ],
+                      const SizedBox(height: 8),
+                      InkWell(
+                        onTap: () async {
+                          final pickedDate = await showDatePicker(
+                            context: context,
+                            initialDate: dataInicio ?? DateTime.now(),
+                            firstDate: DateTime(2000),
+                            lastDate: DateTime(2100),
+                          );
+                          if (pickedDate != null) {
+                            setState(() {
+                              dataInicio = pickedDate;
+                            });
+                          }
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 14,
+                          ),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFF5F5F5),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Row(
+                            children: [
+                              const Icon(
+                                Icons.calendar_today,
+                                color: Color(0xFF3A7CA5),
+                                size: 20,
+                              ),
+                              const SizedBox(width: 12),
+                              Text(
+                                dataInicio != null
+                                    ? '${dataInicio!.day.toString().padLeft(2, '0')}/${dataInicio!.month.toString().padLeft(2, '0')}/${dataInicio!.year}'
+                                    : 'Selecione a data',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  color: dataInicio != null
+                                      ? Colors.black87
+                                      : Colors.grey[600],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              const SizedBox(height: 16),
 
-              // Horário de Início
-              Row(
-                children: [
-                  const Text('Horário de Início:'),
-                  const SizedBox(width: 16),
-                  TextButton(
-                    onPressed: () async {
-                      final pickedTime = await showTimePicker(
-                        context: context,
-                        initialTime: TimeOfDay.now(),
-                      );
-                      if (pickedTime != null) {
-                        setState(() {
-                          horarioInicio = pickedTime;
-                        });
-                      }
-                    },
-                    child: Text(
-                      horarioInicio != null
-                          ? '${horarioInicio!.hour.toString().padLeft(2, '0')}:${horarioInicio!.minute.toString().padLeft(2, '0')}'
-                          : 'Selecionar',
-                    ),
+                // Checkbox para Data de Fim
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 18.0),
+                  child: Row(
+                    children: [
+                      Checkbox(
+                        value: temDataFim,
+                        onChanged: (value) {
+                          if (value != null && value != temDataFim) {
+                            setState(() {
+                              temDataFim = value;
+                              if (!temDataFim) {
+                                dataFim = null;
+                              }
+                            });
+                          }
+                        },
+                      ),
+                      const Text(
+                        'Tem Data de Fim?',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF3A7CA5),
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-              const SizedBox(height: 16),
-
-              // Período
-              Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: periodoController,
-                      decoration: campoDecoration('Período'),
-                      keyboardType: TextInputType.number,
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  DropdownButton<String>(
-                    value: unidadePeriodo,
-                    items: ['horas', 'dias', 'semanas', 'meses'].map((
-                      String value,
-                    ) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
-                    onChanged: (String? newValue) {
-                      if (newValue != null && newValue != unidadePeriodo) {
-                        setState(() {
-                          unidadePeriodo = newValue;
-                        });
-                      }
-                    },
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-
-              // Observações
-              TextField(
-                controller: observacoesController,
-                decoration: campoDecoration('Observações (opcional)'),
-                maxLines: 3, // Permite que o usuário digite várias linhas
-              ),
-              const SizedBox(height: 16),
-
-              // Botão Salvar
-              ElevatedButton(
-                onPressed: isLoading ? null : adicionarMedicamento,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF66B2B2),
-                  foregroundColor: Colors.white,
-                  minimumSize: const Size(double.infinity, 48),
-                  shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(10)),
-                  ),
-                  elevation: 0,
                 ),
-                child: isLoading
-                    ? const CircularProgressIndicator(color: Colors.white)
-                    : const Text('Salvar'),
-              ),
-            ],
+                if (temDataFim)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 18.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Data de Fim',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF3A7CA5),
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        InkWell(
+                          onTap: () async {
+                            final pickedDate = await showDatePicker(
+                              context: context,
+                              initialDate: dataFim ?? DateTime.now(),
+                              firstDate: DateTime(2000),
+                              lastDate: DateTime(2100),
+                            );
+                            if (pickedDate != null) {
+                              setState(() {
+                                dataFim = pickedDate;
+                              });
+                            }
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 14,
+                            ),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFF5F5F5),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Row(
+                              children: [
+                                const Icon(
+                                  Icons.calendar_today,
+                                  color: Color(0xFF3A7CA5),
+                                  size: 20,
+                                ),
+                                const SizedBox(width: 12),
+                                Text(
+                                  dataFim != null
+                                      ? '${dataFim!.day.toString().padLeft(2, '0')}/${dataFim!.month.toString().padLeft(2, '0')}/${dataFim!.year}'
+                                      : 'Selecione a data',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                    color: dataFim != null
+                                        ? Colors.black87
+                                        : Colors.grey[600],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                // Horário de Início
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 18.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Horário de Início',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF3A7CA5),
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      InkWell(
+                        onTap: () async {
+                          final pickedTime = await showTimePicker(
+                            context: context,
+                            initialTime: horarioInicio ?? TimeOfDay.now(),
+                          );
+                          if (pickedTime != null) {
+                            setState(() {
+                              horarioInicio = pickedTime;
+                            });
+                          }
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 14,
+                          ),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFF5F5F5),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Row(
+                            children: [
+                              const Icon(
+                                Icons.access_time,
+                                color: Color(0xFF3A7CA5),
+                                size: 20,
+                              ),
+                              const SizedBox(width: 12),
+                              Text(
+                                horarioInicio != null
+                                    ? '${horarioInicio!.hour.toString().padLeft(2, '0')}:${horarioInicio!.minute.toString().padLeft(2, '0')}'
+                                    : 'Selecione o horário',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  color: horarioInicio != null
+                                      ? Colors.black87
+                                      : Colors.grey[600],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                // Período
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 18.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Período',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF3A7CA5),
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
+                        children: [
+                          Expanded(
+                            flex: 2,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFF5F5F5),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: TextField(
+                                controller: periodoController,
+                                keyboardType: TextInputType.number,
+                                decoration: const InputDecoration(
+                                  border: InputBorder.none,
+                                  contentPadding: EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 12,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            flex: 3,
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                              ),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFF5F5F5),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: DropdownButton<String>(
+                                value: unidadePeriodo,
+                                isExpanded: true,
+                                underline: const SizedBox(),
+                                items: ['horas', 'dias', 'semanas', 'meses']
+                                    .map((String value) {
+                                      return DropdownMenuItem<String>(
+                                        value: value,
+                                        child: Text(value),
+                                      );
+                                    })
+                                    .toList(),
+                                onChanged: (String? newValue) {
+                                  if (newValue != null &&
+                                      newValue != unidadePeriodo) {
+                                    setState(() {
+                                      unidadePeriodo = newValue;
+                                    });
+                                  }
+                                },
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+
+                // Observações
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 32.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Observações',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF3A7CA5),
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Container(
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFF5F5F5),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: TextField(
+                          controller: observacoesController,
+                          maxLines: 3,
+                          decoration: const InputDecoration(
+                            border: InputBorder.none,
+                            contentPadding: EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 12,
+                            ),
+                            hintText: 'Observações adicionais (opcional)',
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                // Botão Salvar
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 16.0),
+                  child: ElevatedButton(
+                    onPressed: isLoading ? null : adicionarMedicamento,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF3A7CA5),
+                      foregroundColor: Colors.white,
+                      minimumSize: const Size(double.infinity, 56),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      elevation: 4,
+                    ),
+                    child: isLoading
+                        ? const CircularProgressIndicator(color: Colors.white)
+                        : const Text(
+                            'Salvar Medicamento',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
+          // Botão voltar
+          Positioned(
+            left: 32,
+            bottom: 24,
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.2),
+                    blurRadius: 8,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: IconButton(
+                icon: const Icon(
+                  Icons.arrow_back,
+                  color: Colors.grey,
+                  size: 28,
+                ),
+                onPressed: () => Navigator.pop(context),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

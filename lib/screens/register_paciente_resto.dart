@@ -32,7 +32,7 @@ class _RegisterIdosoRestoPageState extends State<RegisterIdosoRestoPage> {
               fontFamily: 'Montserrat',
               fontSize: 16,
               fontWeight: FontWeight.bold,
-              color: Color(0xFF3A7CA5),
+              color: Color.fromARGB(255, 70, 128, 84),
               letterSpacing: 0.5,
             ),
           ),
@@ -111,7 +111,7 @@ class _RegisterIdosoRestoPageState extends State<RegisterIdosoRestoPage> {
                       fontFamily: 'Montserrat',
                       fontWeight: FontWeight.bold,
                       fontSize: 22,
-                      color: Color(0xFF3A7CA5),
+                      color: Color.fromARGB(255, 70, 128, 84),
                       letterSpacing: 1.1,
                     ),
                   ),
@@ -272,7 +272,7 @@ class _RegisterIdosoRestoPageState extends State<RegisterIdosoRestoPage> {
                   child: ElevatedButton(
                     onPressed: isLoading ? null : salvarDados,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF3A7CA5),
+                      backgroundColor: const Color(0xFF6DBE81),
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       shape: RoundedRectangleBorder(
