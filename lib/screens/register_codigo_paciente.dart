@@ -58,7 +58,8 @@ class _RegisterCodigoIdosoPageState extends State<RegisterCodigoIdosoPage> {
                 Expanded(
                   child: TextField(
                     controller: controller,
-                    keyboardType: TextInputType.number,
+                    keyboardType: TextInputType.text,
+                    textCapitalization: TextCapitalization.characters,
                     textAlign: TextAlign.center,
                     maxLength: 8,
                     decoration: const InputDecoration(
