@@ -468,29 +468,142 @@ class _HomeIdosoState extends State<HomeIdoso> {
                             onPressed: () {
                               showDialog(
                                 context: context,
-                                builder: (context) => AlertDialog(
-                                  title: const Text(
-                                    'Ajuda',
-                                    style: TextStyle(
-                                      fontSize: 24,
-                                      fontWeight: FontWeight.bold,
-                                      color: Color(0xFFD32F2F),
+                                barrierDismissible: true,
+                                builder: (context) => Dialog(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(24),
+                                  ),
+                                  child: Container(
+                                    constraints: BoxConstraints(
+                                      maxWidth: 400,
+                                      maxHeight:
+                                          MediaQuery.of(context).size.height *
+                                          0.7,
+                                    ),
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        // Cabeçalho colorido
+                                        Container(
+                                          width: double.infinity,
+                                          padding: const EdgeInsets.symmetric(
+                                            vertical: 24,
+                                            horizontal: 24,
+                                          ),
+                                          decoration: const BoxDecoration(
+                                            gradient: LinearGradient(
+                                              colors: [
+                                                Color(0xFF7C4DFF),
+                                                Color(0xFF9C7EFF),
+                                              ],
+                                            ),
+                                            borderRadius: BorderRadius.only(
+                                              topLeft: Radius.circular(24),
+                                              topRight: Radius.circular(24),
+                                            ),
+                                          ),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: const [
+                                              Icon(
+                                                Icons.help_outline_rounded,
+                                                color: Colors.white,
+                                                size: 40,
+                                              ),
+                                              SizedBox(width: 12),
+                                              Text(
+                                                'Como usar',
+                                                style: TextStyle(
+                                                  fontSize: 28,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.white,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        // Conteúdo
+                                        Flexible(
+                                          child: SingleChildScrollView(
+                                            padding: const EdgeInsets.all(24),
+                                            child: Column(
+                                              children: [
+                                                _AjudaRow(
+                                                  icon: Icons.touch_app_rounded,
+                                                  color: Color(0xFF7C4DFF),
+                                                  text:
+                                                      'Toque nos botões coloridos para avisar seu responsável',
+                                                ),
+                                                const SizedBox(height: 20),
+                                                _AjudaRow(
+                                                  icon: Icons
+                                                      .notifications_active_rounded,
+                                                  color: Color(0xFFE57373),
+                                                  text:
+                                                      'Cada botão envia uma mensagem diferente',
+                                                ),
+                                                const SizedBox(height: 20),
+                                                _AjudaRow(
+                                                  icon: Icons
+                                                      .phone_android_rounded,
+                                                  color: Color(0xFF6DBE81),
+                                                  text:
+                                                      'Seu responsável receberá a notificação no celular dele',
+                                                ),
+                                                const SizedBox(height: 20),
+                                                _AjudaRow(
+                                                  icon: Icons
+                                                      .warning_amber_rounded,
+                                                  color: Color(0xFFFF9800),
+                                                  text:
+                                                      'Use o botão vermelho para emergências',
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                        // Botão de fechar
+                                        Padding(
+                                          padding: const EdgeInsets.fromLTRB(
+                                            24,
+                                            0,
+                                            24,
+                                            24,
+                                          ),
+                                          child: SizedBox(
+                                            width: double.infinity,
+                                            child: ElevatedButton(
+                                              style: ElevatedButton.styleFrom(
+                                                backgroundColor: const Color(
+                                                  0xFF7C4DFF,
+                                                ),
+                                                foregroundColor: Colors.white,
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                      vertical: 18,
+                                                    ),
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(16),
+                                                ),
+                                                elevation: 2,
+                                              ),
+                                              onPressed: () =>
+                                                  Navigator.pop(context),
+                                              child: const Text(
+                                                'Entendi!',
+                                                style: TextStyle(
+                                                  fontSize: 22,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ),
-                                  content: const Text(
-                                    'Toque em um dos botões para avisar seu responsável.\n'
-                                    'Cada botão tem uma função diferente e envia uma notificação apropriada.',
-                                    style: TextStyle(fontSize: 20),
-                                  ),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () => Navigator.pop(context),
-                                      child: const Text(
-                                        'OK',
-                                        style: TextStyle(fontSize: 18),
-                                      ),
-                                    ),
-                                  ],
                                 ),
                               );
                             },
@@ -508,7 +621,7 @@ class _HomeIdosoState extends State<HomeIdoso> {
       },
     );
   }
-      
+
   Future<Map<String, dynamic>?> _getIdosoData() async {
     try {
       final user = await AuthService().getCurrentUser();
@@ -547,48 +660,126 @@ class _IdosoAction {
   });
 }
 
-class _IdosoActionButton extends StatelessWidget {
+class _IdosoActionButton extends StatefulWidget {
   final _IdosoAction action;
   const _IdosoActionButton({Key? key, required this.action}) : super(key: key);
+
+  @override
+  State<_IdosoActionButton> createState() => _IdosoActionButtonState();
+}
+
+class _IdosoActionButtonState extends State<_IdosoActionButton>
+    with SingleTickerProviderStateMixin {
+  double _scale = 1.0;
+
+  void _onTapDown(TapDownDetails details) {
+    setState(() {
+      _scale = 0.93;
+    });
+  }
+
+  void _onTapUp(TapUpDetails details) {
+    setState(() {
+      _scale = 1.0;
+    });
+  }
+
+  void _onTapCancel() {
+    setState(() {
+      _scale = 1.0;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Material(
       color: Colors.transparent,
-      child: InkWell(
-        borderRadius: BorderRadius.circular(32),
-        onTap: () => action.onTap(context),
-        child: Container(
-          decoration: BoxDecoration(
-            color: action.color,
-            borderRadius: BorderRadius.circular(32),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.20),
-                blurRadius: 8,
-                offset: const Offset(0, 4),
-              ),
-            ],
-          ),
-          padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 8),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(action.icon, color: Colors.white, size: 64),
-              const SizedBox(height: 16),
-              Text(
-                action.label,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontFamily: 'Montserrat',
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18,
-                  color: Colors.white,
+      child: GestureDetector(
+        onTap: () => widget.action.onTap(context),
+        onTapDown: _onTapDown,
+        onTapUp: _onTapUp,
+        onTapCancel: _onTapCancel,
+        child: AnimatedScale(
+          scale: _scale,
+          duration: const Duration(milliseconds: 120),
+          curve: Curves.easeOut,
+          child: Container(
+            decoration: BoxDecoration(
+              color: widget.action.color,
+              borderRadius: BorderRadius.circular(32),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.20),
+                  blurRadius: 8,
+                  offset: const Offset(0, 4),
                 ),
-              ),
-            ],
+              ],
+            ),
+            padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 8),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(widget.action.icon, color: Colors.white, size: 64),
+                const SizedBox(height: 16),
+                Text(
+                  widget.action.label,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontFamily: 'Montserrat',
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                    color: Colors.white,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _AjudaRow extends StatelessWidget {
+  final IconData icon;
+  final Color color;
+  final String text;
+
+  const _AjudaRow({
+    required this.icon,
+    required this.color,
+    required this.text,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.08),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: color.withOpacity(0.3), width: 2),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+            child: Icon(icon, color: Colors.white, size: 32),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Text(
+              text,
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: Color(0xFF2C3E50),
+                height: 1.4,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

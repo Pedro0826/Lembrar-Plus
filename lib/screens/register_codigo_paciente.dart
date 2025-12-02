@@ -17,19 +17,70 @@ class _RegisterCodigoIdosoPageState extends State<RegisterCodigoIdosoPage> {
   String? errorMsg;
   bool isLoading = false;
 
-  InputDecoration campoDecoration(String label) {
-    return InputDecoration(
-      hintText: label,
-      hintStyle: const TextStyle(color: Color(0xFF707070)),
-      filled: true,
-      fillColor: const Color(0xFFE4FBFB),
-      enabledBorder: const OutlineInputBorder(
-        borderRadius: BorderRadius.all(Radius.circular(10)),
-        borderSide: BorderSide.none,
-      ),
-      focusedBorder: const OutlineInputBorder(
-        borderRadius: BorderRadius.all(Radius.circular(10)),
-        borderSide: BorderSide.none,
+  // Caixa de entrada no mesmo estilo de EditarPaciente
+  Widget _editBox({
+    required String label,
+    required TextEditingController controller,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 18.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF3A7CA5),
+              letterSpacing: 0.5,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 12),
+            decoration: BoxDecoration(
+              color: const Color(0xFFF5F5F5),
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: const [
+                BoxShadow(
+                  color: Color(0x11000000),
+                  blurRadius: 6,
+                  offset: Offset(0, 3),
+                ),
+              ],
+            ),
+            child: Row(
+              children: [
+                const Icon(Icons.qr_code_2, color: Color(0xFF3A7CA5)),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: TextField(
+                    controller: controller,
+                    keyboardType: TextInputType.number,
+                    textAlign: TextAlign.center,
+                    maxLength: 8,
+                    decoration: const InputDecoration(
+                      hintText: 'Digite o código',
+                      hintStyle: TextStyle(color: Color(0xFF707070)),
+                      border: InputBorder.none,
+                      isDense: true,
+                      counterText: '',
+                      contentPadding: EdgeInsets.symmetric(vertical: 10),
+                    ),
+                    style: const TextStyle(
+                      fontSize: 18,
+                      color: Colors.black87,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 2,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -104,53 +155,99 @@ class _RegisterCodigoIdosoPageState extends State<RegisterCodigoIdosoPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: const Text(
-          'Cadastrar paciente por código',
-          style: TextStyle(
-            color: Color(0xFF3A7CA5),
-            fontWeight: FontWeight.bold,
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: Image.asset(
+              'assets/images/Background3.png',
+              fit: BoxFit.cover,
+            ),
           ),
-        ),
-        iconTheme: const IconThemeData(color: Color(0xFF3A7CA5)),
-        backgroundColor: Colors.white,
-        elevation: 0,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          children: [
-            TextField(
-              controller: codigoController,
-              decoration: campoDecoration('Código do paciente'),
-            ),
-            if (errorMsg != null)
-              Padding(
-                padding: const EdgeInsets.only(top: 8.0),
-                child: Text(
-                  errorMsg!,
-                  style: const TextStyle(color: Colors.red),
+          SafeArea(
+            child: ListView(
+              padding: const EdgeInsets.all(24),
+              children: [
+                const Center(
+                  child: Text(
+                    'Cadastrar Paciente',
+                    style: TextStyle(
+                      fontFamily: 'Montserrat',
+                      fontWeight: FontWeight.bold,
+                      fontSize: 22,
+                      color: Color(0xFF3A7CA5),
+                      letterSpacing: 1.1,
+                    ),
+                  ),
                 ),
-              ),
-            const SizedBox(height: 24),
-            ElevatedButton(
-              onPressed: isLoading ? null : vincularIdoso,
+                const SizedBox(height: 24),
+                _editBox(
+                  label: 'Código do paciente',
+                  controller: codigoController,
+                ),
+                if (errorMsg != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
+                    child: Text(
+                      errorMsg!,
+                      style: const TextStyle(
+                        color: Colors.red,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                const SizedBox(height: 16),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF3A7CA5),
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      textStyle: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1.1,
+                      ),
+                    ),
+                    onPressed: isLoading ? null : vincularIdoso,
+                    child: isLoading
+                        ? const SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 2,
+                            ),
+                          )
+                        : const Text('Vincular paciente'),
+                  ),
+                ),
+                const SizedBox(height: 32),
+              ],
+            ),
+          ),
+          // Removido overlay global para evitar dupla de loaders ao voltar
+          Positioned(
+            left: 32,
+            bottom: 24,
+            child: ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF3A7CA5),
-                foregroundColor: Colors.white,
-                minimumSize: const Size(double.infinity, 48),
-                shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(10)),
-                ),
-                elevation: 0,
+                backgroundColor: Colors.white,
+                foregroundColor: Colors.grey,
+                shape: const CircleBorder(),
+                elevation: 4,
+                padding: const EdgeInsets.all(18),
               ),
-              child: isLoading
-                  ? const CircularProgressIndicator(color: Colors.white)
-                  : const Text('Vincular paciente'),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Icon(Icons.arrow_back, size: 36),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

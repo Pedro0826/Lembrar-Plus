@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'Info_projeto.dart';
 
 class WelcomePage extends StatefulWidget {
   const WelcomePage({super.key});
@@ -75,11 +76,20 @@ class _WelcomePageState extends State<WelcomePage> {
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(32),
+                        border: Border.all(
+                          color: const Color(0xFF3A7CA5).withOpacity(0.3),
+                          width: 2,
+                        ),
                         boxShadow: [
                           BoxShadow(
-                            color: const Color(0xFFB3D9F7).withOpacity(0.4),
-                            blurRadius: 14,
-                            offset: const Offset(0, 4),
+                            color: Colors.black.withOpacity(0.15),
+                            blurRadius: 20,
+                            offset: const Offset(0, 6),
+                          ),
+                          BoxShadow(
+                            color: const Color(0xFFB3D9F7).withOpacity(0.3),
+                            blurRadius: 16,
+                            offset: const Offset(0, 2),
                           ),
                         ],
                       ),
@@ -155,26 +165,36 @@ class _WelcomePageState extends State<WelcomePage> {
                       padding: const EdgeInsets.symmetric(horizontal: 32.0),
                       child: SizedBox(
                         width: double.infinity,
-                        height: 44,
+                        height: 56,
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF6DBE81),
+                            backgroundColor: const Color(0xFF4CAF50),
                             foregroundColor: Colors.white,
-                            elevation: 2,
+                            elevation: 4,
+                            shadowColor: const Color(
+                              0xFF4CAF50,
+                            ).withOpacity(0.4),
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
+                              borderRadius: BorderRadius.circular(16),
                             ),
                             textStyle: const TextStyle(
                               fontFamily: 'Montserrat',
                               fontWeight: FontWeight.bold,
-                              fontSize: 17,
-                              letterSpacing: 1,
+                              fontSize: 18,
+                              letterSpacing: 1.2,
                             ),
                           ),
                           onPressed: () {
                             Navigator.pushNamed(context, '/login');
                           },
-                          child: const Text("ENTRAR/REGISTRAR"),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: const [
+                              Text("ENTRAR/REGISTRAR"),
+                              SizedBox(width: 8),
+                              Icon(Icons.arrow_forward_rounded, size: 24),
+                            ],
+                          ),
                         ),
                       ),
                     ),
@@ -182,6 +202,28 @@ class _WelcomePageState extends State<WelcomePage> {
                   ],
                 ),
               ),
+            ),
+          ),
+          // Botão informação no canto inferior esquerdo
+          Positioned(
+            left: 24,
+            bottom: 24,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white,
+                foregroundColor: const Color(0xFF3A7CA5),
+                shape: const CircleBorder(),
+                elevation: 4,
+                padding: EdgeInsets.zero,
+                fixedSize: const Size(56, 56),
+              ),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const InfoProjetoPage()),
+                );
+              },
+              child: const Icon(Icons.info_outline, size: 26),
             ),
           ),
         ],

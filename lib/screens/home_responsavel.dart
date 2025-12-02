@@ -4,9 +4,8 @@ import '../services/firestore_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:circular_menu/circular_menu.dart';
 import 'paciente_page.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'dart:io';
+import 'Info_projeto.dart';
+// Removed image upload and storage dependencies; using asset-only avatar
 
 class HomeResponsavel extends StatefulWidget {
   const HomeResponsavel({super.key});
@@ -90,38 +89,39 @@ class _HomeResponsavelState extends State<HomeResponsavel> {
   }
 
   Future<void> _atualizarFotoPerfil() async {
+    // Seta a foto de perfil como um asset local fixo e atualiza o Firestore
     try {
-      final picker = ImagePicker();
-      final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-
-      if (pickedFile != null) {
-        final user = await AuthService().getCurrentUser();
-        if (user == null) return;
-
-        // Upload para o Firebase Storage
-        final storageRef = FirebaseStorage.instance.ref().child(
-          'profile_images/responsavel_${user.uid}.jpg',
+      final user = await AuthService().getCurrentUser();
+      if (user == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Usuário não autenticado')),
         );
-        await storageRef.putFile(File(pickedFile.path));
-        final downloadUrl = await storageRef.getDownloadURL();
-
-        // Atualiza o campo fotoUrl no Firestore
-        await FirebaseFirestore.instance
-            .collection('responsavel')
-            .doc(user.uid)
-            .update({'fotoUrl': downloadUrl});
-
-        // Atualiza os dados locais e recarrega a tela
-        setState(() {
-          if (responsavelData != null) {
-            responsavelData!['fotoUrl'] = downloadUrl;
-          }
-        });
+        return;
       }
+
+      const String assetPath = 'assets/images/default_profile.jpg';
+
+      await FirebaseFirestore.instance
+          .collection('responsavel')
+          .doc(user.uid)
+          .set({
+            'fotoUrl': assetPath,
+            'isAsset': true,
+          }, SetOptions(merge: true));
+
+      setState(() {
+        responsavelData = (responsavelData ?? {});
+        responsavelData!['fotoUrl'] = assetPath;
+        responsavelData!['isAsset'] = true;
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Foto de perfil definida como asset.')),
+      );
     } catch (e) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('Erro ao atualizar foto: $e')));
+      ).showSnackBar(SnackBar(content: Text('Erro ao definir foto: $e')));
     }
   }
 
@@ -131,92 +131,242 @@ class _HomeResponsavelState extends State<HomeResponsavel> {
 
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Definir Apelido'),
-        content: TextField(
-          controller: apelidoController,
-          decoration: const InputDecoration(
-            labelText: 'Apelido',
-            hintText: 'Digite um apelido para o paciente',
+      builder: (context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
           ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancelar'),
+          backgroundColor: Colors.white,
+          titlePadding: const EdgeInsets.fromLTRB(24, 20, 24, 0),
+          contentPadding: const EdgeInsets.fromLTRB(24, 12, 24, 0),
+          actionsPadding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+          title: Row(
+            children: const [
+              Icon(Icons.edit, color: Color(0xFF3A7CA5)),
+              SizedBox(width: 8),
+              Text(
+                'Definir Apelido',
+                style: TextStyle(
+                  fontFamily: 'Montserrat',
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF3A7CA5),
+                ),
+              ),
+            ],
           ),
-          TextButton(
-            onPressed: () async {
-              try {
-                await FirebaseFirestore.instance
-                    .collection('idoso')
-                    .doc(idoso['id'])
-                    .update({'apelido': apelidoController.text});
-                Navigator.pop(context);
-                _loadIdososVinculados(); // Recarrega a lista
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Apelido atualizado com sucesso!'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: apelidoController,
+                textInputAction: TextInputAction.done,
+                decoration: InputDecoration(
+                  labelText: 'Apelido',
+                  hintText: 'Digite um apelido para o paciente',
+                  filled: true,
+                  fillColor: Colors.grey.shade100,
+                  prefixIcon: const Icon(
+                    Icons.person_outline,
+                    color: Color(0xFF6B7A8F),
                   ),
-                );
-              } catch (e) {
-                Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Erro ao atualizar apelido: $e')),
-                );
-              }
-            },
-            child: const Text('Salvar'),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: BorderSide(color: Colors.grey.shade300),
+                  ),
+                  focusedBorder: const OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(14)),
+                    borderSide: BorderSide(color: Color(0xFF3A7CA5), width: 2),
+                  ),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              style: TextButton.styleFrom(
+                foregroundColor: const Color(0xFF6B7A8F),
+              ),
+              child: const Text('Cancelar'),
+            ),
+            ElevatedButton.icon(
+              icon: const Icon(Icons.check, size: 18),
+              label: const Text('Salvar'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF6DBE81),
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                textStyle: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              onPressed: () async {
+                final String novoApelido = apelidoController.text.trim();
+                if (novoApelido.isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Digite um apelido válido.')),
+                  );
+                  return;
+                }
+                try {
+                  await FirebaseFirestore.instance
+                      .collection('idoso')
+                      .doc(idoso['id'])
+                      .update({'apelido': novoApelido});
+                  Navigator.pop(context);
+                  _loadIdososVinculados();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Apelido atualizado com sucesso!'),
+                      backgroundColor: Color(0xFF6DBE81),
+                    ),
+                  );
+                } catch (e) {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Erro ao atualizar apelido: $e')),
+                  );
+                }
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 
   Future<void> _removerVinculo(String idosoId) async {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Remover Vínculo'),
-        content: const Text(
-          'Tem certeza que deseja remover o vínculo com este paciente?',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancelar'),
+      builder: (context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
           ),
-          TextButton(
-            onPressed: () async {
-              try {
-                final user = await AuthService().getCurrentUser();
-                if (user == null) return;
+          backgroundColor: Colors.white,
+          titlePadding: const EdgeInsets.fromLTRB(24, 20, 24, 0),
+          contentPadding: const EdgeInsets.fromLTRB(24, 12, 24, 0),
+          actionsPadding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+          title: Row(
+            children: const [
+              Icon(Icons.link_off, color: Color(0xFFD9534F)),
+              SizedBox(width: 8),
+              Text(
+                'Remover Vínculo',
+                style: TextStyle(
+                  fontFamily: 'Montserrat',
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFFD9534F),
+                ),
+              ),
+            ],
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: const [
+              SizedBox(height: 4),
+              Text(
+                'Tem certeza que deseja remover o vínculo com este paciente?\nEsta ação não pode ser desfeita.',
+                style: TextStyle(color: Color(0xFF6B7A8F), fontSize: 15),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              style: TextButton.styleFrom(
+                foregroundColor: const Color(0xFF6B7A8F),
+              ),
+              child: const Text('Cancelar'),
+            ),
+            ElevatedButton.icon(
+              icon: const Icon(Icons.delete_outline, size: 18),
+              label: const Text('Remover'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFD9534F),
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                textStyle: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              onPressed: () async {
+                try {
+                  final user = await AuthService().getCurrentUser();
+                  if (user == null) return;
 
-                // Remove vínculo usando o serviço
-                final firestoreService = FirestoreService();
-                await firestoreService.removerVinculoResponsavelIdoso(
-                  user.uid,
-                  idosoId,
-                );
+                  final firestoreService = FirestoreService();
+                  await firestoreService.removerVinculoResponsavelIdoso(
+                    user.uid,
+                    idosoId,
+                  );
 
-                Navigator.pop(context);
-                _loadIdososVinculados(); // Recarrega a lista
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Vínculo removido com sucesso!'),
+                  Navigator.pop(context);
+                  _loadIdososVinculados();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Vínculo removido com sucesso!'),
+                      backgroundColor: Color(0xFF6DBE81),
+                    ),
+                  );
+                } catch (e) {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Erro ao remover vínculo: $e')),
+                  );
+                }
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showProfilePreview() {
+    final String defaultAsset = 'assets/images/default_profile.jpg';
+    final String url = (responsavelData?['fotoUrl'] ?? '').toString();
+    final bool isAsset = responsavelData?['isAsset'] == true;
+    final ImageProvider imageProvider = url.isEmpty
+        ? AssetImage(defaultAsset)
+        : (isAsset ? AssetImage(url) : NetworkImage(url) as ImageProvider);
+
+    showGeneralDialog(
+      context: context,
+      barrierDismissible: true,
+      barrierLabel: 'Fechar',
+      transitionDuration: const Duration(milliseconds: 200),
+      pageBuilder: (context, anim1, anim2) {
+        return Center(
+          child: Material(
+            color: Colors.transparent,
+            child: Container(
+              width: 240,
+              height: 240,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.25),
+                    blurRadius: 20,
+                    offset: const Offset(0, 10),
                   ),
-                );
-              } catch (e) {
-                Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Erro ao remover vínculo: $e')),
-                );
-              }
-            },
-            child: const Text('Remover'),
+                ],
+              ),
+              child: CircleAvatar(backgroundImage: imageProvider, radius: 120),
+            ),
           ),
-        ],
-      ),
+        );
+      },
+      transitionBuilder: (context, anim, secondaryAnim, child) {
+        return FadeTransition(
+          opacity: anim,
+          child: ScaleTransition(
+            scale: Tween<double>(begin: 0.95, end: 1).animate(anim),
+            child: child,
+          ),
+        );
+      },
     );
   }
 
@@ -246,33 +396,25 @@ class _HomeResponsavelState extends State<HomeResponsavel> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     GestureDetector(
-                      onTap: _atualizarFotoPerfil,
+                      onTap: _showProfilePreview,
                       child: CircleAvatar(
                         radius: 34,
                         backgroundColor: Colors.white,
-                        backgroundImage:
-                            responsavelData != null &&
-                                responsavelData!['fotoUrl'] != null &&
-                                responsavelData!['fotoUrl']
-                                    .toString()
-                                    .isNotEmpty
-                            ? (responsavelData!['isAsset'] == true
-                                      ? AssetImage(responsavelData!['fotoUrl'])
-                                      : NetworkImage(
-                                          responsavelData!['fotoUrl'],
-                                        ))
-                                  as ImageProvider
-                            : null,
-                        child:
-                            responsavelData == null ||
-                                responsavelData!['fotoUrl'] == null ||
-                                responsavelData!['fotoUrl'].toString().isEmpty
-                            ? const Icon(
-                                Icons.camera_alt,
-                                color: Colors.grey,
-                                size: 32,
-                              )
-                            : null,
+                        backgroundImage: () {
+                          const String defaultAsset =
+                              'assets/images/default_profile.jpg';
+                          final data = responsavelData;
+                          if (data == null)
+                            return const AssetImage(defaultAsset);
+                          final String url = (data['fotoUrl'] ?? '').toString();
+                          final bool isAsset = data['isAsset'] == true;
+                          if (url.isEmpty)
+                            return const AssetImage(defaultAsset);
+                          return isAsset
+                              ? AssetImage(url)
+                              : NetworkImage(url) as ImageProvider;
+                        }(),
+                        child: null,
                       ),
                     ),
                     const SizedBox(width: 18),
@@ -458,16 +600,28 @@ class _HomeResponsavelState extends State<HomeResponsavel> {
                                                               .toString()
                                                               .isNotEmpty)
                                                       ? (idoso['isAsset'] ==
-                                                                    true
-                                                                ? AssetImage(
+                                                                true
+                                                            ? AssetImage(
+                                                                idoso['fotoUrl'],
+                                                              )
+                                                            : NetworkImage(
                                                                     idoso['fotoUrl'],
                                                                   )
-                                                                : NetworkImage(
-                                                                    idoso['fotoUrl'],
-                                                                  ))
-                                                            as ImageProvider
-                                                      : const AssetImage(
-                                                          'assets/images/default_profile.jpg',
+                                                                  as ImageProvider)
+                                                      : null,
+                                                  child:
+                                                      (idoso['fotoUrl'] !=
+                                                              null &&
+                                                          idoso['fotoUrl']
+                                                              .toString()
+                                                              .isNotEmpty)
+                                                      ? null
+                                                      : const Icon(
+                                                          Icons.person,
+                                                          color: Color(
+                                                            0xFF6B7A8F,
+                                                          ),
+                                                          size: 32,
                                                         ),
                                                 ),
                                                 title: Text(
@@ -595,7 +749,6 @@ class _HomeResponsavelState extends State<HomeResponsavel> {
               ],
             ),
           ),
-          if (isLoading) const Center(child: CircularProgressIndicator()),
           // Menu circular centralizado, um pouco mais alto
           Padding(
             padding: const EdgeInsets.only(bottom: 56),
@@ -631,7 +784,14 @@ class _HomeResponsavelState extends State<HomeResponsavel> {
                 CircularMenuItem(
                   icon: Icons.info_outline,
                   color: Colors.red,
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const InfoProjetoPage(),
+                      ),
+                    );
+                  },
                 ),
               ],
             ),
