@@ -110,7 +110,7 @@ class _IdosoPageState extends State<IdosoPage> {
         children: [
           Positioned.fill(
             child: Image.asset(
-              'assets/images/Background2.png',
+              'assets/images/Background9.png',
               fit: BoxFit.cover,
             ),
           ),
