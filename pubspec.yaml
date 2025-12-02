@@ -24,6 +24,7 @@ dependencies:
   firebase_storage: ^13.0.2
   connectivity_plus: ^7.0.0
   url_launcher: ^6.2.5
+  table_calendar: ^3.2.0
 
 dev_dependencies:
   flutter_test:
@@ -53,8 +54,12 @@ flutter:
     - assets/images/Background.png
     - assets/images/Background2.png
     - assets/images/Background3.png
+    - assets/images/Background4.png
+    - assets/images/Background5.png
     - assets/images/MariaSilva.jpg
     - assets/images/AnaCosta.jpg
     - assets/images/JoaoSouza.jpg
+    - assets/images/LauraVieira.jpg
+    - assets/images/Foto_Grupo.jpg
     - assets/videos/background.mp4
     - assets/videos/background2.mp4

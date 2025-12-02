@@ -21,7 +21,9 @@ class _IdosoInfoPageState extends State<IdosoInfoPage> {
   }
 
   Future<void> fetchIdosoData() async {
-    setState(() { isLoading = true; });
+    setState(() {
+      isLoading = true;
+    });
     final doc = await FirebaseFirestore.instance
         .collection('idoso')
         .doc(widget.idosoId)
@@ -75,11 +77,13 @@ class _IdosoInfoPageState extends State<IdosoInfoPage> {
                           CircleAvatar(
                             radius: 34,
                             backgroundColor: Colors.white,
-                            backgroundImage: idosoData!['fotoUrl'] != null && (idosoData!['fotoUrl'] as String).isNotEmpty
+                            backgroundImage:
+                                idosoData!['fotoUrl'] != null &&
+                                    (idosoData!['fotoUrl'] as String).isNotEmpty
                                 ? (idosoData!['isAsset'] == true
-                                    ? AssetImage(idosoData!['fotoUrl'])
-                                    : NetworkImage(idosoData!['fotoUrl']))
-                                  as ImageProvider
+                                          ? AssetImage(idosoData!['fotoUrl'])
+                                          : NetworkImage(idosoData!['fotoUrl']))
+                                      as ImageProvider
                                 : null,
                           ),
                           const SizedBox(width: 18),
@@ -112,9 +116,15 @@ class _IdosoInfoPageState extends State<IdosoInfoPage> {
                                   children: [
                                     const TextSpan(text: 'PACIENTE: '),
                                     TextSpan(
-                                      text: (idosoData!['apelido'] != null && (idosoData!['apelido'] as String).isNotEmpty
-                                          ? idosoData!['apelido']
-                                          : (idosoData!['nome'] ?? '')).toString().toUpperCase(),
+                                      text:
+                                          (idosoData!['apelido'] != null &&
+                                                      (idosoData!['apelido']
+                                                              as String)
+                                                          .isNotEmpty
+                                                  ? idosoData!['apelido']
+                                                  : (idosoData!['nome'] ?? ''))
+                                              .toString()
+                                              .toUpperCase(),
                                       style: const TextStyle(
                                         color: Color(0xFF3A7CA5),
                                       ),
@@ -137,15 +147,23 @@ class _IdosoInfoPageState extends State<IdosoInfoPage> {
                         label: 'CPF',
                         value: _formatCpf(idosoData!['cpf'] ?? ''),
                       ),
-                      _InfoBox(label: 'Telefone', value: idosoData!['telefone'] ?? ''),
-                      _InfoBox(label: 'Convênio', value: idosoData!['convenio'] ?? ''),
+                      _InfoBox(
+                        label: 'Telefone',
+                        value: idosoData!['telefone'] ?? '',
+                      ),
+                      _InfoBox(
+                        label: 'Convênio',
+                        value: idosoData!['convenio'] ?? '',
+                      ),
                       _InfoBox(
                         label: 'Tipo Sanguíneo',
                         value: idosoData!['tipo_sanguineo'] ?? '',
                       ),
                       _InfoBox(
                         label: 'Peso',
-                        value: idosoData!['peso'] != null ? '${idosoData!['peso']} kg' : '',
+                        value: idosoData!['peso'] != null
+                            ? '${idosoData!['peso']} kg'
+                            : '',
                       ),
                       _InfoBox(
                         label: 'Altura',
@@ -256,7 +274,7 @@ class _InfoBox extends StatelessWidget {
               value,
               style: const TextStyle(
                 fontSize: 18,
-                color: Color.fromARGB(255, 64, 161, 108),
+                color: Color.fromARGB(255, 0, 0, 0),
                 fontWeight: FontWeight.w500,
               ),
             ),

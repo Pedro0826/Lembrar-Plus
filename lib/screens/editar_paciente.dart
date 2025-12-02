@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:async';
 
-// Caixa de edição no mesmo estilo do paciente_info
+// Reusable input box used across forms
 class _EditBox extends StatelessWidget {
   final String label;
   final TextEditingController controller;
-  const _EditBox({required this.label, required this.controller});
+  const _EditBox({required this.label, required this.controller, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -27,17 +27,10 @@ class _EditBox extends StatelessWidget {
           const SizedBox(height: 6),
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 18),
+            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.92),
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.06),
-                  blurRadius: 6,
-                  offset: const Offset(0, 2),
-                ),
-              ],
+              color: const Color(0xFFF5F5F5),
+              borderRadius: BorderRadius.circular(12),
             ),
             child: TextField(
               controller: controller,
@@ -47,9 +40,9 @@ class _EditBox extends StatelessWidget {
                 contentPadding: EdgeInsets.zero,
               ),
               style: const TextStyle(
-                fontSize: 18,
-                color: Color.fromARGB(255, 64, 161, 108),
-                fontWeight: FontWeight.w500,
+                fontSize: 16,
+                color: Colors.black87,
+                fontWeight: FontWeight.bold,
               ),
             ),
           ),
@@ -62,7 +55,11 @@ class _EditBox extends StatelessWidget {
 class EditarPacientePage extends StatefulWidget {
   final String idosoId;
   final Map<String, dynamic> dados;
-  const EditarPacientePage({super.key, required this.idosoId, required this.dados});
+  const EditarPacientePage({
+    super.key,
+    required this.idosoId,
+    required this.dados,
+  });
 
   @override
   State<EditarPacientePage> createState() => _EditarPacientePageState();
@@ -78,16 +75,25 @@ class _EditarPacientePageState extends State<EditarPacientePage> {
   DateTime? dataNascSelecionada;
   String convenioSelecionado = 'Unimed';
   String tipoSangSelecionado = 'A+';
+  bool isLoading = false;
 
   @override
   void initState() {
     super.initState();
     nomeController = TextEditingController(text: widget.dados['nome'] ?? '');
-    apelidoController = TextEditingController(text: widget.dados['apelido'] ?? '');
+    apelidoController = TextEditingController(
+      text: widget.dados['apelido'] ?? '',
+    );
     cpfController = TextEditingController(text: widget.dados['cpf'] ?? '');
-    telefoneController = TextEditingController(text: widget.dados['telefone'] ?? '');
-    pesoController = TextEditingController(text: widget.dados['peso']?.toString() ?? '');
-    alturaController = TextEditingController(text: widget.dados['altura']?.toString() ?? '');
+    telefoneController = TextEditingController(
+      text: widget.dados['telefone'] ?? '',
+    );
+    pesoController = TextEditingController(
+      text: widget.dados['peso']?.toString() ?? '',
+    );
+    alturaController = TextEditingController(
+      text: widget.dados['altura']?.toString() ?? '',
+    );
     // Data de nascimento
     final dn = widget.dados['data_nasc'];
     if (dn is Timestamp) {
@@ -108,35 +114,55 @@ class _EditarPacientePageState extends State<EditarPacientePage> {
     tipoSangSelecionado = widget.dados['tipo_sanguineo'] ?? 'A+';
   }
 
-
   Future<void> salvarEdicao() async {
-    bool completed = false;
-    Future updateFuture = FirebaseFirestore.instance.collection('idoso').doc(widget.idosoId).update({
-      'nome': nomeController.text.trim(),
-      'apelido': apelidoController.text.trim(),
-      'cpf': cpfController.text.trim(),
-      'data_nasc': dataNascSelecionada ?? '',
-      'telefone': telefoneController.text.trim(),
-      'convenio': convenioSelecionado,
-      'tipo_sanguineo': tipoSangSelecionado,
-      'peso': double.tryParse(pesoController.text.trim()),
-      'altura': double.tryParse(alturaController.text.trim()),
-    }).then((_) {
-      completed = true;
-      if (mounted) {
-        Navigator.pop(context, true);
-      }
-    }).catchError((e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Erro ao salvar: ${e.toString()}')),
-      );
+    setState(() {
+      isLoading = true;
     });
+    bool completed = false;
+    Future updateFuture = FirebaseFirestore.instance
+        .collection('idoso')
+        .doc(widget.idosoId)
+        .update({
+          'nome': nomeController.text.trim(),
+          'apelido': apelidoController.text.trim(),
+          'cpf': cpfController.text.trim(),
+          'data_nasc': dataNascSelecionada ?? '',
+          'telefone': telefoneController.text.trim(),
+          'convenio': convenioSelecionado,
+          'tipo_sanguineo': tipoSangSelecionado,
+          'peso': double.tryParse(pesoController.text.trim()),
+          'altura': double.tryParse(alturaController.text.trim()),
+        })
+        .then((_) {
+          completed = true;
+          if (mounted) {
+            Navigator.pop(context, true);
+          }
+        })
+        .catchError((e) {
+          if (mounted) {
+            setState(() {
+              isLoading = false;
+            });
+          }
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                'Erro ao salvar: ${e.toString()}',
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ),
+          );
+        });
 
     await Future.any([
       updateFuture,
       Future.delayed(const Duration(seconds: 3)),
     ]);
     if (!completed && mounted) {
+      setState(() {
+        isLoading = false;
+      });
       Navigator.pop(context, true);
     }
   }
@@ -191,14 +217,18 @@ class _EditarPacientePageState extends State<EditarPacientePage> {
                         dataNascSelecionada == null
                             ? 'Selecione'
                             : '${dataNascSelecionada!.day.toString().padLeft(2, '0')}/${dataNascSelecionada!.month.toString().padLeft(2, '0')}/${dataNascSelecionada!.year}',
-                        style: const TextStyle(fontSize: 16),
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       IconButton(
                         icon: const Icon(Icons.calendar_today),
                         onPressed: () async {
                           DateTime? picked = await showDatePicker(
                             context: context,
-                            initialDate: dataNascSelecionada ?? DateTime(2000, 1, 1),
+                            initialDate:
+                                dataNascSelecionada ?? DateTime(2000, 1, 1),
                             firstDate: DateTime(1900),
                             lastDate: DateTime.now(),
                           );
@@ -213,60 +243,164 @@ class _EditarPacientePageState extends State<EditarPacientePage> {
                   ),
                 ),
                 _EditBox(label: 'Telefone', controller: telefoneController),
-                // Convênio como dropdown
+                // Convênio como dropdown com rótulo e estilo similar ao _EditBox
                 Padding(
                   padding: const EdgeInsets.only(bottom: 18.0),
-                  child: DropdownButtonFormField<String>(
-                    value: convenioSelecionado,
-                    decoration: const InputDecoration(
-                      labelText: 'Convênio',
-                      filled: true,
-                      fillColor: Colors.white,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(16)),
-                        borderSide: BorderSide(color: Color(0xFFCCCCCC), width: 1),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Plano de Saúde',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF3A7CA5),
+                          letterSpacing: 0.5,
+                        ),
                       ),
-                    ),
-                    items: const [
-                      DropdownMenuItem(value: 'Unimed', child: Text('Unimed')),
-                      DropdownMenuItem(value: 'Ipsemg', child: Text('Ipsemg')),
+                      const SizedBox(height: 6),
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 8,
+                          horizontal: 12,
+                        ),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFF5F5F5),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: DropdownButtonFormField<String>(
+                          value: convenioSelecionado,
+                          decoration: const InputDecoration(
+                            border: InputBorder.none,
+                            isDense: true,
+                            contentPadding: EdgeInsets.zero,
+                          ),
+                          items: const [
+                            DropdownMenuItem(
+                              value: 'Unimed',
+                              child: Text(
+                                'Unimed',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                            DropdownMenuItem(
+                              value: 'Ipsemg',
+                              child: Text(
+                                'Ipsemg',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                          ],
+                          onChanged: (value) {
+                            setState(() {
+                              convenioSelecionado = value ?? 'Unimed';
+                            });
+                          },
+                        ),
+                      ),
                     ],
-                    onChanged: (value) {
-                      setState(() {
-                        convenioSelecionado = value ?? 'Unimed';
-                      });
-                    },
                   ),
                 ),
-                // Tipo sanguíneo como dropdown
+                // Tipo sanguíneo com rótulo e estilo igual ao Convênio/_EditBox
                 Padding(
                   padding: const EdgeInsets.only(bottom: 18.0),
-                  child: DropdownButtonFormField<String>(
-                    value: tipoSangSelecionado,
-                    decoration: const InputDecoration(
-                      labelText: 'Tipo Sanguíneo',
-                      filled: true,
-                      fillColor: Colors.white,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(16)),
-                        borderSide: BorderSide(color: Color(0xFFCCCCCC), width: 1),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Tipo Sanguíneo',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF3A7CA5),
+                          letterSpacing: 0.5,
+                        ),
                       ),
-                    ),
-                    items: const [
-                      DropdownMenuItem(value: 'A+', child: Text('A+')),
-                      DropdownMenuItem(value: 'A-', child: Text('A-')),
-                      DropdownMenuItem(value: 'B+', child: Text('B+')),
-                      DropdownMenuItem(value: 'B-', child: Text('B-')),
-                      DropdownMenuItem(value: 'AB+', child: Text('AB+')),
-                      DropdownMenuItem(value: 'AB-', child: Text('AB-')),
-                      DropdownMenuItem(value: 'O+', child: Text('O+')),
-                      DropdownMenuItem(value: 'O-', child: Text('O-')),
+                      const SizedBox(height: 6),
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 8,
+                          horizontal: 12,
+                        ),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFF5F5F5),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: DropdownButtonFormField<String>(
+                          value: tipoSangSelecionado,
+                          decoration: const InputDecoration(
+                            border: InputBorder.none,
+                            isDense: true,
+                            contentPadding: EdgeInsets.zero,
+                          ),
+                          items: const [
+                            DropdownMenuItem(
+                              value: 'A+',
+                              child: Text(
+                                'A+',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                            DropdownMenuItem(
+                              value: 'A-',
+                              child: Text(
+                                'A-',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                            DropdownMenuItem(
+                              value: 'B+',
+                              child: Text(
+                                'B+',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                            DropdownMenuItem(
+                              value: 'B-',
+                              child: Text(
+                                'B-',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                            DropdownMenuItem(
+                              value: 'AB+',
+                              child: Text(
+                                'AB+',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                            DropdownMenuItem(
+                              value: 'AB-',
+                              child: Text(
+                                'AB-',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                            DropdownMenuItem(
+                              value: 'O+',
+                              child: Text(
+                                'O+',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                            DropdownMenuItem(
+                              value: 'O-',
+                              child: Text(
+                                'O-',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                          ],
+                          onChanged: (value) {
+                            setState(() {
+                              tipoSangSelecionado = value ?? 'A+';
+                            });
+                          },
+                        ),
+                      ),
                     ],
-                    onChanged: (value) {
-                      setState(() {
-                        tipoSangSelecionado = value ?? 'A+';
-                      });
-                    },
                   ),
                 ),
                 _EditBox(label: 'Peso (kg)', controller: pesoController),
@@ -288,8 +422,17 @@ class _EditarPacientePageState extends State<EditarPacientePage> {
                         letterSpacing: 1.1,
                       ),
                     ),
-                    onPressed: salvarEdicao,
-                    child: const Text('Salvar Alterações'),
+                    onPressed: isLoading ? null : salvarEdicao,
+                    child: isLoading
+                        ? const SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 2,
+                            ),
+                          )
+                        : const Text('Salvar Alterações'),
                   ),
                 ),
                 const SizedBox(height: 32),

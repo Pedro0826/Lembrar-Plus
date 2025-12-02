@@ -2,7 +2,6 @@ import '../services/firestore_service.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-
 class RegisterMedicamentosPage extends StatefulWidget {
   final String idosoId;
   final String? medicamentoId;
@@ -20,25 +19,36 @@ class RegisterMedicamentosPage extends StatefulWidget {
 }
 
 class _RegisterMedicamentosPageState extends State<RegisterMedicamentosPage> {
-  final TextEditingController nomeController = TextEditingController();
-  final TextEditingController dosagemController = TextEditingController();
-  final TextEditingController periodoController = TextEditingController();
-  final TextEditingController observacoesController = TextEditingController();
+  late TextEditingController nomeController;
+  late TextEditingController dosagemController;
+  late TextEditingController periodoController;
+  late TextEditingController observacoesController;
 
-  DateTime? dataInicio;
-  DateTime? dataFim;
-  TimeOfDay? horarioInicio;
-  bool temDataFim = false;
-  String unidadeDosagem = 'mg'; // mg ou ml
-  String unidadePeriodo = 'horas'; // horas, dias, semanas, meses
+  late DateTime? dataInicio;
+  late DateTime? dataFim;
+  late TimeOfDay? horarioInicio;
+  late bool temDataFim;
+  late String unidadeDosagem;
+  late String unidadePeriodo;
   bool isLoading = false;
 
   final FirestoreService _firestoreService = FirestoreService();
 
-
   @override
   void initState() {
     super.initState();
+    nomeController = TextEditingController();
+    dosagemController = TextEditingController();
+    periodoController = TextEditingController();
+    observacoesController = TextEditingController();
+
+    dataInicio = null;
+    dataFim = null;
+    horarioInicio = null;
+    temDataFim = false;
+    unidadeDosagem = 'mg';
+    unidadePeriodo = 'horas';
+
     // Se for edição, preenche os campos
     if (widget.medicamentoData != null) {
       final data = widget.medicamentoData!;
@@ -74,6 +84,15 @@ class _RegisterMedicamentosPageState extends State<RegisterMedicamentosPage> {
         }
       }
     }
+  }
+
+  @override
+  void dispose() {
+    nomeController.dispose();
+    dosagemController.dispose();
+    periodoController.dispose();
+    observacoesController.dispose();
+    super.dispose();
   }
 
   InputDecoration campoDecoration(String label) {
@@ -122,43 +141,52 @@ class _RegisterMedicamentosPageState extends State<RegisterMedicamentosPage> {
             .collection('medicamentos')
             .doc(widget.medicamentoId)
             .update({
-          'idosoId': widget.idosoId,
-          'nome': nome,
-          'dosagem': dosagem,
-          'unidadeDosagem': unidadeDosagem,
-          'dataInicio': Timestamp.fromDate(dataInicio!),
-          'dataFim': temDataFim && dataFim != null
-              ? Timestamp.fromDate(dataFim!)
-              : null,
-          'horarioInicio': horarioInicio != null
-              ? '${horarioInicio!.hour.toString().padLeft(2, '0')}:${horarioInicio!.minute.toString().padLeft(2, '0')}'
-              : null,
-          'periodo': periodo,
-          'unidadePeriodo': unidadePeriodo,
-          'observacoes': observacoes,
-        }).timeout(const Duration(seconds: 3), onTimeout: () {
-          return;
-        });
+              'idosoId': widget.idosoId,
+              'nome': nome,
+              'dosagem': dosagem,
+              'unidadeDosagem': unidadeDosagem,
+              'dataInicio': Timestamp.fromDate(dataInicio!),
+              'dataFim': temDataFim && dataFim != null
+                  ? Timestamp.fromDate(dataFim!)
+                  : null,
+              'horarioInicio': horarioInicio != null
+                  ? '${horarioInicio!.hour.toString().padLeft(2, '0')}:${horarioInicio!.minute.toString().padLeft(2, '0')}'
+                  : null,
+              'periodo': periodo,
+              'unidadePeriodo': unidadePeriodo,
+              'observacoes': observacoes,
+            })
+            .timeout(
+              const Duration(seconds: 3),
+              onTimeout: () {
+                return;
+              },
+            );
       } else {
         // Criar novo medicamento
-        await _firestoreService.addMedicamento(
-          idosoId: widget.idosoId,
-          nome: nome,
-          dosagem: dosagem,
-          unidadeDosagem: unidadeDosagem,
-          dataInicio: Timestamp.fromDate(dataInicio!),
-          dataFim: temDataFim && dataFim != null
-              ? Timestamp.fromDate(dataFim!)
-              : null,
-          horarioInicio: horarioInicio != null
-              ? '${horarioInicio!.hour.toString().padLeft(2, '0')}:${horarioInicio!.minute.toString().padLeft(2, '0')}'
-              : null,
-          periodo: periodo,
-          unidadePeriodo: unidadePeriodo,
-          observacoes: observacoes,
-        ).timeout(const Duration(seconds: 3), onTimeout: () {
-          return;
-        });
+        await _firestoreService
+            .addMedicamento(
+              idosoId: widget.idosoId,
+              nome: nome,
+              dosagem: dosagem,
+              unidadeDosagem: unidadeDosagem,
+              dataInicio: Timestamp.fromDate(dataInicio!),
+              dataFim: temDataFim && dataFim != null
+                  ? Timestamp.fromDate(dataFim!)
+                  : null,
+              horarioInicio: horarioInicio != null
+                  ? '${horarioInicio!.hour.toString().padLeft(2, '0')}:${horarioInicio!.minute.toString().padLeft(2, '0')}'
+                  : null,
+              periodo: periodo,
+              unidadePeriodo: unidadePeriodo,
+              observacoes: observacoes,
+            )
+            .timeout(
+              const Duration(seconds: 3),
+              onTimeout: () {
+                return;
+              },
+            );
       }
 
       setState(() {
@@ -167,9 +195,11 @@ class _RegisterMedicamentosPageState extends State<RegisterMedicamentosPage> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(widget.medicamentoId != null
-              ? 'Medicamento atualizado com sucesso!'
-              : 'Medicamento salvo com sucesso!'),
+          content: Text(
+            widget.medicamentoId != null
+                ? 'Medicamento atualizado com sucesso!'
+                : 'Medicamento salvo com sucesso!',
+          ),
         ),
       );
 
@@ -225,9 +255,11 @@ class _RegisterMedicamentosPageState extends State<RegisterMedicamentosPage> {
                             value: 'mg',
                             groupValue: unidadeDosagem,
                             onChanged: (value) {
-                              setState(() {
-                                unidadeDosagem = value!;
-                              });
+                              if (value != null && value != unidadeDosagem) {
+                                setState(() {
+                                  unidadeDosagem = value;
+                                });
+                              }
                             },
                           ),
                           const Text('mg'),
@@ -239,9 +271,11 @@ class _RegisterMedicamentosPageState extends State<RegisterMedicamentosPage> {
                             value: 'ml',
                             groupValue: unidadeDosagem,
                             onChanged: (value) {
-                              setState(() {
-                                unidadeDosagem = value!;
-                              });
+                              if (value != null && value != unidadeDosagem) {
+                                setState(() {
+                                  unidadeDosagem = value;
+                                });
+                              }
                             },
                           ),
                           const Text('ml'),
@@ -288,12 +322,14 @@ class _RegisterMedicamentosPageState extends State<RegisterMedicamentosPage> {
                   Checkbox(
                     value: temDataFim,
                     onChanged: (value) {
-                      setState(() {
-                        temDataFim = value!;
-                        if (!temDataFim) {
-                          dataFim = null;
-                        }
-                      });
+                      if (value != null && value != temDataFim) {
+                        setState(() {
+                          temDataFim = value;
+                          if (!temDataFim) {
+                            dataFim = null;
+                          }
+                        });
+                      }
                     },
                   ),
                   const Text('Tem Data de Fim?'),
@@ -377,9 +413,11 @@ class _RegisterMedicamentosPageState extends State<RegisterMedicamentosPage> {
                       );
                     }).toList(),
                     onChanged: (String? newValue) {
-                      setState(() {
-                        unidadePeriodo = newValue!;
-                      });
+                      if (newValue != null && newValue != unidadePeriodo) {
+                        setState(() {
+                          unidadePeriodo = newValue;
+                        });
+                      }
                     },
                   ),
                 ],
