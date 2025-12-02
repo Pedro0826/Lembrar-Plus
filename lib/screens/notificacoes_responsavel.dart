@@ -279,90 +279,187 @@ class _NotificacoesResponsavelPageState
                   onTap: () {
                     showDialog(
                       context: context,
-                      builder: (context) => AlertDialog(
-                        title: const Text(
-                          'Como Funciona',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF3A7CA5),
-                          ),
+                      barrierDismissible: true,
+                      builder: (context) => Dialog(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(24),
                         ),
-                        content: SingleChildScrollView(
+                        child: Container(
+                          constraints: BoxConstraints(
+                            maxWidth: 400,
+                            maxHeight: MediaQuery.of(context).size.height * 0.7,
+                          ),
                           child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisSize: MainAxisSize.min,
-                            children: const [
-                              Text(
-                                'Notificações',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
-                                  color: Color(0xFF3A7CA5),
+                            children: [
+                              // Cabeçalho colorido
+                              Container(
+                                width: double.infinity,
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 24,
+                                  horizontal: 24,
+                                ),
+                                decoration: const BoxDecoration(
+                                  gradient: LinearGradient(
+                                    colors: [
+                                      Color.fromARGB(255, 226, 83, 81),
+                                      Color.fromARGB(255, 223, 113, 111),
+                                    ],
+                                  ),
+                                  borderRadius: BorderRadius.only(
+                                    topLeft: Radius.circular(24),
+                                    topRight: Radius.circular(24),
+                                  ),
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: const [
+                                    Icon(
+                                      Icons.notifications_active_rounded,
+                                      color: Colors.white,
+                                      size: 40,
+                                    ),
+                                    SizedBox(width: 12),
+                                    Text(
+                                      'Notificações',
+                                      style: TextStyle(
+                                        fontSize: 28,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
-                              SizedBox(height: 8),
-                              Text(
-                                'Esta aba exibe alertas e lembretes importantes sobre o paciente.',
-                                style: TextStyle(height: 1.4),
-                              ),
-                              SizedBox(height: 12),
-                              Text(
-                                '📋 O que você verá:',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 15,
+                              // Conteúdo
+                              Flexible(
+                                child: SingleChildScrollView(
+                                  padding: const EdgeInsets.all(24),
+                                  child: Column(
+                                    children: [
+                                      _NotifInfoRow(
+                                        icon: Icons.info_outline_rounded,
+                                        color: const Color(0xFF3A7CA5),
+                                        text:
+                                            'Esta aba exibe alertas e lembretes importantes sobre o paciente.',
+                                      ),
+                                      const SizedBox(height: 20),
+                                      _NotifInfoRow(
+                                        icon: Icons.list_alt_rounded,
+                                        color: const Color(0xFF6DBE81),
+                                        text:
+                                            'O que você verá: Avisos de cuidados, lembretes de consultas e alertas de situações importantes.',
+                                      ),
+                                      const SizedBox(height: 20),
+                                      _NotifInfoRow(
+                                        icon: Icons.priority_high_rounded,
+                                        color: const Color(0xFFE57373),
+                                        text:
+                                            'Níveis: Extrema (vermelho), Alta (laranja), Média (azul), Baixa (verde).',
+                                      ),
+                                      const SizedBox(height: 20),
+                                      _NotifInfoRow(
+                                        icon:
+                                            Icons.check_circle_outline_rounded,
+                                        color: const Color(0xFF4CAF50),
+                                        text:
+                                            'Como usar: Toque no botão "Feito" para remover notificações concluídas.',
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
-                              SizedBox(height: 6),
-                              Text(
-                                '• Avisos de cuidados com o paciente\n'
-                                '• Lembretes de consultas\n'
-                                '• Alertas de situações importantes',
-                                style: TextStyle(height: 1.5),
-                              ),
-                              SizedBox(height: 12),
-                              Text(
-                                '🔴 Níveis de Importância:',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 15,
+                              // Botão de fechar
+                              Padding(
+                                padding: const EdgeInsets.fromLTRB(
+                                  24,
+                                  0,
+                                  24,
+                                  24,
                                 ),
-                              ),
-                              SizedBox(height: 6),
-                              Text(
-                                '• Extrema (vermelho): atenção urgente\n'
-                                '• Alta (laranja): prioridade\n'
-                                '• Média (azul): atenção normal\n'
-                                '• Baixa (verde): informativo',
-                                style: TextStyle(height: 1.5),
-                              ),
-                              SizedBox(height: 12),
-                              Text(
-                                '✅ Como usar:',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 15,
+                                child: SizedBox(
+                                  width: double.infinity,
+                                  child: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: const Color.fromARGB(
+                                        255,
+                                        226,
+                                        83,
+                                        81,
+                                      ),
+                                      foregroundColor: Colors.white,
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 16,
+                                      ),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(16),
+                                      ),
+                                      elevation: 2,
+                                    ),
+                                    onPressed: () => Navigator.pop(context),
+                                    child: const Text(
+                                      'Entendi!',
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
                                 ),
-                              ),
-                              SizedBox(height: 6),
-                              Text(
-                                'Quando uma tarefa for concluída, toque no botão "Feito" para removê-la da lista.',
-                                style: TextStyle(height: 1.4),
                               ),
                             ],
                           ),
                         ),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.pop(context),
-                            child: const Text('Entendi'),
-                          ),
-                        ],
                       ),
                     );
                   },
                 ),
               ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _NotifInfoRow extends StatelessWidget {
+  final IconData icon;
+  final Color color;
+  final String text;
+
+  const _NotifInfoRow({
+    required this.icon,
+    required this.color,
+    required this.text,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.08),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: color.withOpacity(0.3), width: 2),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+            child: Icon(icon, color: Colors.white, size: 32),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Text(
+              text,
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: Color(0xFF2C3E50),
+                height: 1.4,
+              ),
             ),
           ),
         ],

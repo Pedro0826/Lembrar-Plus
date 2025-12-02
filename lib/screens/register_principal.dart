@@ -22,109 +22,119 @@ class _RegisterPrincipalPageState extends State<RegisterPrincipalPage> {
   void _showInfoDialog(BuildContext context) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        backgroundColor: Colors.white,
-        titlePadding: const EdgeInsets.fromLTRB(24, 20, 24, 0),
-        contentPadding: const EdgeInsets.fromLTRB(24, 12, 24, 0),
-        actionsPadding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
-        title: Row(
-          children: const [
-            Icon(Icons.info_outline, color: Color(0xFF3A7CA5)),
-            SizedBox(width: 8),
-            Expanded(
-              child: Text(
-                'Como funciona o cadastro',
-                maxLines: 2,
-                softWrap: true,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  fontFamily: 'Montserrat',
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF3A7CA5),
-                ),
-              ),
-            ),
-          ],
-        ),
-        content: SingleChildScrollView(
+      barrierDismissible: true,
+      builder: (context) => Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        child: Container(
+          constraints: BoxConstraints(
+            maxWidth: 400,
+            maxHeight: MediaQuery.of(context).size.height * 0.7,
+          ),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
-            children: const [
-              SizedBox(height: 6),
-              Text(
-                'Você pode se registrar como Responsável (cuidador) ou como Paciente. Veja abaixo as diferenças e passos:',
-                style: TextStyle(color: Color(0xFF6B7A8F), fontSize: 14),
-              ),
-              SizedBox(height: 12),
-              Text(
-                'Responsável (Cuidador):',
-                style: TextStyle(
-                  fontFamily: 'Montserrat',
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF3A7CA5),
+            children: [
+              // Cabeçalho colorido
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(
+                  vertical: 24,
+                  horizontal: 24,
+                ),
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [Color(0xFF3A7CA5), Color(0xFF5A9CC5)],
+                  ),
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(24),
+                    topRight: Radius.circular(24),
+                  ),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: const [
+                    Icon(
+                      Icons.info_outline_rounded,
+                      color: Colors.white,
+                      size: 40,
+                    ),
+                    SizedBox(width: 12),
+                    Text(
+                      'Como funciona',
+                      style: TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              SizedBox(height: 6),
-              Text(
-                '• Cria e gerencia os pacientes vinculados\n• Define apelidos, atualiza dados e acompanha notificações\n• Pode cadastrar pelo Google ou email/senha',
-                style: TextStyle(fontSize: 14, color: Color(0xFF333333)),
-              ),
-              SizedBox(height: 12),
-              Text(
-                'Paciente:',
-                style: TextStyle(
-                  fontFamily: 'Montserrat',
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF3A7CA5),
+              // Conteúdo
+              Flexible(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(24),
+                  child: Column(
+                    children: [
+                      _InfoRow(
+                        icon: Icons.person_outline_rounded,
+                        color: const Color(0xFF2563A5),
+                        text:
+                            'Responsável (Cuidador): Cria e gerencia os pacientes vinculados, define apelidos, atualiza dados e acompanha notificações.',
+                      ),
+                      const SizedBox(height: 20),
+                      _InfoRow(
+                        icon: Icons.elderly_rounded,
+                        color: const Color(0xFF4CAF50),
+                        text:
+                            'Paciente: Possui um perfil com informações de saúde básicas e recebe lembretes de medicamentos.',
+                      ),
+                      const SizedBox(height: 20),
+                      _InfoRow(
+                        icon: Icons.app_registration_rounded,
+                        color: const Color(0xFF3A7CA5),
+                        text:
+                            'Passos: Escolha seu tipo, complete seus dados (nome, email, CPF, data) e vincule pacientes.',
+                      ),
+                      const SizedBox(height: 20),
+                      _InfoRow(
+                        icon: Icons.lock_outline_rounded,
+                        color: const Color(0xFF6B7A8F),
+                        text:
+                            'Privacidade: Seus dados são protegidos e você pode editar ou remover vínculos a qualquer momento.',
+                      ),
+                    ],
+                  ),
                 ),
               ),
-              SizedBox(height: 6),
-              Text(
-                '• Possui um perfil com informações de saúde básicas\n• Recebe lembretes e registros de medicamentos\n• Pode ser criado pelo responsável usando um código ou diretamente',
-                style: TextStyle(fontSize: 14, color: Color(0xFF333333)),
-              ),
-              SizedBox(height: 12),
-              Text(
-                'Passos rápidos:',
-                style: TextStyle(
-                  fontFamily: 'Montserrat',
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF3A7CA5),
+              // Botão de fechar
+              Padding(
+                padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF3A7CA5),
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      elevation: 2,
+                    ),
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text(
+                      'Entendi!',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
                 ),
-              ),
-              SizedBox(height: 6),
-              Text(
-                '1. Escolha seu tipo de registro\n2. Complete seus dados (nome, email, CPF, data de nascimento)\n3. Vincule pacientes (se for responsável) ou finalize seu perfil (se for paciente)',
-                style: TextStyle(fontSize: 14, color: Color(0xFF333333)),
-              ),
-              SizedBox(height: 12),
-              Text(
-                'Privacidade:',
-                style: TextStyle(
-                  fontFamily: 'Montserrat',
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF3A7CA5),
-                ),
-              ),
-              SizedBox(height: 6),
-              Text(
-                '• Seus dados são protegidos e usados somente para funcionamento do app\n• Você pode editar ou remover vínculos a qualquer momento',
-                style: TextStyle(fontSize: 14, color: Color(0xFF333333)),
               ),
             ],
           ),
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            style: TextButton.styleFrom(
-              foregroundColor: const Color(0xFF6B7A8F),
-            ),
-            child: const Text('Entendi'),
-          ),
-        ],
       ),
     );
   }
@@ -307,6 +317,47 @@ class _RegisterPrincipalPageState extends State<RegisterPrincipalPage> {
               ),
               onPressed: () => _showInfoDialog(context),
               child: const Icon(Icons.info_outline, size: 26),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _InfoRow extends StatelessWidget {
+  final IconData icon;
+  final Color color;
+  final String text;
+
+  const _InfoRow({required this.icon, required this.color, required this.text});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.08),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: color.withOpacity(0.3), width: 2),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+            child: Icon(icon, color: Colors.white, size: 32),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Text(
+              text,
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: Color(0xFF2C3E50),
+                height: 1.4,
+              ),
             ),
           ),
         ],
