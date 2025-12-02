@@ -64,6 +64,7 @@ lembrar-plus/
 │   ├── firebase_options.dart     # Opções de inicialização do Firebase
 │   ├── main.dart                 # Ponto de entrada do app
 │   ├── screens/                  # Telas do aplicativo
+│   │   ├── info_projeto.dart               # Tela de Apresentação do App
 │   │   ├── home_paciente.dart              # Tela principal do paciente
 │   │   ├── home_responsavel.dart           # Tela principal do responsável
 │   │   ├── paciente_info.dart              # Tela de informações do paciente
