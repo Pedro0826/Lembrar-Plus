@@ -1,10 +1,10 @@
-# 🌟 Lembrar+
+#  Lembrar+
 
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue)]()
 
 Este repositório contém o aplicativo **Lembrar+**, desenvolvido em Flutter (Dart), voltado para ajudar idosos a se comunicarem com seus responsáveis. O app oferece funcionalidades de **login**, **registro**, **chamadas**, **mensagens** e **avisos rápidos** entre idoso e responsável.
 
-## 🧩 Funcionalidades
+##  Funcionalidades
 
 - Login e registro de usuários (*Paciente* ou *Cuidador*).  
 - Tela inicial de boas-vindas.  
@@ -14,12 +14,12 @@ Este repositório contém o aplicativo **Lembrar+**, desenvolvido em Flutter (Da
   - Enviar alertas/notificações  
 - Histórico de interações.
 
-## ⚙️ Tecnologias
+##  Tecnologias
 
 - Flutter (Dart)  
 - Android & iOS  
 
-## 🚀 Como Usar
+##  Como Usar
 
 Antes de começar, certifique-se de ter:
 
@@ -41,7 +41,7 @@ flutter pub get
 flutter run
 ```
 ---
-## 🗂️ Estrutura do Repositório
+##  Estrutura do Repositório
 
 ```
 lembrar-plus/
@@ -99,7 +99,7 @@ lembrar-plus/
 ├── windows/                     # Projeto Windows nativo
 ```
 ---
-## 👩‍💻 Autores
+##  Autores
 
 ### [Caua Diniz](https://github.com/Caua0305)
 
@@ -120,6 +120,6 @@ Para testes, utilizo emuladores Android/iOS e um dispositivo físico Android.
 O controle de versão é feito pelo **Git** diretamente pelo terminal integrado do VSCode.
 
 ---
-### 📄 Licença
+###  Licença
 
 Este projeto está sob a Apache License 2.0.
